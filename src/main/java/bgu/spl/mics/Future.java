@@ -16,7 +16,6 @@ public class Future<T> {
 	 * This should be the the only public constructor in this class.
 	 */
 	public Future() {
-		result = null;
 	}
 	
 	/**
