@@ -3,9 +3,10 @@ package bgu.spl.mics;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FutureTest {
-
+    private static Future<String> f;
     @org.junit.jupiter.api.BeforeEach
     void setUp() {
+        f = new Future();
     }
 
     @org.junit.jupiter.api.AfterEach
@@ -13,18 +14,19 @@ class FutureTest {
     }
 
     @org.junit.jupiter.api.Test
-    void get() {
+    void TestGet() {
+
     }
 
     @org.junit.jupiter.api.Test
-    void resolve() {
+    void TestResolve() {
     }
 
     @org.junit.jupiter.api.Test
-    void isDone() {
+    void TestisDone() {
     }
 
     @org.junit.jupiter.api.Test
-    void testGet() {
+    void TestTimeGet() {
     }
 }
