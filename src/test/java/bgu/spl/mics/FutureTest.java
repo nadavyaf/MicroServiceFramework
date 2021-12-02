@@ -3,12 +3,10 @@ package bgu.spl.mics;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FutureTest {
-
-    private static Future<String> a;
-
+    private static Future<String> f;
     @org.junit.jupiter.api.BeforeEach
     void setUp() {
-        a = new Future<String>();
+        f = new Future();
     }
 
     @org.junit.jupiter.api.AfterEach
@@ -17,14 +15,15 @@ class FutureTest {
 
     @org.junit.jupiter.api.Test
     void TestGet() {
+        assertNotNull(f.get());
     }
 
     @org.junit.jupiter.api.Test
     void TestResolve() {
-        assertThrows(Exception.class,() -> a.resolve(null), "Expected an error");
-        a.resolve("result");
-        assertEquals("result", a.get(), "Expected: result, got: " +a.get());
-        assertThrows(Exception.class,() -> a.resolve("something"), "Expected an error");
+        assertThrows(Exception.class,() -> f.resolve(null), "Expected an error");
+        f.resolve("result");
+        assertEquals("result", f.get(), "Expected: result, got: " +f.get());
+        assertThrows(Exception.class,() -> f.resolve("something"), "Expected an error");
     }
 
     @org.junit.jupiter.api.Test
