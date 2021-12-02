@@ -17,34 +17,36 @@ class FutureTest {
 
     @org.junit.jupiter.api.Test
     void TestGet() {
-        f.resolve("something");
-        assertNotNull(f.get(), "Expected a non-null type");
-        assertEquals("something", f.get(), "Expected: something, got: " +f.get());
+        f.resolve("somevalue");
+        assertNotNull(f.get(),"Got null from get.");
+        assertEquals("somevalue", f.get(), "Expected: result, got: " +f.get());
     }
 
     @org.junit.jupiter.api.Test
     void TestResolve() {
         assertThrows(Exception.class,() -> f.resolve(null), "Expected an error");
         f.resolve("result");
+        assertTrue(f.isDone(),"Already resolved but didn't show");
         assertEquals("result", f.get(), "Expected: result, got: " +f.get());
-        assertTrue(f.isDone(), "Expected: true, Got: false");
         assertThrows(Exception.class,() -> f.resolve("something"), "Expected an error");
     }
 
     @org.junit.jupiter.api.Test
     void TestisDone() {
-        assertEquals(false, f.isDone(), "Expected: false, Got: True");
+        assertEquals(false,f.isDone(),"expected isDone() to be false, because it didn't run before.");
         f.resolve("work");
-        assertEquals(true, f.isDone(), "Expected: True, Got: False");
+        assertEquals(true,f.isDone(),"expected isDone() to be true, because it ran before.");
     }
 
     @org.junit.jupiter.api.Test
     void TestTimeGet() {
-        assertThrows(Exception.class,() -> f.get(-10, TimeUnit.MILLISECONDS), "Illegal time");
-        assertNull(f.get(10,TimeUnit.MILLISECONDS),"Must return a null type");
-        f.resolve("something");
-        assertNotNull(f.get(5, TimeUnit.MILLISECONDS), "Expected a non-null type");
-        String ans = f.get(5, TimeUnit.MILLISECONDS);
-        assertEquals("something", ans, "Expected: something, got: " + ans);
+        assertThrows(Exception.class,()-> f.get(-10,TimeUnit.MILLISECONDS),"Worked for a negative time.");
+        long currentTime = System.currentTimeMillis();
+        assertNull(f.get(500,TimeUnit.MILLISECONDS),"Expected null, got a result instead.");
+        assertTrue(System.currentTimeMillis()-currentTime<=500);
+        f.resolve("somevalue");
+        assertNotNull(f.get(10,TimeUnit.MILLISECONDS),"Got null from get.");
+        String ans=f.get(10,TimeUnit.MILLISECONDS);
+        assertEquals("somevalue", ans, "Expected: result, got: " +ans);
     }
 }

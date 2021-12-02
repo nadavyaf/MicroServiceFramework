@@ -1,7 +1,5 @@
 package bgu.spl.mics.application.objects;
 
-import java.util.LinkedList;
-
 /**
  * Passive object representing a single CPU.
  * Add all the fields described in the assignment as private fields.
