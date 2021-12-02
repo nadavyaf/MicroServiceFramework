@@ -1,18 +1,30 @@
 package bgu.spl.mics;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class FutureTest extends TestCase {
+class FutureTest {
 
-    public void testGet() {
+    @org.junit.jupiter.api.BeforeEach
+    void setUp() {
     }
 
-    public void testResolve() {
+    @org.junit.jupiter.api.AfterEach
+    void tearDown() {
     }
 
-    public void testIsDone() {
+    @org.junit.jupiter.api.Test
+    void get() {
     }
 
-    public void testTestGet() {
+    @org.junit.jupiter.api.Test
+    void resolve() {
+    }
+
+    @org.junit.jupiter.api.Test
+    void isDone() {
+    }
+
+    @org.junit.jupiter.api.Test
+    void testGet() {
     }
 }
