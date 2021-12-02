@@ -15,7 +15,7 @@ class FutureTest {
 
     @org.junit.jupiter.api.Test
     void TestGet() {
-        assertNotNull(f.get());
+        assertNotNull(f.get(), "Expected a non-null type");
     }
 
     @org.junit.jupiter.api.Test
