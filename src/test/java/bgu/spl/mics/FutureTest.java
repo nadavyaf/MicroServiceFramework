@@ -20,7 +20,10 @@ class FutureTest {
 
     @org.junit.jupiter.api.Test
     void TestResolve() {
-
+        assertThrows(Exception.class,() -> f.resolve(null), "Expected an error");
+        f.resolve("result");
+        assertEquals("result", f.get(), "Expected: result, got: " +f.get());
+        assertThrows(Exception.class,() -> f.resolve("something"), "Expected an error");
     }
 
     @org.junit.jupiter.api.Test
