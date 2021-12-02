@@ -6,5 +6,16 @@ package bgu.spl.mics.application.objects;
  */
 
 public class DataBatch {
-    
+  private Boolean ProcessedCpu;
+
+    public DataBatch() {
+        ProcessedCpu = false;
+    }
+
+    public Boolean isProcessedCpu(){
+       return ProcessedCpu;
+   }
+   public void setTrueProcessedCpu(){
+        ProcessedCpu = true;
+   }
 }
