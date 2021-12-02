@@ -15,11 +15,12 @@ class FutureTest {
 
     @org.junit.jupiter.api.Test
     void TestGet() {
-
+        assertNotNull(f.get());
     }
 
     @org.junit.jupiter.api.Test
     void TestResolve() {
+
     }
 
     @org.junit.jupiter.api.Test
