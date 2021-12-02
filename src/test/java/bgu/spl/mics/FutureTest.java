@@ -28,6 +28,9 @@ class FutureTest {
 
     @org.junit.jupiter.api.Test
     void TestisDone() {
+        assertEquals(false,f.isDone(),"expected isDone() to be false, because it didn't run before.");
+        f.resolve("work");
+        assertEquals(true,f.isDone(),"expected isDone() to be true, because it ran before.");
     }
 
     @org.junit.jupiter.api.Test
