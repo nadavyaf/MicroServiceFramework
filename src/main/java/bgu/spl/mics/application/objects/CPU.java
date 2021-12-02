@@ -1,5 +1,7 @@
 package bgu.spl.mics.application.objects;
 
+import java.util.LinkedList;
+
 /**
  * Passive object representing a single CPU.
  * Add all the fields described in the assignment as private fields.
@@ -8,7 +10,7 @@ package bgu.spl.mics.application.objects;
 public class CPU {
     final private int cores;
     final private LinkedList<DataBatch> data;
-    final Cluster cluster;
+    final private Cluster cluster;
 
 
     public CPU(int cores, LinkedList<DataBatch> data, Cluster cluster) {
