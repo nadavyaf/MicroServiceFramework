@@ -1,6 +1,9 @@
 package bgu.spl.mics.application.services;
 
+import bgu.spl.mics.Event;
 import bgu.spl.mics.MicroService;
+
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * GPU service is responsible for handling the
@@ -12,15 +15,17 @@ import bgu.spl.mics.MicroService;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class GPUService extends MicroService {
-
+    LinkedBlockingQueue<Event> GPUQueue=null;
     public GPUService(String name) {
         super("Change_This_Name");
         // TODO Implement this
     }
-
     @Override
     protected void initialize() {
         // TODO Implement this
 
+    }
+    public LinkedBlockingQueue<Event> getGPUQueue() {
+        return GPUQueue;
     }
 }

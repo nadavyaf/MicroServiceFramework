@@ -27,9 +27,9 @@ public class CPUTest{
     assertTrue(a.isProcessedCpu());
     }
     @Test
-    public void testUpdateTime() { //need to work on
-    Timer previous = cpu.getTime();
+    public void testUpdateTime() {
+    int currTime = cpu.getTime();
     cpu.updateTime();
-    assertNotEquals(previous,cpu.getTime(),"times are the same even after update");
+    assertTrue(cpu.getTime()>currTime);
     }
 }

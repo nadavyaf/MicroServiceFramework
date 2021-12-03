@@ -4,6 +4,8 @@ import sun.awt.image.ImageWatched;
 
 import java.util.LinkedList;
 import java.util.Timer;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Passive object representing a single CPU.
@@ -12,24 +14,24 @@ import java.util.Timer;
  */
 public class CPU {
     final private int cores;
-    final private LinkedList<DataBatch> data;
+    final private LinkedBlockingQueue<DataBatch> data;
     final private Cluster cluster;
-    private Timer Time;
-    public Timer getTime() {
+    private int Time; // we will get from TimeService pulses,TickBrodcast, which will be caught in the GPUservice and CPUservice and update our time int.
+    public int getTime() {
         return Time;
     }
     public CPU(int numberOfCores) {
         this.cores = numberOfCores;
-        this.data = new LinkedList<DataBatch>();
+        this.data = new LinkedBlockingQueue<DataBatch>();
         this.cluster = Cluster.getInstance();
-        Time= new Timer();
+        Time= 1;
     }
 
     public int getCores() {
         return cores;
     }
 
-    public LinkedList<DataBatch> getData() {
+    public LinkedBlockingQueue getData() {
         return data;
     }
 
@@ -45,7 +47,11 @@ public class CPU {
      *
      */
     public void addData(DataBatch d){
-        data.addLast(d);
+        try {
+            data.put(d);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /** works on the Databatches, and processes them.
