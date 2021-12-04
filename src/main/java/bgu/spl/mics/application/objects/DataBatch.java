@@ -6,16 +6,19 @@ package bgu.spl.mics.application.objects;
  */
 
 public class DataBatch {
-  private Boolean ProcessedCpu;
+    private boolean processedCpu;
+    private boolean learnedGpu;
 
-    public DataBatch() {
-        ProcessedCpu = false;
+    public DataBatch(){
+        this.processedCpu = false;
+        this.learnedGpu = false;
     }
 
-    public Boolean isProcessedCpu(){
-       return ProcessedCpu;
-   }
-   public void setTrueProcessedCpu(){
-        ProcessedCpu = true;
-   }
+    public boolean isProcessedCpu() {
+        return processedCpu;
+    }
+
+    public boolean isLearnedGpu() {
+        return learnedGpu;
+    }
 }
