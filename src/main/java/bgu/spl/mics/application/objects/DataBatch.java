@@ -6,10 +6,19 @@ package bgu.spl.mics.application.objects;
  */
 
 public class DataBatch {
-    private int size;
+    private boolean processedCpu;
+    private boolean learnedGpu;
 
-    public int getSize(){
-        return this.size;
+    public DataBatch(){
+        this.processedCpu = false;
+        this.learnedGpu = false;
     }
-    
+
+    public boolean isProcessedCpu() {
+        return processedCpu;
+    }
+
+    public boolean isLearnedGpu() {
+        return learnedGpu;
+    }
 }

@@ -3,6 +3,8 @@ package bgu.spl.mics.application.objects;
 import bgu.spl.mics.Event;
 
 import java.util.LinkedList;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 
 /**
@@ -19,18 +21,19 @@ public class GPU {
     private Type type;
     private Model model;
     private Cluster cluster;
-    private LinkedList<Event> eventQueue;
-    private LinkedList<DataBatch> clusterQueue;
-    private LinkedList<Event> learnedQueue;
+    final private LinkedBlockingQueue<Event> eventQueue;
+    final private LinkedList<DataBatch> clusterQueue;
+    final private ArrayBlockingQueue<DataBatch> processedCPUQueue;
+    int learnedBatches;
     private int capacity;
 
 
     public GPU(Type type, Model model) {
         this.type = type;
         this.model = model;
-        this.eventQueue = new LinkedList<Event>();
+        this.eventQueue = new LinkedBlockingQueue<Event>();
+        this.learnedBatches = 0;
         this.clusterQueue = new LinkedList<DataBatch>();
-        this.learnedQueue = new LinkedList<Event>();
         if(this.type == Type.RTX3090){
             this.capacity = 32;
         }
@@ -40,6 +43,7 @@ public class GPU {
         else if(this.type == Type.GTX1080){
             this.capacity = 8;
         }
+        this.processedCPUQueue = new ArrayBlockingQueue<DataBatch>(capacity);
     }
 
     /**
@@ -48,7 +52,7 @@ public class GPU {
      * @pre: none
      * @post: none
      */
-    public LinkedList<Event> getEventQueue() {
+    public LinkedBlockingQueue<Event> getEventQueue() {
         return eventQueue;
     }
 
@@ -62,19 +66,15 @@ public class GPU {
         return clusterQueue;
     }
 
+
     /**
-     *
-     * Return the learnedQueue, which holds events which have been learned by the computer,
-     * and will be sent to the MessageBus.
+     * Return the processedQueue, which holds the processed data batches.
      * @pre: none
      * @post: none
      */
-    public LinkedList<Event> getLearnedQueue() {
-        return learnedQueue;
+    public ArrayBlockingQueue<DataBatch> getProcessedCPUQueue() {
+        return processedCPUQueue;
     }
-
-
-
 
     /**
      *
@@ -117,6 +117,15 @@ public class GPU {
     }
 
     /**
+     * Return the amount of data batches which were processed by the GPU.
+     * @pre: none
+     * @post: none
+     */
+    public int getLearnedBatches(){
+        return this.learnedBatches;
+    }
+
+    /**
      * Take an event which the message bus has allocated to the GPU and add to its eventQueue.
      * @param event
      * @pre: none
@@ -131,8 +140,11 @@ public class GPU {
      * Take event from eventQueue (remember to change the return when implementing), if null, throw
      * an exception.
      * @pre: !eventQueue.isEmpty()
-     * @post: size == @pre eventQueue.size
+     *       this.model == null
+     * @post: size = @pre eventQueue.size
      *        eventQueue.size == size -1
+     *        this.model != null
+     *        learnedBatches == 0
      */
     public Event extractEvent(){
         return null;
@@ -143,8 +155,7 @@ public class GPU {
      * an exception.
      * @param data
      * @pre: data != null
-     * @post: dataBatch.size == 1000
-     *        size == @pre data.size
+     * @post: size == @pre data.size
      *        data.size == size - 1000
      */
     public DataBatch divide1000(Data data){
@@ -155,6 +166,7 @@ public class GPU {
      * Divide all the data recieved into data batches, add each batch to clusterQueue.
      * @param data
      * @pre: data != null
+     * @inv: data.size >= 0
      * @post: data.size == 0
      *        clusterSize = @pre clusterQueue.size
      *        clusterQueue.size == clusterSize + numberofDataBatches(The number of data batches created)
@@ -178,14 +190,33 @@ public class GPU {
 
     /**
      * Insert the processed and learned event into the learned queue for the message bus to take.
-     * @param event
-     * @pre: event.future.isDone() == true
-     *       event.data.getProcessed() == event.data.getSize()
-     * @post: learnedSize = @pre learnedQueue.size
-     *        learnedQueue.size == learnedSize + 1
+     * @param data
+     * @pre: data.isprocessedCPU()
+     *       processedCPUQueue.size < capacity
+     * @post: processedSize = @pre processedCPUQueue.size
+     *        processedCPUQueue.size == processedSize + 1
      */
-    public void insertLearned(Event event){
+    public void insertProcessedCPU(DataBatch data){
+    }
 
+    /**
+     *
+     * @param dataBatch
+     * @pre: !dataBatch.isLearnedGPU()
+     * @post: dataBatch.isLearnedGPU()
+     *        learnedSize = @pre learnedBatches
+     *        learnedBatches == learnedSize + 1
+     */
+    public void GPULearn(DataBatch dataBatch){
+    }
+
+    /**
+     *
+     * @pre: none
+     * @post: none
+     */
+    public boolean isDone(){
+        return false;
     }
 
 }

@@ -27,19 +27,25 @@ class GPUTest {
     }
 
     @Test
-    void TestgetLearnedQueue() {
+    void TestGetProcessedCPUQueue(){
+
     }
 
     @Test
-    void TestgetType() {
+    void TestGetType() {
     }
 
     @Test
-    void TestgetModel() {
+    void TestGetModel() {
     }
 
     @Test
-    void TestgetCluster() {
+    void TestGetCluster() {
+    }
+
+    @Test
+    void TestGetNumberOfBatches(){
+
     }
 
     @Test
@@ -72,10 +78,13 @@ class GPUTest {
                 return super.toString();
             }
         };
+        assertTrue(g.getModel() == null, "Cannot overwrite a model!");
         g.addEvent(event);
         int size = g.getEventQueue().size();
         g.extractEvent();
+        assertFalse(g.getModel() == null, "Model shouldn't be null!");
         assertEquals(size - 1, g.getEventQueue().size(), "Event Queue size isn't correct.");
+        assertEquals(0, g.getLearnedBatches(), "Shouldn't have any learned batches from this event!");
     }
 
     @Test
@@ -83,7 +92,6 @@ class GPUTest {
         assertNull(g.divide1000(null), "Expected to return a null type");
         int dataSize = data.getSize();
         DataBatch db = g.divide1000(data);
-        assertEquals(1000, db.getSize(), "Data batch isnt of size 1000");
         assertEquals(dataSize-1000, data.getSize(), "data's size has not decreased by 1000");
     }
 
@@ -111,9 +119,25 @@ class GPUTest {
     }
 
     @Test
-    void testInsertLearned(Event event) {
-        int learnedSize = g.getLearnedQueue().size();
-        g.insertLearned(event);
-        assertEquals(learnedSize +1, g.getLearnedQueue(), "Expected the learned queue size to increase by one");
+    void testInsertProcessedGPU(DataBatch data){
+        assertTrue(data.isProcessedCpu(), "Data hasn't been processed by CPU");
+        assertTrue(g.getProcessedCPUQueue().size() < g.getCapacity(), "Processed CPU Queue is full!");
+        int processedSize = g.getProcessedCPUQueue().size();
+        g.insertProcessedCPU(data);
+        assertEquals(processedSize + 1, g.getProcessedCPUQueue().size());
+    }
+
+    @Test
+    void testGPULearn(DataBatch dataBatch){
+        assertFalse(dataBatch.isLearnedGpu(),"Cannot teach data that has been taught!");
+        int numberLearned = g.getLearnedBatches();
+        g.GPULearn(dataBatch);
+        assertTrue(dataBatch.isLearnedGpu(), "Data should've been learned");
+        assertEquals(numberLearned + 1, g.getLearnedBatches());
+    }
+
+    @Test
+    void isDone(){
+
     }
 }
