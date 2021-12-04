@@ -42,4 +42,6 @@ public class CPU {
     public Cluster getCluster() {
         return cluster;
     }
+
+
 }

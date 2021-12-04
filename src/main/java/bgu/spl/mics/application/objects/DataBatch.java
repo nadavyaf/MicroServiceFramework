@@ -6,5 +6,10 @@ package bgu.spl.mics.application.objects;
  */
 
 public class DataBatch {
+    private int size;
+
+    public int getSize(){
+        return this.size;
+    }
     
 }
