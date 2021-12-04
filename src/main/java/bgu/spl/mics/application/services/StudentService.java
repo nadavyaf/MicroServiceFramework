@@ -1,10 +1,12 @@
 package bgu.spl.mics.application.services;
 
-import bgu.spl.mics.MicroService;
+import bgu.spl.mics.*;
+
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Student is responsible for sending the {@link TrainModelEvent},
- * {@link TestModelEvent} and {@link PublishResultsEvent}.
+ * Student is responsible for sending the {@link //TrainModelEvent},
+ * {@link TestModelEvent} and {@link //PublishResultsEvent}.
  * In addition, it must sign up for the conference publication broadcasts.
  * This class may not hold references for objects which it is not responsible for.
  *
@@ -12,6 +14,7 @@ import bgu.spl.mics.MicroService;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class StudentService extends MicroService {
+    private LinkedBlockingQueue<Message> MessageQueue=null;
     public StudentService(String name) {
         super("Change_This_Name");
         // TODO Implement this
@@ -21,5 +24,14 @@ public class StudentService extends MicroService {
     protected void initialize() {
         // TODO Implement this
 
+    }
+    public Boolean isEventSubscribed(Event e){
+        return MessageBusImpl.getInstance().isMicroServiceEventRegistered(this,e);
+    }
+    public Boolean isBroadcastSubscribed(Broadcast b){
+        return MessageBusImpl.getInstance().isMicroServiceBroadCastRegistered(this,b);
+    }
+    public LinkedBlockingQueue<Message> getMessageQueue() {
+        return MessageQueue;
     }
 }

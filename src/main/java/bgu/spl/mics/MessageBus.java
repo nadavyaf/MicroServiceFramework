@@ -20,7 +20,7 @@ public interface MessageBus {
      * @param <T>  The type of the result expected by the completed event.
      * @param type The type to subscribe to,
      * @param m    The subscribing micro-service.
-     * @pre none
+     * @pre m.isRegistered()
      * @inv none
      * @post m.isSubscribed(Event)
      */
@@ -30,7 +30,7 @@ public interface MessageBus {
      * <p>
      * @param type 	The type to subscribe to.
      * @param m    	The subscribing micro-service.
-     * @pre !m.isSubscribed(Broadcast)
+     * @pre m.isRegistered()
      * @inv none
      * @post m.isSubscribed(Broadcast)
      */
@@ -56,9 +56,9 @@ public interface MessageBus {
      * micro-services subscribed to {@code b.getClass()}.
      * <p>
      * @param b 	The message to added to the queues.
-     * @pre none
+     * @pre b!=null
      * @inv none
-     * @post {m:m is a Microservice, and m.isSubscribed(Broadcast)}, @postQueuemap.get(m.getName()).size+1 = @preQueuemap.get(m.getName()).size
+     * @post {m:m is a Microservice, and m.isSubscribed(Broadcast)}, @postm.getMessageQueue().size = @prem.getMessageQueue().size+1
      */
     void sendBroadcast(Broadcast b);
 
@@ -83,7 +83,7 @@ public interface MessageBus {
      * @param m the micro-service to create a queue for.
      * @pre none
      * @inv none
-     * @post Queuemap.containsKey(m.getName()) && @postQueuemap.size = @preQueuemap.size + 1
+     * @post m.isMicroServiceRegistered=true;
      */
     void register(MicroService m);
 
@@ -96,8 +96,7 @@ public interface MessageBus {
      * @param m the micro-service to unregister.
      * @pre none
      * @inv none
-     * @post @postm.LinkedBlockingQueue = null && !(@postQueuemap.containsKey(m.getName())) && @postQueuemap.size = @preQueuemap.size - 1
-     * @post if !(Queuemap.containsKey(m.getName())) then @postQueuemap.size = @preQueuemap.size
+     * @post @postm.LinkedBlockingQueue = null && !(m.isMicroServiceRegistered)
      */
     void unregister(MicroService m);
 
@@ -115,10 +114,15 @@ public interface MessageBus {
      * @return The next message in the {@code m}'s queue (blocking).
      * @throws InterruptedException if interrupted while waiting for a message
      *                              to became available.
-     * @pre !m.isRegistered
+     * @pre m.isRegistered()
      * @inv should be blocked as long as the LinkedBlockingList.isEmpty (implemented in the object itself).
-     * @post return @prem.LinkedBlockingQueue.peek() && @postm.LinkedBlockingQueue.size = @prem.LinkedBlockingQueue.size -1
+     * @post @postm.LinkedBlockingQueue.size = @prem.LinkedBlockingQueue.size -1 && return (@prem.LinkedBlockingQueue.peek())
      */
     Message awaitMessage(MicroService m) throws InterruptedException;
-    
+
+    Boolean isMicroServiceRegistered(MicroService m);
+
+    Boolean isMicroServiceEventRegistered(MicroService m,Event e);
+
+    Boolean isMicroServiceBroadCastRegistered(MicroService m,Broadcast b);
 }

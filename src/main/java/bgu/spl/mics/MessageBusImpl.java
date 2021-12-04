@@ -81,6 +81,17 @@ public class MessageBusImpl implements MessageBus {
 		return null;
 	}
 
-	
+	public Boolean isMicroServiceRegistered(MicroService m){
+		return null;
+	}
+
+	public Boolean isMicroServiceEventRegistered(MicroService m,Event e) {
+		return null;
+	}
+
+	public Boolean isMicroServiceBroadCastRegistered(MicroService m,Broadcast b){
+		return null;
+	}
+
 
 }
