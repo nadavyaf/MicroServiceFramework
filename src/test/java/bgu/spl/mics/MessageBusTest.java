@@ -1,5 +1,6 @@
 package bgu.spl.mics;
 
+import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.services.CPUService;
 import bgu.spl.mics.application.services.GPUService;
 import bgu.spl.mics.application.services.StudentService;
@@ -39,11 +40,11 @@ public class MessageBusTest extends TestCase {
 
     public void testComplete() {
         TestModelEvent TEM= new TestModelEvent();
-        assertThrows(Exception.class,()->mbs.complete(TEM,null),"Managed to work, even though the String is null");
+        assertThrows(Exception.class,()->mbs.complete(TEM,null),"Managed to work, even though the result is null");
         String result = "works";
         assertThrows(Exception.class,()->mbs.complete(null,result),"Managed to work, even though the event is null");
         mbs.complete(TEM,result);
-        assertTrue(TEM.isResolved());
+        assertTrue("Didn't resolve the Future object.",TEM.getFuture().isDone());
     }
 
     public void testSendBroadcast() {
@@ -60,9 +61,10 @@ public class MessageBusTest extends TestCase {
         assertFalse("sent a broadcast to a subscribed service, but it didn't add it to it's messageQueue (was the second service to get the broadcast)",st2.getMessageQueue().isEmpty());
     }
 
-    public void testSendEvent() {
+    public void testSendEvent() { //still need to check.
         assertThrows(Exception.class,()->mbs.sendEvent(null),"Managed to send a null event.");
         TestModelEvent TME = new TestModelEvent();
+        GPUService n = new GPUService("gpu2");
         assertNull("Sent an event when there were no subscribed services, and still got a result different than null, expected null.",mbs.sendEvent(TME));
         mbs.register(m);
         mbs.subscribeEvent(TestModelEvent.class,m);
@@ -80,6 +82,10 @@ public class MessageBusTest extends TestCase {
     assertFalse("Still registered even though it unregistered.",mbs.isMicroServiceRegistered(m));
     mbs.register(m);
     mbs.subscribeEvent(TestModelEvent.class,m);
+    mbs.sendEvent(new TestModelEvent());
+    mbs.sendEvent(new TestModelEvent());
+    mbs.sendEvent(new TestModelEvent());
+    mbs.sendEvent(new TestModelEvent());
     mbs.sendEvent(new TestModelEvent());
     mbs.unregister(m);
     assertNull("Should empty the MessageQueue when unregisters, but didn't empty it.",m.getMessageQueue());

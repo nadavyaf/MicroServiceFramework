@@ -72,7 +72,7 @@ public interface MessageBus {
      * @return {@link Future<T>} object to be resolved once the processing is complete,
      * 	       null in case no micro-service has subscribed to {@code e.getClass()}.
      * @pre e != null
-     * @inv none
+     * @inv send in round-robin fashion.
      * @post e.isComplete() && future.get(0,Seconds) = result;
      */
     <T> Future<T> sendEvent(Event<T> e);
