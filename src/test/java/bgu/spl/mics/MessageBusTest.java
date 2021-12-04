@@ -1,11 +1,7 @@
 package bgu.spl.mics;
-
 import bgu.spl.mics.application.objects.GPU;
-import bgu.spl.mics.application.services.CPUService;
 import bgu.spl.mics.application.services.GPUService;
 import bgu.spl.mics.application.services.StudentService;
-import bgu.spl.mics.example.messages.ExampleEvent;
-import junit.framework.Test;
 import junit.framework.TestCase;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -13,14 +9,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class MessageBusTest extends TestCase {
     private static MessageBusImpl mbs;
     private static GPUService m;
+    private static GPU g;
 
     public void setUp(){
-        m = new GPUService("gpu1");
+        g = new GPU(GPU.Type.RTX3090);
+        m = new GPUService("gpu1 service",g);
         mbs=MessageBusImpl.getInstance();
     }
 
     public void testSubscribeEvent() {
-      GPUService m = new GPUService("GPU1");
        TestModelEvent TME = new TestModelEvent();
         assertThrows(Exception.class,()->mbs.subscribeEvent(TestModelEvent.class,m),"Managed to subscribe to event without registering first!");
         mbs.register(m);
@@ -64,7 +61,8 @@ public class MessageBusTest extends TestCase {
     public void testSendEvent() { //still need to check.
         assertThrows(Exception.class,()->mbs.sendEvent(null),"Managed to send a null event.");
         TestModelEvent TME = new TestModelEvent();
-        GPUService n = new GPUService("gpu2");
+        GPU gpu = new GPU(GPU.Type.RTX2080);
+        GPUService n = new GPUService("gpu2 service", gpu);
         assertNull("Sent an event when there were no subscribed services, and still got a result different than null, expected null.",mbs.sendEvent(TME));
         mbs.register(m);
         mbs.subscribeEvent(TestModelEvent.class,m);

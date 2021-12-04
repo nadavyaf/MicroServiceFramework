@@ -11,7 +11,7 @@ class GPUTest {
 
     @BeforeEach
     void setUp() {
-        g = new GPU(GPU.Type.RTX3090, null);
+        g = new GPU(GPU.Type.RTX3090);
     }
 
     @AfterEach

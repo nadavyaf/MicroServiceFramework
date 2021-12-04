@@ -1,7 +1,7 @@
 package bgu.spl.mics.application.objects;
 
 import bgu.spl.mics.Event;
-
+import bgu.spl.mics.Message;
 import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -16,22 +16,22 @@ public class GPU {
     /**
      * Enum representing the type of the GPU.
      */
-    enum Type {RTX3090, RTX2080, GTX1080}
+   public enum Type {RTX3090, RTX2080, GTX1080}
 
     private Type type;
     private Model model;
     private Cluster cluster;
-    final private LinkedBlockingQueue<Event> eventQueue;
+    final private LinkedBlockingQueue<Message> eventQueue;
     final private LinkedList<DataBatch> clusterQueue;
     final private ArrayBlockingQueue<DataBatch> processedCPUQueue;
     int learnedBatches;
     private int capacity;
 
 
-    public GPU(Type type, Model model) {
+    public GPU(Type type) {
         this.type = type;
-        this.model = model;
-        this.eventQueue = new LinkedBlockingQueue<Event>();
+        this.model = null;
+        this.eventQueue = new LinkedBlockingQueue<Message>();
         this.learnedBatches = 0;
         this.clusterQueue = new LinkedList<DataBatch>();
         if(this.type == Type.RTX3090){
@@ -52,7 +52,7 @@ public class GPU {
      * @pre: none
      * @post: none
      */
-    public LinkedBlockingQueue<Event> getEventQueue() {
+    public LinkedBlockingQueue<Message> getEventQueue() {
         return eventQueue;
     }
 

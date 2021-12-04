@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.*;
+import bgu.spl.mics.application.objects.GPU;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -14,10 +15,11 @@ import java.util.concurrent.LinkedBlockingQueue;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class GPUService extends MicroService {
-    private LinkedBlockingQueue<Message> MessageQueue=null;
-    public GPUService(String name) {
+    final private GPU gpu;
+    public GPUService(String name, GPU gpu) {
         super("Change_This_Name");
         // TODO Implement this
+        this.gpu = gpu;
     }
     @Override
     protected void initialize() {
@@ -31,6 +33,6 @@ public class GPUService extends MicroService {
         return MessageBusImpl.getInstance().isMicroServiceBroadCastRegistered(this,b);
     }
     public LinkedBlockingQueue<Message> getMessageQueue() {
-        return MessageQueue;
+        return gpu.getEventQueue();
     }
 }
