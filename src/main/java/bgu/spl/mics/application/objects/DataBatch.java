@@ -8,6 +8,7 @@ package bgu.spl.mics.application.objects;
 public class DataBatch {
     private boolean processedCpu;
     private boolean learnedGpu;
+    private int StartTime;
 
     public DataBatch(){
         this.processedCpu = false;
@@ -20,5 +21,9 @@ public class DataBatch {
 
     public boolean isLearnedGpu() {
         return learnedGpu;
+    }
+
+    public int getStartTime() {
+        return StartTime;
     }
 }

@@ -16,15 +16,15 @@ public class CPU {
     final private int cores;
     final private LinkedBlockingQueue<DataBatch> data;
     final private Cluster cluster;
-    private int Time; // we will get from TimeService pulses,TickBrodcast, which will be caught in the GPUservice and CPUservice and update our time int.
+    private int currTime; // we will get from TimeService pulses,TickBrodcast, which will be caught in the GPUservice and CPUservice and update our time int.
     public int getTime() {
-        return Time;
+        return currTime;
     }
     public CPU(int numberOfCores) {
         this.cores = numberOfCores;
         this.data = new LinkedBlockingQueue<DataBatch>();
         this.cluster = Cluster.getInstance();
-        Time= 1;
+        currTime= 1;// need to think.
     }
 
     public int getCores() {
@@ -69,8 +69,14 @@ public class CPU {
      * @pre none
      * @post @pre(time)<time
      */
-    public void updateTime(){
+    public void updateTime(){//we will need something like this also in GPU.
+        if (currTime-data.peek().getStartTime()>10)// should be ticks instead of 10 instead, it is known in the json file we get{
+            System.out.println("Need to implement here!");
+            //implement
 
+        else{
+            //We just wait until the number of ticks is passed, we block the CPU so just let the loop run.
+        }
     }
 
 }

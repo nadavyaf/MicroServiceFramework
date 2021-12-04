@@ -12,7 +12,7 @@ public class MessageBusTest extends TestCase {
     private static GPU g;
 
     public void setUp(){
-        g = new GPU(GPU.Type.RTX3090);
+        g = new GPU(g.getEnum(2));
         m = new GPUService("gpu1 service",g);
         mbs=MessageBusImpl.getInstance();
     }
@@ -61,7 +61,7 @@ public class MessageBusTest extends TestCase {
     public void testSendEvent() { //still need to check.
         assertThrows(Exception.class,()->mbs.sendEvent(null),"Managed to send a null event.");
         TestModelEvent TME = new TestModelEvent();
-        GPU gpu = new GPU(GPU.Type.RTX2080);
+        GPU gpu = new GPU(g.getEnum(2));
         GPUService n = new GPUService("gpu2 service", gpu);
         assertNull("Sent an event when there were no subscribed services, and still got a result different than null, expected null.",mbs.sendEvent(TME));
         mbs.register(m);

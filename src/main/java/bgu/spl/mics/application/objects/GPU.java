@@ -16,7 +16,7 @@ public class GPU {
     /**
      * Enum representing the type of the GPU.
      */
-   public enum Type {RTX3090, RTX2080, GTX1080}
+    enum Type {RTX3090, RTX2080, GTX1080}
 
     private Type type;
     private Model model;
@@ -26,7 +26,7 @@ public class GPU {
     final private ArrayBlockingQueue<DataBatch> processedCPUQueue;
     int learnedBatches;
     private int capacity;
-
+    private int currTime;
 
     public GPU(Type type) {
         this.type = type;
@@ -34,6 +34,7 @@ public class GPU {
         this.eventQueue = new LinkedBlockingQueue<Message>();
         this.learnedBatches = 0;
         this.clusterQueue = new LinkedList<DataBatch>();
+        currTime = 1;//need to think.
         if(this.type == Type.RTX3090){
             this.capacity = 32;
         }
@@ -54,6 +55,14 @@ public class GPU {
      */
     public LinkedBlockingQueue<Message> getEventQueue() {
         return eventQueue;
+    }
+    public Type getEnum(int type){
+        if (type==1)
+        return Type.GTX1080;
+        if (type == 2)
+            return Type.RTX2080;
+        return Type.RTX3090;
+
     }
 
     /**
@@ -123,6 +132,16 @@ public class GPU {
      */
     public int getLearnedBatches(){
         return this.learnedBatches;
+    }
+
+    /**
+     *
+     * returns the currTime ticks in this GPU.
+     * @return
+     */
+
+    public int getCurrTime() {
+        return currTime;
     }
 
     /**
@@ -219,4 +238,14 @@ public class GPU {
         return false;
     }
 
+
+    public void updateTime(){//we will need something like this also in GPU.
+        if (currTime-processedCPUQueue.peek().getStartTime()>10)// should be ticks instead of 10 instead, it is known in the json file we get{
+            System.out.println("Need to implement here!");
+            //implement
+
+        else{
+            //We just wait until the number of ticks is passed, we block the CPU so just let the loop run.
+        }
+    }
 }
