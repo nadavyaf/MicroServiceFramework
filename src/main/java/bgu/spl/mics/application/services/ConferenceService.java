@@ -22,4 +22,9 @@ public class ConferenceService extends MicroService {
         // TODO Implement this
 
     }
+    /**
+     * Assiph's comment:In this Service we should send PublishConferenceBroadcast, in a similar way we did in studentservice. Note that
+     * this is a Broadcast, we don't wait for an answer, we just update the system.
+     */
+
 }

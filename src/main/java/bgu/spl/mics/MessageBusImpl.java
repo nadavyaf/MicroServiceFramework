@@ -56,7 +56,15 @@ public class MessageBusImpl implements MessageBus {
 
 	}
 
-	
+	/**
+	 *
+	 * Assiph's thoughts: send this Event (or broadcast in a different function) and in this block you will also use the function
+	 * complete with 2 args: 1.this event, 2.function the initializes the right microservice (it will be a callback to this service
+	 * so when the service finishes, you get a result, and also it runs on a different thread and the thread of the messagebus can just
+	 * continue).
+	 * when we get the result, we will create a Future object, use result on it and return it, this should return it to the student in the
+	 * right way. ***the student will get it in the main (CRMSRunner) or in it's StudentService, not sure yet.***
+	 */
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
 		// TODO Auto-generated method stub

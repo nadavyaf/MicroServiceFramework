@@ -238,8 +238,14 @@ public class GPU {
         return false;
     }
 
-
-    public void updateTime(){//we will need something like this also in GPU.
+    /**
+     *
+     * @pre !processedCPUQueue.isEmpty()
+     * @inv none
+     * @post none
+     *
+     */
+    public void updateTick(){//we will need something like this also in GPU.
         if (currTime-processedCPUQueue.peek().getStartTime()>10)// should be ticks instead of 10 instead, it is known in the json file we get{
             System.out.println("Need to implement here!");
             //implement
@@ -247,5 +253,14 @@ public class GPU {
         else{
             //We just wait until the number of ticks is passed, we block the CPU so just let the loop run.
         }
+    }
+
+    /** Updates the time of the cpu.
+     *
+     * @pre none
+     * @post @pre(time)<time
+     */
+    public void updateTime(){
+
     }
 }

@@ -34,4 +34,11 @@ public class StudentService extends MicroService {
     public LinkedBlockingQueue<Message> getMessageQueue() {
         return MessageQueue;
     }
+
+    /**
+     * Assiph's comments:In here we should create 3 send events that use the message bus (let messagebus be mbs, so we will use
+     * mbs.sendEvent()). The 2 events should be TrainModelEvent,TestModelEvent,PublishResultsEvent.
+     *
+     *
+     */
 }

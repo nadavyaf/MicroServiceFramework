@@ -136,6 +136,12 @@ class GPUTest {
         assertEquals(numberLearned + 1, g.getLearnedBatches());
     }
 
+    public void testUpdateTime() {
+        int currTime = g.getCurrTime();
+        g.updateTime();
+        assertTrue(g.getCurrTime()>currTime);
+    }
+
     @Test
     void isDone(){
 

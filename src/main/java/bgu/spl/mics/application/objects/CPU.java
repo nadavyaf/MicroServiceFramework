@@ -70,6 +70,16 @@ public class CPU {
      * @post @pre(time)<time
      */
     public void updateTime(){//we will need something like this also in GPU.
+
+    }
+
+    /**
+     * @pre !data.isEmpty()
+     * @inv none
+     * @post none
+     */
+
+    public void updateTick(){
         if (currTime-data.peek().getStartTime()>10)// should be ticks instead of 10 instead, it is known in the json file we get{
             System.out.println("Need to implement here!");
             //implement

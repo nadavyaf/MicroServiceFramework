@@ -24,4 +24,10 @@ public class TimeService extends MicroService{
 		
 	}
 
+	/**
+	 * Assiph's comment:In this Service we should send TickBroadcast, in a similar way we did in studentservice.Note that
+	 * this is a Broadcast, we don't wait for an answer, we just update the system.
+	 *
+	 */
+
 }
