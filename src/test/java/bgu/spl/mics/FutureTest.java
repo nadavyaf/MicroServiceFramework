@@ -6,8 +6,9 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FutureTest {
+public class FutureTest {
     private static Future<String> f;
+
     @Test
     void setUp() {
         f = new Future();

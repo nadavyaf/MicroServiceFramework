@@ -58,11 +58,9 @@ public class MessageBusTest extends TestCase {
         assertFalse("sent a broadcast to a subscribed service, but it didn't add it to it's messageQueue (was the second service to get the broadcast)",st2.getMessageQueue().isEmpty());
     }
 
-    public void testSendEvent() { //still need to check.
+    public void testSendEvent() {
         assertThrows(Exception.class,()->mbs.sendEvent(null),"Managed to send a null event.");
         TestModelEvent TME = new TestModelEvent();
-        GPU gpu = new GPU(g.getEnum(2));
-        GPUService n = new GPUService("gpu2 service", gpu);
         assertNull("Sent an event when there were no subscribed services, and still got a result different than null, expected null.",mbs.sendEvent(TME));
         mbs.register(m);
         mbs.subscribeEvent(TestModelEvent.class,m);
