@@ -102,6 +102,11 @@ public class MessageBusTest extends TestCase {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         assertTrue("The MessageQueue didn't delete the message from it",m.getMessageQueue().isEmpty());
         assertEquals("The message that came out of awaitMessage, is not the same as the message that went in.",a,b);
     }
