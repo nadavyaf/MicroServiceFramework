@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: bgu.spl.mics.MessageBusTest
 -------------------------------------------------------------------------------
-Tests run: 8, Failures: 0, Errors: 8, Skipped: 0, Time elapsed: 0.003 sec <<< FAILURE!
-testSubscribeBroadcast(bgu.spl.mics.MessageBusTest)  Time elapsed: 0 sec  <<< ERROR!
+Tests run: 8, Failures: 0, Errors: 8, Skipped: 0, Time elapsed: 0.006 sec <<< FAILURE!
+testSubscribeBroadcast(bgu.spl.mics.MessageBusTest)  Time elapsed: 0.002 sec  <<< ERROR!
 java.lang.NullPointerException
 	at bgu.spl.mics.MessageBusTest.setUp(MessageBusTest.java:16)
 	at junit.framework.TestCase.runBare(TestCase.java:140)
@@ -50,7 +50,7 @@ java.lang.NullPointerException
 	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
 
-testComplete(bgu.spl.mics.MessageBusTest)  Time elapsed: 0.001 sec  <<< ERROR!
+testComplete(bgu.spl.mics.MessageBusTest)  Time elapsed: 0 sec  <<< ERROR!
 java.lang.NullPointerException
 	at bgu.spl.mics.MessageBusTest.setUp(MessageBusTest.java:16)
 	at junit.framework.TestCase.runBare(TestCase.java:140)
@@ -98,7 +98,7 @@ java.lang.NullPointerException
 	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
 
-testSubscribeEvent(bgu.spl.mics.MessageBusTest)  Time elapsed: 0.001 sec  <<< ERROR!
+testSubscribeEvent(bgu.spl.mics.MessageBusTest)  Time elapsed: 0 sec  <<< ERROR!
 java.lang.NullPointerException
 	at bgu.spl.mics.MessageBusTest.setUp(MessageBusTest.java:16)
 	at junit.framework.TestCase.runBare(TestCase.java:140)
@@ -122,7 +122,7 @@ java.lang.NullPointerException
 	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
 
-testSendBroadcast(bgu.spl.mics.MessageBusTest)  Time elapsed: 0 sec  <<< ERROR!
+testSendBroadcast(bgu.spl.mics.MessageBusTest)  Time elapsed: 0.001 sec  <<< ERROR!
 java.lang.NullPointerException
 	at bgu.spl.mics.MessageBusTest.setUp(MessageBusTest.java:16)
 	at junit.framework.TestCase.runBare(TestCase.java:140)

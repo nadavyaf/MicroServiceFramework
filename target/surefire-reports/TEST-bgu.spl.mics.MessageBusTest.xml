@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="8" failures="0" name="bgu.spl.mics.MessageBusTest" time="0.003" errors="8" skipped="0">
+<testsuite tests="8" failures="0" name="bgu.spl.mics.MessageBusTest" time="0.004" errors="8" skipped="0">
   <properties>
     <property name="idea.version" value="2020.2.4"/>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
@@ -64,7 +64,7 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="bgu.spl.mics.MessageBusTest" name="testSubscribeBroadcast" time="0">
+  <testcase classname="bgu.spl.mics.MessageBusTest" name="testSubscribeBroadcast" time="0.002">
     <error type="java.lang.NullPointerException">java.lang.NullPointerException
 	at bgu.spl.mics.MessageBusTest.setUp(MessageBusTest.java:16)
 	at junit.framework.TestCase.runBare(TestCase.java:140)
@@ -114,7 +114,7 @@
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
 </error>
   </testcase>
-  <testcase classname="bgu.spl.mics.MessageBusTest" name="testComplete" time="0.001">
+  <testcase classname="bgu.spl.mics.MessageBusTest" name="testComplete" time="0">
     <error type="java.lang.NullPointerException">java.lang.NullPointerException
 	at bgu.spl.mics.MessageBusTest.setUp(MessageBusTest.java:16)
 	at junit.framework.TestCase.runBare(TestCase.java:140)
@@ -164,7 +164,7 @@
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
 </error>
   </testcase>
-  <testcase classname="bgu.spl.mics.MessageBusTest" name="testSubscribeEvent" time="0.001">
+  <testcase classname="bgu.spl.mics.MessageBusTest" name="testSubscribeEvent" time="0">
     <error type="java.lang.NullPointerException">java.lang.NullPointerException
 	at bgu.spl.mics.MessageBusTest.setUp(MessageBusTest.java:16)
 	at junit.framework.TestCase.runBare(TestCase.java:140)
@@ -189,7 +189,7 @@
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
 </error>
   </testcase>
-  <testcase classname="bgu.spl.mics.MessageBusTest" name="testSendBroadcast" time="0">
+  <testcase classname="bgu.spl.mics.MessageBusTest" name="testSendBroadcast" time="0.001">
     <error type="java.lang.NullPointerException">java.lang.NullPointerException
 	at bgu.spl.mics.MessageBusTest.setUp(MessageBusTest.java:16)
 	at junit.framework.TestCase.runBare(TestCase.java:140)
