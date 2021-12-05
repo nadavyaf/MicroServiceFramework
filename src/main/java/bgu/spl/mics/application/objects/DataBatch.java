@@ -9,6 +9,7 @@ public class DataBatch {
     private boolean processedCpu;
     private boolean learnedGpu;
     private int StartTime;
+    //Assiph's comment: maybe add a field of which gpu? so we know from which one it came.
 
     public DataBatch(){
         this.processedCpu = false;

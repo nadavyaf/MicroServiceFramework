@@ -14,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class CPU {
     final private int cores;
-    final private LinkedBlockingQueue<DataBatch> data;
+    final private LinkedBlockingQueue<DataBatch> CPUdata;
     final private Cluster cluster;
     private int currTime; // we will get from TimeService pulses,TickBrodcast, which will be caught in the GPUservice and CPUservice and update our time int.
     public int getTime() {
@@ -22,7 +22,7 @@ public class CPU {
     }
     public CPU(int numberOfCores) {
         this.cores = numberOfCores;
-        this.data = new LinkedBlockingQueue<DataBatch>();
+        this.CPUdata = new LinkedBlockingQueue<DataBatch>();
         this.cluster = Cluster.getInstance();
         currTime= 1;// need to think.
     }
@@ -32,7 +32,7 @@ public class CPU {
     }
 
     public LinkedBlockingQueue getData() {
-        return data;
+        return CPUdata;
     }
 
     public Cluster getCluster() {
@@ -48,7 +48,7 @@ public class CPU {
      */
     public void addData(DataBatch d){
         try {
-            data.put(d);
+            CPUdata.put(d);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -57,11 +57,26 @@ public class CPU {
     /** works on the Databatches, and processes them.
      *
      * @pre (!data.isEmpty)
-     * @post data.length=@pre(data.length - 1)
+     * @post if currTime-datapeek()>10 then data.length=@pre(data.length - 1)
      * @return
      */
-    public void Proccessed(){//Processes the first element in the data LinkedList, and then pops it.
+    public DataBatch Proccessed(){//Processes the first element in the data LinkedList, and then pops it.
+        updateTime();
+        if (currTime - CPUdata.peek().getStartTime() > 10)// should be ticks instead of 10 instead, it is known in the json file we get{
+        {
+            System.out.println("Need to implement here!");
+            //implement
+            try {
+                return CPUdata.take();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        else{
 
+            //We just wait until the number of ticks is passed, we block the CPU so just let the loop run.
+        }
+        return null;
     }
 
     /** Updates the time of the cpu.
@@ -70,7 +85,7 @@ public class CPU {
      * @post @pre(time)<time
      */
     public void updateTime(){//we will need something like this also in GPU.
-
+    currTime = currTime + 1; // Need to check if it is actually good.
     }
 
     /**
@@ -80,13 +95,9 @@ public class CPU {
      */
 
     public void updateTick(){
-        if (currTime-data.peek().getStartTime()>10)// should be ticks instead of 10 instead, it is known in the json file we get{
-            System.out.println("Need to implement here!");
-            //implement
-
-        else{
-            //We just wait until the number of ticks is passed, we block the CPU so just let the loop run.
-        }
+        updateTime();
+        if (!CPUdata.isEmpty())
+        Proccessed();
     }
 
 }

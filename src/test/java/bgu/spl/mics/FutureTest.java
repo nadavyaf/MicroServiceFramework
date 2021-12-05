@@ -62,8 +62,8 @@ public class FutureTest {
         assertThrows(Exception.class,()-> f.get(-10,TimeUnit.MILLISECONDS),"Worked for a negative time.");
         assertNull(f.get(5000,TimeUnit.MILLISECONDS),"Expected null, got a result instead.");
         t1.start();
-        assertNotNull(f.get(10000,TimeUnit.MILLISECONDS),"Got null from get.");
         long currentTime = System.currentTimeMillis();
+        assertNotNull(f.get(10000,TimeUnit.MILLISECONDS),"Got null from get.");
         assertTrue(System.currentTimeMillis()-currentTime<=1000,"didn't managed to break out of the wait.");
         String ans=f.get(10,TimeUnit.MILLISECONDS);
         assertEquals("somevalue", ans, "Expected: result, got: " +ans);

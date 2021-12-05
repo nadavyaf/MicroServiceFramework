@@ -220,13 +220,20 @@ public class GPU {
 
     /**
      *
-     * @param dataBatch
+     * @param
      * @pre: !dataBatch.isLearnedGPU()
      * @post: dataBatch.isLearnedGPU()
      *        learnedSize = @pre learnedBatches
      *        learnedBatches == learnedSize + 1
      */
-    public void GPULearn(DataBatch dataBatch){
+    public void GPULearn(){
+        if (currTime-processedCPUQueue.peek().getStartTime()>10)// should be ticks instead of 10 instead, it is known in the json file we get{
+            System.out.println("Need to implement here!");
+            //implement
+
+        else{
+            //We just wait until the number of ticks is passed, we block the CPU so just let the loop run.
+        }
     }
 
     /**
@@ -246,13 +253,9 @@ public class GPU {
      *
      */
     public void updateTick(){//we will need something like this also in GPU.
-        if (currTime-processedCPUQueue.peek().getStartTime()>10)// should be ticks instead of 10 instead, it is known in the json file we get{
-            System.out.println("Need to implement here!");
-            //implement
-
-        else{
-            //We just wait until the number of ticks is passed, we block the CPU so just let the loop run.
-        }
+        updateTime(); // Need to check if this is the right way to update time.
+        if (!processedCPUQueue.isEmpty())
+        GPULearn();
     }
 
     /** Updates the time of the cpu.

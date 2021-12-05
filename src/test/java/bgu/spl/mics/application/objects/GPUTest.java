@@ -109,11 +109,12 @@ class GPUTest {
     }
 
     @Test
-    void testGPULearn(DataBatch dataBatch){
-        assertFalse(dataBatch.isLearnedGpu(),"Cannot teach data that has been taught!");
+    void testGPULearn(){
+        g.getProcessedCPUQueue().add(new DataBatch());
+        assertFalse(g.getProcessedCPUQueue().peek().isLearnedGpu(),"Cannot teach data that has been taught!");
         int numberLearned = g.getLearnedBatches();
-        g.GPULearn(dataBatch);
-        assertTrue(dataBatch.isLearnedGpu(), "Data should've been learned");
+        g.GPULearn();
+        assertTrue(g.getProcessedCPUQueue().peek().isLearnedGpu(), "Data should've been learned");
         assertEquals(numberLearned + 1, g.getLearnedBatches());
     }
 
