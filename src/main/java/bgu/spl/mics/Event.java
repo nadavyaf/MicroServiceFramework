@@ -11,3 +11,9 @@ public interface Event<T> extends Message {
 
 
 }
+
+/**
+ * Assiph's comments: Each event should hold a result, note that when we finish our event, we will pass this result (with resolve method)
+ * to the future object that is connected to the service that sent the event (not sure if we need to add a field of future for each service
+ * or not yet).
+ */
