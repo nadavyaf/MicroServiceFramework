@@ -1,7 +1,5 @@
 package bgu.spl.mics.application.objects;
 
-import sun.awt.image.ImageWatched;
-
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.concurrent.BlockingQueue;

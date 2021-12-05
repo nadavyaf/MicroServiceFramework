@@ -2,7 +2,6 @@ package bgu.spl.mics;
 
 import bgu.spl.mics.application.objects.Cluster;
 import bgu.spl.mics.example.ServiceCreator;
-import sun.awt.image.ImageWatched;
 
 import javax.swing.plaf.metal.MetalIconFactory;
 import java.util.HashMap;

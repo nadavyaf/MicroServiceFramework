@@ -6,19 +6,19 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FutureTest {
+public class FutureTest {
     private static Future<String> f;
     @Test
-    void setUp() {
+   public void setUp() {
         f = new Future();
     }
 
     @Test
-    void tearDown() {
+    public void tearDown() {
     }
 
     @Test
-    void TestGet() {
+    public void TestGet() {
         assertNotNull(f.get(),"Got null from get."); /** checks if it can get null */
         Thread t1 = new Thread(()->{
             try {
@@ -33,7 +33,7 @@ class FutureTest {
     }
 
     @Test
-    void TestResolve() {
+    public void TestResolve() {
         assertThrows(Exception.class,() -> f.resolve(null), "Expected an error");
         f.resolve("result");
         assertTrue(f.isDone(),"Already resolved but didn't show");
@@ -42,14 +42,14 @@ class FutureTest {
     }
 
     @Test
-    void TestisDone() {
+    public void TestisDone() {
         assertEquals(false,f.isDone(),"expected isDone() to be false, because it didn't run before.");
         f.resolve("work");
         assertEquals(true,f.isDone(),"expected isDone() to be true, because it ran before.");
     }
 
     @Test
-    void TestTimeGet() {
+    public void TestTimeGet() {
         Thread t1 = new Thread(()->{
             try {
                 Thread.sleep(200);
