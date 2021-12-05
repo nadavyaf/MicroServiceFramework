@@ -1,15 +1,7 @@
 package bgu.spl.mics;
 
-import bgu.spl.mics.application.objects.Cluster;
-import bgu.spl.mics.example.ServiceCreator;
-import sun.awt.image.ImageWatched;
-
-import javax.swing.plaf.metal.MetalIconFactory;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
