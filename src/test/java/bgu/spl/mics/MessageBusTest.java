@@ -10,11 +10,13 @@ public class MessageBusTest extends TestCase {
     private static MessageBusImpl mbs;
     private static GPUService m;
     private static GPU g;
+    private static Message a;
 
     public void setUp(){
         g = new GPU(g.getEnum(2));
         m = new GPUService("gpu1 service",g);
         mbs=MessageBusImpl.getInstance();
+        a = new TestModelEvent();
     }
 
     public void testSubscribeEvent() {
@@ -96,12 +98,15 @@ public class MessageBusTest extends TestCase {
         mbs.subscribeEvent(TestModelEvent.class,m);
         mbs.sendEvent(new TestModelEvent());
         Message b = m.getMessageQueue().peek();
-        Message a= new TestModelEvent();
-        try {
-            a = mbs.awaitMessage(m);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+        Thread t1 = new Thread(() ->{
+            try {
+                a = mbs.awaitMessage(m);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        t1.start();
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
