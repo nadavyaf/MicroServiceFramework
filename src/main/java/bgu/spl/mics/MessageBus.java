@@ -1,8 +1,5 @@
 package bgu.spl.mics;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-
 /**
  * The message-bus is a shared object used for communication between
  * micro-services.
@@ -20,9 +17,8 @@ public interface MessageBus {
      * @param <T>  The type of the result expected by the completed event.
      * @param type The type to subscribe to,
      * @param m    The subscribing micro-service.
-     * @pre m.isRegistered()
-     * @inv none
-     * @post m.isSubscribed(Event)
+     * @pre: m.isRegistered()
+     * @post: m.isSubscribed(Event)
      */
     <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m);
     /**
@@ -30,9 +26,8 @@ public interface MessageBus {
      * <p>
      * @param type 	The type to subscribe to.
      * @param m    	The subscribing micro-service.
-     * @pre m.isRegistered()
-     * @inv none
-     * @post m.isSubscribed(Broadcast)
+     * @pre: m.isRegistered()
+     * @post: m.isSubscribed(Broadcast)
      */
     void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m);
 
@@ -45,9 +40,8 @@ public interface MessageBus {
      * @param <T>    The type of the result expected by the completed event.
      * @param e      The completed event.
      * @param result The resolved result of the completed event.
-     * @pre e!= null && result!=null
-     * @inv none
-     * @post future.get(0,Seconds) = result;
+     * @pre: e!= null && result!=null
+     * @post: future.get(0,Seconds) = result;
      */
     <T> void complete(Event<T> e, T result);
 
@@ -56,9 +50,10 @@ public interface MessageBus {
      * micro-services subscribed to {@code b.getClass()}.
      * <p>
      * @param b 	The message to added to the queues.
-     * @pre b!=null
-     * @inv none
-     * @post {m:m is a Microservice, and m.isSubscribed(Broadcast)}, @postm.getMessageQueue().size = @prem.getMessageQueue().size+1
+     * @pre: b!=null
+     * @post: messageQueueSize = @pre m.getMessageQueue().size
+     *        {m:m is a Microservice && m.isSubscribed(Broadcast)}:
+     *        m.getMessageQueue().size == messageQueueSize +1
      */
     void sendBroadcast(Broadcast b);
 
@@ -71,9 +66,9 @@ public interface MessageBus {
      * @param e     	The event to add to the queue.
      * @return {@link Future<T>} object to be resolved once the processing is complete,
      * 	       null in case no micro-service has subscribed to {@code e.getClass()}.
-     * @pre e != null
-     * @inv send in round-robin fashion.
-     * @post e.isComplete() && future.get(0,Seconds) = result;
+     * @pre: e != null
+     * @inv: send in round-robin fashion.
+     * @post: e.isComplete() && future.get(0,Seconds) = result;
      */
     <T> Future<T> sendEvent(Event<T> e);
 
@@ -81,9 +76,8 @@ public interface MessageBus {
      * Allocates a message-queue for the {@link MicroService} {@code m}.
      * <p>
      * @param m the micro-service to create a queue for.
-     * @pre none
-     * @inv none
-     * @post m.isMicroServiceRegistered=true;
+     * @pre: none
+     * @post: m.isMicroServiceRegistered == true;
      */
     void register(MicroService m);
 
@@ -94,9 +88,8 @@ public interface MessageBus {
      * registered, nothing should happen.
      * <p>
      * @param m the micro-service to unregister.
-     * @pre none
-     * @inv none
-     * @post @postm.LinkedBlockingQueue = null && !(m.isMicroServiceRegistered)
+     * @pre: none
+     * @post: m.LinkedBlockingQueue = null && !(m.isMicroServiceRegistered)
      */
     void unregister(MicroService m);
 
@@ -114,15 +107,38 @@ public interface MessageBus {
      * @return The next message in the {@code m}'s queue (blocking).
      * @throws InterruptedException if interrupted while waiting for a message
      *                              to became available.
-     * @pre m.isRegistered()
-     * @inv should be blocked as long as the LinkedBlockingList.isEmpty (implemented in the object itself).
-     * @post @postm.LinkedBlockingQueue.size = @prem.LinkedBlockingQueue.size -1 && return (@prem.LinkedBlockingQueue.peek())
+     * @pre: m.isRegistered()
+     * @inv: should be blocked as long as the LinkedBlockingList.isEmpty (implemented in the object itself).
+     * @post: blockingQueueSize = @pre m.LinkedBlockingQueue.size
+     *       awaitedMessage = @pre m.LinkedBlockingQueue.peek()
+     *       m.LinkedBlockingQueue.size = blockingQueueSize -1
+     *       return awaitedMessage
      */
     Message awaitMessage(MicroService m) throws InterruptedException;
 
+    /**
+     * Return true iff the microservice is registered to a message.
+     * @param m
+     * @pre: none
+     * @post: none
+     */
     Boolean isMicroServiceRegistered(MicroService m);
 
+    /**
+     * Return true iff the microservice is registered to Event e.
+     * @param m
+     * @param e
+     * @pre: none
+     * @post: none
+     */
     Boolean isMicroServiceEventRegistered(MicroService m,Event e);
 
+    /**
+     * Return true iff the microservice is registered to Broadcast b.
+     * @param m
+     * @param b
+     * @pre: none
+     * @post: none
+     */
     Boolean isMicroServiceBroadCastRegistered(MicroService m,Broadcast b);
 }

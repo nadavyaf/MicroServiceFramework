@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.objects;
 
 import bgu.spl.mics.Event;
+import bgu.spl.mics.TestModelEvent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,27 +58,7 @@ class GPUTest {
 
     @Test
     void TestextractEvent() {
-        Event event = new Event() {
-            @Override
-            public int hashCode() {
-                return super.hashCode();
-            }
-
-            @Override
-            public boolean equals(Object obj) {
-                return super.equals(obj);
-            }
-
-            @Override
-            protected Object clone() throws CloneNotSupportedException {
-                return super.clone();
-            }
-
-            @Override
-            public String toString() {
-                return super.toString();
-            }
-        };
+        Event event = new TestModelEvent();
         assertTrue(g.getModel() == null, "Cannot overwrite a model!");
         g.addEvent(event);
         int size = g.getEventQueue().size();

@@ -8,8 +8,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class FutureTest {
     private static Future<String> f;
+
     @Test
-   public void setUp() {
+    public void setUp() {
         f = new Future();
     }
 

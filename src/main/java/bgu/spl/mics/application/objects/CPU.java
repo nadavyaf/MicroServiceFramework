@@ -1,8 +1,5 @@
 package bgu.spl.mics.application.objects;
 
-import java.util.LinkedList;
-import java.util.Timer;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
