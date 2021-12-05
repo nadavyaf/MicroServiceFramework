@@ -4,6 +4,7 @@ import bgu.spl.mics.application.objects.Cluster;
 import bgu.spl.mics.example.ServiceCreator;
 import sun.awt.image.ImageWatched;
 
+import javax.swing.plaf.metal.MetalIconFactory;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -19,7 +20,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  *
  */
 public class MessageBusImpl implements MessageBus {
- 	private Map<String, LinkedBlockingQueue<Event>> Queuemap = new HashMap<>();
+ 	private Map<MicroService, LinkedBlockingQueue<Message>> Queuemap = new HashMap<>();
 	private static MessageBusImpl firstInstance = null;
 	public static MessageBusImpl getInstance() {
 		if (firstInstance == null) { //if we didn't create an object yet, we continue, else we return the object.
