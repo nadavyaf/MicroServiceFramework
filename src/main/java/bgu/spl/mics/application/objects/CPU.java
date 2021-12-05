@@ -57,11 +57,26 @@ public class CPU {
     /** works on the Databatches, and processes them.
      *
      * @pre (!data.isEmpty)
-     * @post data.length=@pre(data.length - 1)
+     * @post if currTime-datapeek()>10 then data.length=@pre(data.length - 1)
      * @return
      */
-    public void Proccessed(){//Processes the first element in the data LinkedList, and then pops it.
+    public DataBatch Proccessed(){//Processes the first element in the data LinkedList, and then pops it.
+        updateTime();
+        if (currTime - data.peek().getStartTime() > 10)// should be ticks instead of 10 instead, it is known in the json file we get{
+        {
+            System.out.println("Need to implement here!");
+            //implement
+            try {
+                return data.take();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        else{
 
+            //We just wait until the number of ticks is passed, we block the CPU so just let the loop run.
+        }
+        return null;
     }
 
     /** Updates the time of the cpu.
@@ -70,7 +85,7 @@ public class CPU {
      * @post @pre(time)<time
      */
     public void updateTime(){//we will need something like this also in GPU.
-
+    currTime = currTime + 1; // Need to check if it is actually good.
     }
 
     /**
@@ -80,13 +95,9 @@ public class CPU {
      */
 
     public void updateTick(){
-        if (currTime-data.peek().getStartTime()>10)// should be ticks instead of 10 instead, it is known in the json file we get{
-            System.out.println("Need to implement here!");
-            //implement
-
-        else{
-            //We just wait until the number of ticks is passed, we block the CPU so just let the loop run.
-        }
+        updateTime();
+        if (data.size()!=0)
+        Proccessed();
     }
 
 }
