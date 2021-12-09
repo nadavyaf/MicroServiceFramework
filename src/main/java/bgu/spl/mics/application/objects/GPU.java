@@ -12,7 +12,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Add all the fields described in the assignment as private fields.
  * Add fields and methods to this class as you see fit (including public methods and constructors).
  */
-public class GPU {
+public class GPU { /** Assiph's comments: I think we should add another queue - timeTickQueue that will be updating the time. I also think
+ we need to delete the clusterQueue.*/
     /**
      * Enum representing the type of the GPU.
      */
