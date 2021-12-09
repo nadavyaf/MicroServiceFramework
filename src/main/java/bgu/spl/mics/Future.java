@@ -15,7 +15,7 @@ public class Future<T> {
 	/**
 	 * This should be the the only public constructor in this class.
 	 */
-	public Future() {
+	public Future() { /** assiph's comments: result should be null when we build future.*/
 		//TODO: implement this
 	}
 	
@@ -29,7 +29,7 @@ public class Future<T> {
 	 * @inv none.
 	 * @post not null.
      */
-	public T get() {
+	public T get() { /** assiph's comments: get should be implemented with the wait method, try to do without synchronized (no need) */
 		//TODO: implement this.
 		return null;
 	}
@@ -40,7 +40,7 @@ public class Future<T> {
 	 * @inv none
 	 * @post Result=result
      */
-	public void resolve (T result) {
+	public void resolve (T result) { /** assiph's comments: you shouldn't allow the result to change twice (resolved is allowed only once) do notifyall when finishing, so all the get methods could run again. */
 		//TODO: implement this.
 	}
 	
@@ -69,7 +69,7 @@ public class Future<T> {
 	 * @inv thread.time <= timeout
 	 * @post none
      */
-	public T get(long timeout, TimeUnit unit) {
+	public T get(long timeout, TimeUnit unit) { /** assiph's comments: the thread should time wait - https://www.baeldung.com/java-wait-notify just do wait with timeout, the notify should solve if it came before */
 		//TODO: implement this.
 		return null;
 	}

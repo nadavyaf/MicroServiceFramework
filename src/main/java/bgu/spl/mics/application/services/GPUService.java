@@ -24,7 +24,6 @@ public class GPUService extends MicroService {
     @Override
     protected void initialize() {
         // TODO Implement this
-
     }
     public Boolean isEventSubscribed(Event e){
         return MessageBusImpl.getInstance().isMicroServiceEventRegistered(this,e);

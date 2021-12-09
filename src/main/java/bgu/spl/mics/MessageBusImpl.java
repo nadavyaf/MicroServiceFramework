@@ -13,16 +13,12 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class MessageBusImpl implements MessageBus {
  	private Map<MicroService, LinkedBlockingQueue<Message>> Queuemap = new HashMap<>();
-	private static MessageBusImpl firstInstance = null;
+	private static class SingeltonHolder{//Java things, this way when we import messagebusimpl, it will not create any instance (since the funcion is private), but when we call the function, it will just call the .instance once.
+		private static MessageBusImpl instance = new MessageBusImpl();
+	}
+
 	public static MessageBusImpl getInstance() {
-		if (firstInstance == null) { //if we didn't create an object yet, we continue, else we return the object.
-			synchronized (MessageBusImpl.class) {//here we make sure that when we create the object, it will only create it once no matter what. also notice that this synchronized works only if we don't have an object yet(when we have an object, it will return the object).
-						if (firstInstance == null) {//from here, only 1 thread at a time will enter the
-							firstInstance = new MessageBusImpl();
-						}
-					}
-				}
-		return firstInstance;
+		return SingeltonHolder.instance;
 			}
 
 	@Override
