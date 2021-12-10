@@ -64,8 +64,7 @@ public class Future<T> {
 	 * @post none
      */
 	public boolean isDone() {
-		//TODO: implement this.
-		return false;
+		return !(result == null);
 	}
 	
 	/**
@@ -82,9 +81,11 @@ public class Future<T> {
 	 * @inv thread.time <= timeout
 	 * @post none
      */
-	public T get(long timeout, TimeUnit unit) { /** assiph's comments: the thread should time wait - https://www.baeldung.com/java-wait-notify just do wait with timeout, the notify should solve if it came before */
-		//TODO: implement this.
-		return null;
+	public T get(long timeout, TimeUnit unit) throws InterruptedException { /** assiph's comments: the thread should time wait - https://www.baeldung.com/java-wait-notify just do wait with timeout, the notify should solve if it came before */
+		synchronized (this) {
+			if (result == null)
+				this.wait(unit.toMillis(timeout));
+		}
+		return result;
 	}
-
 }
