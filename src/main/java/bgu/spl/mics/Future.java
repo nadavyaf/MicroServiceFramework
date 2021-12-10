@@ -45,9 +45,13 @@ public class Future<T> {
 	 * @post Result=result
      */
 	public void resolve (T result) { /** assiph's comments: you shouldn't allow the result to change twice (resolved is allowed only once) do notifyall when finishing, so all the get methods could run again. */
+	if (this.result!=null)
+		throw new IllegalArgumentException("this future already got resolved.");
+	if (result==null)
+		throw new IllegalArgumentException("the result we tried to resolve is null, it can't be.");
 	synchronized (this) {
 		this.result = result;
-		this.notify();
+		this.notifyAll();
 	}
 	}
 	
