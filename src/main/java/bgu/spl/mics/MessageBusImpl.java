@@ -1,7 +1,9 @@
 package bgu.spl.mics;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -13,7 +15,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class MessageBusImpl implements MessageBus {/** Assiph's comments: should have another field, for the round robin - maybe should be a counter
  that we do % from to the number of Queues that we have.*/
- 	private Map<Class<? extends Message>, MicroService> queueMap = new HashMap<>();/** Assiph's comments: i changed to a Microservice,Message hashmap? that way we know which Microservice subscribed to what Message. */
+	private ConcurrentHashMap <Class<? extends Message>, MicroService> queueMap = new ConcurrentHashMap<>();/** Assiph's comments: i changed to a Microservice,Message hashmap? that way we know which Microservice subscribed to what Message. */
 	private static class SingeltonHolder{//Java things, this way when we import messagebusimpl, it will not create any instance (since the funcion is private), but when we call the function, it will just call the .instance once.
 		private static MessageBusImpl instance = new MessageBusImpl();
 	}
