@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 Test set: bgu.spl.mics.FutureTest
 -------------------------------------------------------------------------------
-Tests run: 6, Failures: 1, Errors: 3, Skipped: 0, Time elapsed: 0.074 sec <<< FAILURE!
+Tests run: 6, Failures: 1, Errors: 3, Skipped: 0, Time elapsed: 0.064 sec <<< FAILURE!
 TestResolve(bgu.spl.mics.FutureTest)  Time elapsed: 0.012 sec  <<< ERROR!
 java.lang.NullPointerException
 	at bgu.spl.mics.FutureTest.TestResolve(FutureTest.java:39)
@@ -38,7 +38,7 @@ java.lang.NullPointerException
 	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
 
-TestTimeGet(bgu.spl.mics.FutureTest)  Time elapsed: 0.001 sec  <<< ERROR!
+TestTimeGet(bgu.spl.mics.FutureTest)  Time elapsed: 0 sec  <<< ERROR!
 java.lang.NullPointerException
 	at bgu.spl.mics.FutureTest.TestTimeGet(FutureTest.java:63)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -74,7 +74,7 @@ java.lang.NullPointerException
 	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
 
-TestisDone(bgu.spl.mics.FutureTest)  Time elapsed: 0 sec  <<< ERROR!
+TestisDone(bgu.spl.mics.FutureTest)  Time elapsed: 0.002 sec  <<< ERROR!
 java.lang.NullPointerException
 	at bgu.spl.mics.FutureTest.TestisDone(FutureTest.java:47)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -110,7 +110,7 @@ java.lang.NullPointerException
 	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
 
-TestGet(bgu.spl.mics.FutureTest)  Time elapsed: 0.003 sec  <<< FAILURE!
+TestGet(bgu.spl.mics.FutureTest)  Time elapsed: 0.004 sec  <<< FAILURE!
 org.opentest4j.AssertionFailedError: Got null from get. ==> expected: not <null>
 	at org.junit.jupiter.api.AssertionUtils.fail(AssertionUtils.java:39)
 	at org.junit.jupiter.api.Assertions.fail(Assertions.java:134)

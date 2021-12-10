@@ -19,7 +19,7 @@ public class FutureTest {
     }
 
     @Test
-    public void TestGet() {
+    public void TestGet() throws InterruptedException {
         assertNotNull(f.get(),"Got null from get."); /** checks if it can get null */
         Thread t1 = new Thread(()->{
             try {
@@ -34,7 +34,7 @@ public class FutureTest {
     }
 
     @Test
-    public void TestResolve() {
+    public void TestResolve() throws InterruptedException {
         assertThrows(Exception.class,() -> f.resolve(null), "Expected an error");
         f.resolve("result");
         assertTrue(f.isDone(),"Already resolved but didn't show");

@@ -11,11 +11,11 @@ import java.util.concurrent.TimeUnit;
  * No public constructor is allowed except for the empty constructor.
  */
 public class Future<T> {
-	private T result;
+	private T result = null;
 	/**
 	 * This should be the the only public constructor in this class.
 	 */
-	public Future() {
+	public Future() { /** assiph's comments: result should be null when we build future.*/
 		//TODO: implement this
 	}
 	
@@ -29,31 +29,30 @@ public class Future<T> {
 	 * @inv none.
 	 * @post not null.
      */
-	public T get() throws InterruptedException {
-		synchronized(this){
-			while (this.result == null){
+	public T get() throws InterruptedException { /** assiph's comments: get should be implemented with the wait method, try to do without synchronized (no need) */
+		synchronized (this) {
+			while (result == null)
 				this.wait();
-			}
 		}
-		return this.result;
-	}
+				return result;
 
-     /** Resolves the result of this Future object.
+	}
+	
+	/**
+     * Resolves the result of this Future object.
 	 * @pre result!=null && Result==null
 	 * @inv none
 	 * @post Result=result
      */
-	public void resolve (T result) {
-		if (result == null){
-			throw new IllegalArgumentException("result cannot be null!");
-		}
-		if (this.result != null){
-			throw new IllegalArgumentException("Future's result must be null!");
-		}
-		synchronized (this){
-			this.result = result;
-			this.notifyAll();
-		}
+	public void resolve (T result) { /** assiph's comments: you shouldn't allow the result to change twice (resolved is allowed only once) do notifyall when finishing, so all the get methods could run again. */
+	if (this.result!=null)
+		throw new IllegalArgumentException("this future already got resolved.");
+	if (result==null)
+		throw new IllegalArgumentException("the result we tried to resolve is null, it can't be.");
+	synchronized (this) {
+		this.result = result;
+		this.notifyAll();
+	}
 	}
 	
 	/**
@@ -81,7 +80,7 @@ public class Future<T> {
 	 * @inv thread.time <= timeout
 	 * @post none
      */
-	public T get(long timeout, TimeUnit unit) {
+	public T get(long timeout, TimeUnit unit) { /** assiph's comments: the thread should time wait - https://www.baeldung.com/java-wait-notify just do wait with timeout, the notify should solve if it came before */
 		//TODO: implement this.
 		return null;
 	}
