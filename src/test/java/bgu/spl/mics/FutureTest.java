@@ -50,7 +50,7 @@ public class FutureTest {
     }
 
     @Test
-    public void TestTimeGet() {
+    public void TestTimeGet() throws InterruptedException {
         Thread t1 = new Thread(()->{
             try {
                 Thread.sleep(200);

@@ -1,7 +1,7 @@
 package bgu.spl.mics.application.objects;
 
 import bgu.spl.mics.Event;
-import bgu.spl.mics.TestModelEvent;
+import bgu.spl.mics.application.messages.TestModelEvent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

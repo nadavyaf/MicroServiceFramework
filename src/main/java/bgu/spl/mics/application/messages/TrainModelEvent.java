@@ -1,5 +1,6 @@
-package bgu.spl.mics;
+package bgu.spl.mics.application.messages;
 
+import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.application.objects.Model;
 
 public class TrainModelEvent implements TrainModel{
