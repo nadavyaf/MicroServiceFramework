@@ -1,6 +1,11 @@
 package bgu.spl.mics.application.services;
 
+import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.TickBroadcast;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * TimeService is the global system timer There is only one instance of this micro-service.
@@ -12,22 +17,27 @@ import bgu.spl.mics.MicroService;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class TimeService extends MicroService{
-
-	public TimeService() {
-		super("Change_This_Name");
-		// TODO Implement this
+	private Timer clock = new Timer();
+	private int speed;
+	private int duration;
+	TimerTask tick;
+	public TimeService(int speed, int duration) {
+		super("TimeService");
+		this.speed = speed;
+		this.duration = duration;
+		tick = new TimerTask() {
+			@Override
+			public void run() {
+				MessageBusImpl mbs = new MessageBusImpl();
+				mbs.getInstance().sendBroadcast(new TickBroadcast());
+			}
+		};
 	}
-
-	@Override
-	protected void initialize() {
-		// TODO Implement this
-		
+	protected void initialize() throws InterruptedException {
+		this.clock.scheduleAtFixedRate(tick,0,speed); /**Assiph's comments: creates another thread that sends ticks every speed. */
+		Thread.sleep(duration);
+		clock.cancel();
+		this.terminate();
 	}
-
-	/**
-	 * Assiph's comment:In this Service we should send TickBroadcast, in a similar way we did in studentservice.Note that
-	 * this is a Broadcast, we don't wait for an answer, we just update the system.
-	 *
-	 */
 
 }
