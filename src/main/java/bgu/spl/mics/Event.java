@@ -7,9 +7,7 @@ package bgu.spl.mics;
  * When sending an event, it will be received only by a single subscriber in a
  * Round-Robin fashion.
  */
-public interface Event<T> extends Message {/** Assiph's Comments:We need to create event for each event, each event should have a field
- called Callback, it will be implemented when we use the Subscribe to event, the Subscribing microService will send which callback
- it will use whenever he gets this kind of event.*/
+public interface Event<T> extends Message {/** Assiph's Comments:We need to create event for each event.*/
 
 }
 

@@ -20,7 +20,8 @@ public class GPUService extends MicroService {/** Assiph's comments: I think thi
  to send to the gpu to work on the processed databatch. In the end of the checking (it should be in an infinite while loop, or until interrupted)
   we should add a wait() method, so we don't implement busy waiting (it will get notified each time something is updated).
  I also think we need to add a thread for this class, so when we initialize it, the thread will start running on it's own.
- *******We also need to add a new Queue for the GPUService - SubscribedQueue which will tell to which events the GPU have subscribed, and what
+ *******We also need to add a new Hashmap for the GPUService - subscribedMap which will hold eventTypes and Callbacks, and
+ tell each message that comes from the awaitmessage, which callback to do.
  are their call backs. */
     final private GPU gpu;
     public GPUService(String name, GPU gpu) {
