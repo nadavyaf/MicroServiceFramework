@@ -29,19 +29,31 @@ public class Future<T> {
 	 * @inv none.
 	 * @post not null.
      */
-	public T get() {
-		//TODO: implement this.
-		return null;
+	public T get() throws InterruptedException {
+		synchronized(this){
+			while (this.result == null){
+				this.wait();
+			}
+		}
+		return this.result;
 	}
-	
-	/**
-     * Resolves the result of this Future object.
+
+     /** Resolves the result of this Future object.
 	 * @pre result!=null && Result==null
 	 * @inv none
 	 * @post Result=result
      */
 	public void resolve (T result) {
-		//TODO: implement this.
+		if (result == null){
+			throw new IllegalArgumentException("result cannot be null!");
+		}
+		if (this.result != null){
+			throw new IllegalArgumentException("Future's result must be null!");
+		}
+		synchronized (this){
+			this.result = result;
+			this.notifyAll();
+		}
 	}
 	
 	/**
