@@ -1,4 +1,5 @@
 package bgu.spl.mics;
+import bgu.spl.mics.application.messages.TestModelEvent;
 import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.services.GPUService;
 import bgu.spl.mics.application.services.StudentService;

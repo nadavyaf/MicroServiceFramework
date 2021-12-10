@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.*;
+import bgu.spl.mics.application.messages.TestModelEvent;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
