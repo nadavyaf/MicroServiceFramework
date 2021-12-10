@@ -11,7 +11,6 @@ public interface Event<T> extends Message {/** Assiph's Comments:We need to crea
  called Callback, it will be implemented when we use the Subscribe to event, the Subscribing microService will send which callback
  it will use whenever he gets this kind of event.*/
 
-
 }
 
 /**

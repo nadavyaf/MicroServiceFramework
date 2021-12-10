@@ -19,7 +19,9 @@ public class GPUService extends MicroService {/** Assiph's comments: I think thi
  if the eventQueue has then we check if we are currently working on an event (model==null), and if the processedCPU has, then
  to send to the gpu to work on the processed databatch. In the end of the checking (it should be in an infinite while loop, or until interrupted)
   we should add a wait() method, so we don't implement busy waiting (it will get notified each time something is updated).
- I also think we need to add a thread for this class, so when we initialize it, the thread will start running on it's own.*/
+ I also think we need to add a thread for this class, so when we initialize it, the thread will start running on it's own.
+ *******We also need to add a new Queue for the GPUService - SubscribedQueue which will tell to which events the GPU have subscribed, and what
+ are their call backs. */
     final private GPU gpu;
     public GPUService(String name, GPU gpu) {
         super("Change_This_Name");
