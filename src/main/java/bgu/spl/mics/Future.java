@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  * No public constructor is allowed except for the empty constructor.
  */
 public class Future<T> {
-	private T result;
+	private T result = null;
 	/**
 	 * This should be the the only public constructor in this class.
 	 */
@@ -29,9 +29,13 @@ public class Future<T> {
 	 * @inv none.
 	 * @post not null.
      */
-	public T get() { /** assiph's comments: get should be implemented with the wait method, try to do without synchronized (no need) */
-		//TODO: implement this.
-		return null;
+	public T get() throws InterruptedException { /** assiph's comments: get should be implemented with the wait method, try to do without synchronized (no need) */
+		synchronized (this) {
+			while (result == null)
+				this.wait();
+		}
+				return result;
+
 	}
 	
 	/**
@@ -41,7 +45,10 @@ public class Future<T> {
 	 * @post Result=result
      */
 	public void resolve (T result) { /** assiph's comments: you shouldn't allow the result to change twice (resolved is allowed only once) do notifyall when finishing, so all the get methods could run again. */
-		//TODO: implement this.
+	synchronized (this) {
+		this.result = result;
+		this.notify();
+	}
 	}
 	
 	/**

@@ -58,7 +58,8 @@ public class MessageBusImpl implements MessageBus {/** Assiph's comments: should
 	 * right way. ***the student will get it in the main (CRMSRunner) or in it's StudentService, not sure yet.***
 	 */
 	@Override
-	public <T> Future<T> sendEvent(Event<T> e) {
+	public <T> Future<T> sendEvent(Event<T> e) { /** Assiph's Comments: Will be used by a studentService (or student,not sure) for example
+	 it will enter the event to the right queue using the Messagebus (with get instance) and then use the get method (blocking).*/
 		// TODO Auto-generated method stub
 		return null;
 	}

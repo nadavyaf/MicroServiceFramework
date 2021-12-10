@@ -20,7 +20,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Only private fields and methods may be added to this class.
  * <p>
  */
-public abstract class MicroService implements Runnable {
+public abstract class MicroService implements Runnable {/** Assiph's comments:I think we should add a field isRegistered. */
     private LinkedBlockingQueue<Message> MessageQueue=null;
     private boolean terminated = false;
     private final String name;
