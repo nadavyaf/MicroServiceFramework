@@ -1,4 +1,6 @@
 package bgu.spl.mics.application.messages;
 
-public class PublishConferenceBroadcast implements PublishConference {
+import bgu.spl.mics.Broadcast;
+
+public class PublishConferenceBroadcast implements Broadcast {
 }
