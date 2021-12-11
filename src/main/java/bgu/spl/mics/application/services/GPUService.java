@@ -3,7 +3,7 @@ package bgu.spl.mics.application.services;
 import bgu.spl.mics.*;
 import bgu.spl.mics.application.objects.GPU;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.HashMap;
 
 /**
  * GPU service is responsible for handling the
@@ -24,10 +24,11 @@ public class GPUService extends MicroService {/** Assiph's comments: I think thi
  tell each message that comes from the awaitmessage, which callback to do.
  are their call backs. */
     final private GPU gpu;
+    private HashMap<Class < ? extends Message>,Callback> callbackMap;
     public GPUService(String name, GPU gpu) {
         super(gpu + " " + "service");
-        // TODO Implement this
         this.gpu = gpu;
+        this.callbackMap = new HashMap<>();
     }
     @Override
     protected void initialize() {
@@ -39,9 +40,7 @@ public class GPUService extends MicroService {/** Assiph's comments: I think thi
     public Boolean isBroadcastSubscribed(Broadcast b){
         return MessageBusImpl.getInstance().isMicroServiceBroadCastRegistered(this,b);
     }
-    public LinkedBlockingQueue<Message> getMessageQueue() {
-        return gpu.getEventQueue();
-    }
+
 }
 /**
  * Assiph's Comment: in GPU and CPU, both of the Services should be used to send and bring messages. So in GPU case, the

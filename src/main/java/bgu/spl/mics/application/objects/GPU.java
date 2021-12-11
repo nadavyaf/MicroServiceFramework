@@ -1,12 +1,7 @@
 package bgu.spl.mics.application.objects;
 
-import bgu.spl.mics.Event;
-import bgu.spl.mics.Message;
-import bgu.spl.mics.MessageBusImpl;
-
 import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 
 /**
@@ -32,7 +27,6 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     private int ticks;
 
     public GPU(Type type) {
-        MessageBusImpl mbs = new MessageBusImpl();
         this.type = type;
         this.model = null;
         this.learnedBatches = 0;
@@ -52,6 +46,8 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
         }
         this.processedCPUQueue = new ArrayBlockingQueue<DataBatch>(capacity);
     }
+
+
     public Type getEnum(int type){
         if (type==1)
         return Type.GTX1080;
@@ -139,6 +135,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     public int getCurrTime() {
         return currTime;
     }
+
     /**
      * Helper which creates a dataBatch and add 1000 sample from data to dataBatch. If data is empty, throw
      * an exception.
