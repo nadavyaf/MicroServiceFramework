@@ -1,8 +1,5 @@
 package bgu.spl.mics;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -84,15 +81,15 @@ public class MessageBusImpl implements MessageBus {/** Assiph's comments: should
 	}
 
 	public Boolean isMicroServiceRegistered(MicroService m){
-		return null;
+		return !(microMap.get(m) == null);
 	}
 
 	public Boolean isMicroServiceEventRegistered(MicroService m,Event e) {
-		return null;
+		return messageMap.get(e).contains(m);
 	}
 
 	public Boolean isMicroServiceBroadCastRegistered(MicroService m,Broadcast b){
-		return null;
+		return messageMap.get(b).contains(m);
 	}
 
 

@@ -1,10 +1,9 @@
 package bgu.spl.mics.application.messages;
 
-import bgu.spl.mics.Future;
-import bgu.spl.mics.application.messages.TestModel;
+import bgu.spl.mics.Event;
 import bgu.spl.mics.application.objects.Student;
 
-public class TestModelEvent implements TestModel {
+public class TestModelEvent implements Event<String> {
 private String result=null;
 private Student student;
 public TestModelEvent() {}

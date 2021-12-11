@@ -1,5 +1,7 @@
 package bgu.spl.mics.application.messages;
 
-public class TickBroadcast implements Tick{
+import bgu.spl.mics.Broadcast;
+
+public class TickBroadcast implements Broadcast {
 
 }
