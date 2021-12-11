@@ -52,7 +52,7 @@ public class Future<T> {
 	synchronized (this) {
 		this.result = result;
 		this.notifyAll();
-	}
+		}
 	}
 	
 	/**

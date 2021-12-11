@@ -1,11 +1,11 @@
 package bgu.spl.mics.example.services;
 
-import java.util.concurrent.TimeUnit;
-
 import bgu.spl.mics.Future;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.example.messages.ExampleBroadcast;
 import bgu.spl.mics.example.messages.ExampleEvent;
+
+import java.util.concurrent.TimeUnit;
 
 public class ExampleMessageSenderService extends MicroService {
 
@@ -22,7 +22,7 @@ public class ExampleMessageSenderService extends MicroService {
     }
 
     @Override
-    protected void initialize() {
+    protected void initialize() throws InterruptedException {
         System.out.println("Sender " + getName() + " started");
         if (broadcast) {
             sendBroadcast(new ExampleBroadcast(getName()));
