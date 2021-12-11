@@ -2,6 +2,8 @@ package bgu.spl.mics.application.objects;
 
 import bgu.spl.mics.Event;
 import bgu.spl.mics.Message;
+import bgu.spl.mics.MessageBusImpl;
+
 import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -22,7 +24,6 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     private Type type;
     private Model model;
     private Cluster cluster;
-    final private LinkedBlockingQueue<Message> eventQueue;
     final private LinkedList<DataBatch> clusterQueue;
     final private ArrayBlockingQueue<DataBatch> processedCPUQueue;
     int learnedBatches;
@@ -31,9 +32,9 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     private int ticks;
 
     public GPU(Type type) {
+        MessageBusImpl mbs = new MessageBusImpl();
         this.type = type;
         this.model = null;
-        this.eventQueue = new LinkedBlockingQueue<Message>();
         this.learnedBatches = 0;
         this.clusterQueue = new LinkedList<DataBatch>();
         currTime = 1;//need to think.
@@ -50,16 +51,6 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
             this.ticks=4;
         }
         this.processedCPUQueue = new ArrayBlockingQueue<DataBatch>(capacity);
-    }
-
-    /**
-     *
-     * Return the eventQueue, which holds events that the messageBus allocated to the GPU.
-     * @pre: none
-     * @post: none
-     */
-    public LinkedBlockingQueue<Message> getEventQueue() {
-        return eventQueue;
     }
     public Type getEnum(int type){
         if (type==1)
@@ -148,32 +139,6 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     public int getCurrTime() {
         return currTime;
     }
-
-    /**
-     * Take an event which the message bus has allocated to the GPU and add to its eventQueue.
-     * @param event
-     * @pre: none
-     * @post: size == @pre eventQueue.size
-     *        eventQueue.size == size + 1
-     */
-    public void addEvent(Event event){
-        this.eventQueue.add(event);
-    }
-
-    /**
-     * Take event from eventQueue (remember to change the return when implementing), if null, throw
-     * an exception.
-     * @pre: !eventQueue.isEmpty()
-     *       this.model == null
-     * @post: size = @pre eventQueue.size
-     *        eventQueue.size == size -1
-     *        this.model != null
-     *        learnedBatches == 0
-     */
-    public Event extractEvent(){
-        return null;
-    }
-
     /**
      * Helper which creates a dataBatch and add 1000 sample from data to dataBatch. If data is empty, throw
      * an exception.

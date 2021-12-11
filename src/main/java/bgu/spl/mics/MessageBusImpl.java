@@ -91,6 +91,4 @@ public class MessageBusImpl implements MessageBus {/** Assiph's comments: should
 	public Boolean isMicroServiceBroadCastRegistered(MicroService m,Broadcast b){
 		return messageMap.get(b).contains(m);
 	}
-
-
 }
