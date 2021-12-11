@@ -18,4 +18,25 @@ public class Student {
     private int publications;
     private int papersRead;
 
+    public int getName() {
+        return name;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public String getStatus() {
+        if (status==Degree.PhD)
+        return "PhD";
+        return "MSc";
+    }
+
+    public int getPublications() {
+        return publications;
+    }
+
+    public int getPapersRead() {
+        return papersRead;
+    }
 }

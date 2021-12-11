@@ -14,8 +14,12 @@ public class Cluster {
 	/**
      * Retrieves the single instance of this class.
      */
-	public static Cluster getInstance() {
-		//TODO: Implement this
+	public static Cluster getInstance() {/** Assiph's Comments: A thread safe singleton - you can copy the same idea from Messagebus
+	 for creating a singleton.
+	 "Note that the GPUs and CPUs communicate via the cluster, they are not
+	 allowed to directly call each other methods" - it means here we need to add functions that will make the cpu and the gpu "talk"
+	 with each other.*/
+	 //TODO: Implement this
 		return null;
 	}
 

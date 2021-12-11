@@ -28,6 +28,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     int learnedBatches;
     private int capacity;
     private int currTime;
+    private int ticks;
 
     public GPU(Type type) {
         this.type = type;
@@ -38,12 +39,15 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
         currTime = 1;//need to think.
         if(this.type == Type.RTX3090){
             this.capacity = 32;
+            this.ticks=1;
         }
         else if(this.type == Type.RTX2080){
             this.capacity = 16;
+            this.ticks=2;
         }
         else if(this.type == Type.GTX1080){
             this.capacity = 8;
+            this.ticks=4;
         }
         this.processedCPUQueue = new ArrayBlockingQueue<DataBatch>(capacity);
     }
@@ -228,7 +232,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      *        learnedBatches == learnedSize + 1
      */
     public void GPULearn(){
-        if (currTime-processedCPUQueue.peek().getStartTime()>10)// should be ticks instead of 10 instead, it is known in the json file we get{
+        if (currTime-processedCPUQueue.peek().getStartTime()>=ticks)// should be ticks instead of 10 instead, it is known in the json file we get{
             System.out.println("Need to implement here!");
             //implement
 
@@ -253,18 +257,9 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      * @post none
      *
      */
-    public void updateTick(){//we will need something like this also in GPU.
-        updateTime(); // Need to check if this is the right way to update time.
-        if (!processedCPUQueue.isEmpty())
-        GPULearn();
-    }
-
-    /** Updates the time of the cpu.
-     *
-     * @pre none
-     * @post @pre(time)<time
-     */
     public void updateTime(){
-
+        currTime++;
+        if (!processedCPUQueue.isEmpty())
+            GPULearn();
     }
 }
