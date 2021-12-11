@@ -150,7 +150,11 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
      */
     @Override
     public final void run() {
-        initialize();
+        try {
+            initialize();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         while (!terminated) {
             System.out.println("NOT IMPLEMENTED!!!"); //TODO: you should delete this line :)
         }

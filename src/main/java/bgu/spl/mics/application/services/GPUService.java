@@ -25,7 +25,7 @@ public class GPUService extends MicroService {/** Assiph's comments: I think thi
  are their call backs. */
     final private GPU gpu;
     public GPUService(String name, GPU gpu) {
-        super("Change_This_Name");
+        super(gpu + " " + "service");
         // TODO Implement this
         this.gpu = gpu;
     }
