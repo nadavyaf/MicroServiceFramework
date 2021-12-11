@@ -183,6 +183,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      *        processedCPUQueue.size == processedSize + 1
      */
     public void insertProcessedCPU(DataBatch data){
+        processedCPUQueue.add(data);
     }
 
     /**

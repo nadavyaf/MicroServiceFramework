@@ -1,5 +1,7 @@
 package bgu.spl.mics.application.objects;
 
+import bgu.spl.mics.MessageBusImpl;
+
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -10,7 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class CPU {
     final private int cores;
     final private LinkedBlockingQueue<DataBatch> CPUdata;
-    final private Cluster cluster;
+    final private Cluster cluster=Cluster.getInstance();
     private int currTime; // we will get from TimeService pulses,TickBrodcast, which will be caught in the GPUservice and CPUservice and update our time int.
     public int getTime() {
         return currTime;
@@ -18,7 +20,6 @@ public class CPU {
     public CPU(int numberOfCores) {
         this.cores = numberOfCores;
         this.CPUdata = new LinkedBlockingQueue<DataBatch>();
-        this.cluster = Cluster.getInstance();
         currTime= 1;// need to think.
     }
 
@@ -73,21 +74,23 @@ public class CPU {
 //        }
 //        return null;
 //    }
-    public DataBatch Process() throws InterruptedException {
-        DataBatch process = CPUdata.take();
-        int tick =0;
-        if (process.getType()== Data.Type.Images)
-            tick=4;
-        if (process.getType()== Data.Type.Text)
-            tick=2;
-        if (process.getType()== Data.Type.Tabular)
-            tick=1;
-        int processTime = (32/this.getCores())*tick;
-        process.setStartTime(currTime);
-        while (currTime-process.getStartTime()>processTime)
-            this.wait();
-        process.setProcessedCpu();
-        return process;
+    public void process() throws InterruptedException {
+        while (!Thread.currentThread().isInterrupted()) {
+            DataBatch process = CPUdata.take();
+            int tick = 0;
+            if (process.getType() == Data.Type.Images)
+                tick = 4;
+            if (process.getType() == Data.Type.Text)
+                tick = 2;
+            if (process.getType() == Data.Type.Tabular)
+                tick = 1;
+            int processTime = (32 / this.getCores()) * tick;
+            process.setStartTime(currTime);
+            while (currTime - process.getStartTime() < processTime)
+                this.wait();
+            process.setProcessedCpu();
+            this.cluster.sendToGPU(process);
+        }
     }
     /** Updates the time of the cpu.
      *
@@ -96,5 +99,6 @@ public class CPU {
      */
     public void updateTime(){
     currTime++;
+    this.notifyAll();
     }
 }

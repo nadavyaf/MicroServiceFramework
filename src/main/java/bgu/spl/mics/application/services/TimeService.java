@@ -37,6 +37,7 @@ public class TimeService extends MicroService{
 		Thread.sleep(duration);
 		clock.cancel();
 		this.terminate();
+		System.exit(0);
 	}
 
 }
