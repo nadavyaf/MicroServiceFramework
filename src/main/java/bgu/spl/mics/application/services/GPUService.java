@@ -41,7 +41,11 @@ public class GPUService extends MicroService {/** Assiph's comments: I think thi
         return MessageBusImpl.getInstance().isMicroServiceBroadCastRegistered(this,b);
     }
 
+    public GPU getGpu() {
+        return gpu;
+    }
 }
+
 /**
  * Assiph's Comment: in GPU and CPU, both of the Services should be used to send and bring messages. So in GPU case, the
  * GPUService should be responsible for bringing the data to the GPU, and putting it in the right Queues, and also after 2 scenarios:

@@ -1,7 +1,12 @@
 package bgu.spl.mics;
 
+import bgu.spl.mics.application.objects.GPU;
+import bgu.spl.mics.application.services.GPUService;
+
+import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -14,7 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class MessageBusImpl implements MessageBus {/** Assiph's comments: should have another field, for the round robin - maybe should be a counter
  that we do % from to the number of Queues that we have.*/
 	private ConcurrentHashMap <Class<? extends Message>, BlockingQueue<MicroService>> messageMap = new ConcurrentHashMap<>();
-	private ConcurrentHashMap <MicroService, BlockingQueue<Message>> microMap = new ConcurrentHashMap<>();
+	private ConcurrentHashMap <MicroService, LinkedBlockingDeque<Message>> microMap = new ConcurrentHashMap<>();
 	private static class SingeltonHolder{//Java things, this way when we import messagebusimpl, it will not create any instance (since the funcion is private), but when we call the function, it will just call the .instance once.
 		private static MessageBusImpl instance = new MessageBusImpl();
 	}
@@ -41,10 +46,13 @@ public class MessageBusImpl implements MessageBus {/** Assiph's comments: should
 		// TODO Auto-generated method stub
 
 	}
-
-	@Override
 	public void sendBroadcast(Broadcast b) {
-
+		BlockingQueue<MicroService> services = messageMap.get(b);
+		//the Iterator is weakly consistent - meaning it will not follow any changes that happens in the BlockingQueue after it started.
+		for (MicroService m : services) {
+			microMap.get(m).addFirst(b);
+			m.notifyAll();
+		}
 	}
 
 	/**
@@ -65,7 +73,7 @@ public class MessageBusImpl implements MessageBus {/** Assiph's comments: should
 
 	@Override
 	public void register(MicroService m) {
-		microMap.putIfAbsent(m,new LinkedBlockingQueue<>());
+		microMap.putIfAbsent(m,new LinkedBlockingDeque<>());
 	}
 
 	@Override
@@ -76,8 +84,15 @@ public class MessageBusImpl implements MessageBus {/** Assiph's comments: should
 
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
-		// TODO Auto-generated method stub
-		return null;
+		BlockingQueue<Message> events = microMap.get(m);
+		if (events==null)
+			throw new IllegalArgumentException("The microservice is not registered!");
+		if (m.getClass().isInstance(GPUService.class)){
+			GPUService cast = (GPUService) m;
+		while (events.isEmpty()||(cast.getGpu().getModel()!=null && events.peek() instanceof Event))
+			m.wait();
+		}
+			return events.take(); // this also handles the other options, it waits until we have something in the queue, and then takes it out.
 	}
 
 	public Boolean isMicroServiceRegistered(MicroService m){

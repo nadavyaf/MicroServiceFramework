@@ -28,8 +28,7 @@ public class TimeService extends MicroService{
 		tick = new TimerTask() {
 			@Override
 			public void run() {
-				MessageBusImpl mbs = new MessageBusImpl();
-				mbs.getInstance().sendBroadcast(new TickBroadcast());
+				MessageBusImpl.getInstance().sendBroadcast(new TickBroadcast());
 			}
 		};
 	}

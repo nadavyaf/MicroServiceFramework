@@ -1,5 +1,6 @@
 package bgu.spl.mics;
 
+import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -21,7 +22,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * <p>
  */
 public abstract class MicroService implements Runnable {/** Assiph's comments:I think we should add a field isRegistered. */
-    private LinkedBlockingQueue<Message> MessageQueue=null;
+    private HashMap<Class < ? extends Message>,Callback> callbackMap;
     private boolean terminated = false;
     private final String name;
 
@@ -31,6 +32,7 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
      */
     public MicroService(String name) {
         this.name = name;
+        this.callbackMap = new HashMap<>();
     }
 
     /**
@@ -55,7 +57,8 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
      *                 queue.
      */
     protected final <T, E extends Event<T>> void subscribeEvent(Class<E> type, Callback<E> callback) {
-        //TODO: implement this.
+        this.callbackMap.putIfAbsent(type,callback);
+        MessageBusImpl.getInstance().subscribeEvent(type,this);
     }
 
     /**
@@ -79,7 +82,8 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
      *                 queue.
      */
     protected final <B extends Broadcast> void subscribeBroadcast(Class<B> type, Callback<B> callback) {
-        //TODO: implement this.
+        this.callbackMap.putIfAbsent(type,callback);
+        MessageBusImpl.getInstance().subscribeBroadcast(type,this);
     }
 
     /**
@@ -106,7 +110,7 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
      * @param b The broadcast message to send
      */
     protected final void sendBroadcast(Broadcast b) {
-        //TODO: implement this.
+        MessageBusImpl.getInstance().sendBroadcast(b);
     }
 
     /**
@@ -156,7 +160,13 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
             e.printStackTrace();
         }
         while (!terminated) {
-            System.out.println("NOT IMPLEMENTED!!!"); //TODO: you should delete this line :)
+            try {
+                Message m = MessageBusImpl.getInstance().awaitMessage(this);
+                callbackMap.get(m).call(m);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 

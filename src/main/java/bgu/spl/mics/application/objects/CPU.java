@@ -34,20 +34,20 @@ public class CPU {
         return cluster;
     }
 
-    /**Gets data from the Cluster and add it to the DataBatch of a cpu.
-     *
-     * @param d
-     * @pre none
-     * @post data.length=@pre(data.length + 1)
-     *
-     */
-    public void addData(DataBatch d){
-        try {
-            CPUdata.put(d);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+//    /**Gets data from the Cluster and add it to the DataBatch of a cpu.
+//     *
+//     * @param d
+//     * @pre none
+//     * @post data.length=@pre(data.length + 1)
+//     *
+//     */
+//    public void addData(DataBatch d){
+//        try {
+//            CPUdata.put(d);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     /** works on the Databatches, and processes them.
      *
@@ -55,44 +55,46 @@ public class CPU {
      * @post if currTime-datapeek()>10 then data.length=@pre(data.length - 1)
      * @return
      */
-    public DataBatch Proccessed(){//Processes the first element in the data LinkedList, and then pops it.
-        updateTime();
-        if (currTime - CPUdata.peek().getStartTime() > 10)// should be ticks instead of 10 instead, it is known in the json file we get{
-        {
-            System.out.println("Need to implement here!");
-            //implement
-            try {
-                return CPUdata.take();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        else{
-
-            //We just wait until the number of ticks is passed, we block the CPU so just let the loop run.
-        }
-        return null;
+//    public DataBatch Proccessed(){//Processes the first element in the data LinkedList, and then pops it.
+//        updateTime();
+//        if (currTime - CPUdata.peek().getStartTime() > 10)// should be ticks instead of 10 instead, it is known in the json file we get{
+//        {
+//            System.out.println("Need to implement here!");
+//            //implement
+//            try {
+//                return CPUdata.take();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        else{
+//
+//            //We just wait until the number of ticks is passed, we block the CPU so just let the loop run.
+//        }
+//        return null;
+//    }
+    public DataBatch Process() throws InterruptedException {
+        DataBatch process = CPUdata.take();
+        int tick =0;
+        if (process.getType()== Data.Type.Images)
+            tick=4;
+        if (process.getType()== Data.Type.Text)
+            tick=2;
+        if (process.getType()== Data.Type.Tabular)
+            tick=1;
+        int processTime = (32/this.getCores())*tick;
+        process.setStartTime(currTime);
+        while (currTime-process.getStartTime()>processTime)
+            this.wait();
+        process.setProcessedCpu();
+        return process;
     }
-
     /** Updates the time of the cpu.
      *
      * @pre none
      * @post @pre(time)<time
      */
-    public void updateTime(){//we will need something like this also in GPU.
-    currTime = currTime + 1; // Need to check if it is actually good.
+    public void updateTime(){
+    currTime++;
     }
-
-    /**
-     * @pre !data.isEmpty()
-     * @inv none
-     * @post none
-     */
-
-    public void updateTick(){
-        updateTime();
-        if (!CPUdata.isEmpty())
-        Proccessed();
-    }
-
 }
