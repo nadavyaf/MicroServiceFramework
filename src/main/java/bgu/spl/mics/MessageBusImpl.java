@@ -3,6 +3,7 @@ package bgu.spl.mics;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -15,7 +16,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class MessageBusImpl implements MessageBus {/** Assiph's comments: should have another field, for the round robin - maybe should be a counter
  that we do % from to the number of Queues that we have.*/
-	private ConcurrentHashMap <Class<? extends Message>, MicroService> queueMap = new ConcurrentHashMap<>();/** Assiph's comments: i changed to a Microservice,Message hashmap? that way we know which Microservice subscribed to what Message. */
+	private ConcurrentHashMap <Class<? extends Message>, BlockingQueue<MicroService>> queueMap = new ConcurrentHashMap<>();
+	private ConcurrentHashMap <MicroService, BlockingQueue<Message>> eventMap = new ConcurrentHashMap<>();
 	private static class SingeltonHolder{//Java things, this way when we import messagebusimpl, it will not create any instance (since the funcion is private), but when we call the function, it will just call the .instance once.
 		private static MessageBusImpl instance = new MessageBusImpl();
 	}
@@ -25,15 +27,16 @@ public class MessageBusImpl implements MessageBus {/** Assiph's comments: should
 			}
 
 	@Override
-	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
-		// TODO Auto-generated method stub
-
+	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {/**Assiph's comments: if the message doesn't exist,
+	 add it with a new LinkedBlockingQueue (FIFO) and then just add the element into that queue.*/
+		queueMap.putIfAbsent(type,new LinkedBlockingQueue<>());
+		queueMap.get(type).add(m);
 	}
 
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
-		// TODO Auto-generated method stub
-
+		queueMap.putIfAbsent(type,new LinkedBlockingQueue<>());
+		queueMap.get(type).add(m);
 	}
 
 	@Override
@@ -44,7 +47,6 @@ public class MessageBusImpl implements MessageBus {/** Assiph's comments: should
 
 	@Override
 	public void sendBroadcast(Broadcast b) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -66,8 +68,7 @@ public class MessageBusImpl implements MessageBus {/** Assiph's comments: should
 
 	@Override
 	public void register(MicroService m) {
-		// TODO Auto-generated method stub
-
+		eventMap.putIfAbsent(m,new LinkedBlockingQueue<>());
 	}
 
 	@Override
