@@ -15,11 +15,9 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      * Enum representing the type of the GPU.
      */
     enum Type {RTX3090, RTX2080, GTX1080}
-
     private Type type;
     private Model model;
     private Cluster cluster;
-    final private LinkedList<DataBatch> clusterQueue;
     final private ArrayBlockingQueue<DataBatch> processedCPUQueue;
     int learnedBatches;
     private int capacity;
@@ -30,7 +28,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
         this.type = type;
         this.model = null;
         this.learnedBatches = 0;
-        this.clusterQueue = new LinkedList<DataBatch>();
+        cluster = Cluster.getInstance();
         currTime = 1;//need to think.
         if(this.type == Type.RTX3090){
             this.capacity = 32;
@@ -56,18 +54,6 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
         return Type.RTX3090;
 
     }
-
-    /**
-     *
-     * Return the clusterQueue, which holds databatches that are sent to the cluster.
-     * @pre: none
-     * @post: none
-     */
-    public LinkedList<DataBatch> getClusterQueue() {
-        return clusterQueue;
-    }
-
-
     /**
      * Return the processedQueue, which holds the processed data batches.
      * @pre: none
@@ -135,19 +121,6 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     public int getCurrTime() {
         return currTime;
     }
-
-    /**
-     * Helper which creates a dataBatch and add 1000 sample from data to dataBatch. If data is empty, throw
-     * an exception.
-     * @param data
-     * @pre: data != null
-     * @post: size == @pre data.size
-     *        data.size == size - 1000
-     */
-    public DataBatch divide1000(Data data){
-        return null;
-    }
-
     /**
      * Divide all the data recieved into data batches, add each batch to clusterQueue.
      * @param data
@@ -157,20 +130,12 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      *        clusterSize = @pre clusterQueue.size
      *        clusterQueue.size == clusterSize + numberofDataBatches(The number of data batches created)
      */
-    public void divideAll(Data data){
-    }
-
-    /**
-     * Release data batches for the cluster to allocate. If the clusterQueue is empty or the capacity
-     * of the GPU is 0, throw an error.
-     * @pre: clusterQueue != null, capacity > 0
-     * @inv: capacity >=0
-     * @post: clusterSize = @pre clusterQueue.size
-     *        clusterQueue.size == clusterSize - 1
-     *        capacitySize = @pre capacity
-     *        capacity == capacitySize - 1
-     */
-    public void clusterSend(){
+    public LinkedList<DataBatch> divideAll(Data data){
+            LinkedList<DataBatch> dataList= new LinkedList<>();
+            for (int i =0;i<data.getNumOfBatches();i++){
+                dataList.add(new DataBatch(data.getType(),this));
+            }
+            return dataList;
     }
 
 

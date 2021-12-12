@@ -20,7 +20,7 @@ public class CPU {
     public CPU(int numberOfCores) {
         this.cores = numberOfCores;
         this.CPUdata = new LinkedBlockingQueue<DataBatch>();
-        currTime= 1;// need to think.
+        currTime= 1;
     }
 
     public int getCores() {
@@ -75,7 +75,7 @@ public class CPU {
 //        return null;
 //    }
     public void process() throws InterruptedException {
-        while (!Thread.currentThread().isInterrupted()) {
+        while (Flag.flag) {
             DataBatch process = CPUdata.take();
             int tick = 0;
             if (process.getType() == Data.Type.Images)
@@ -90,6 +90,8 @@ public class CPU {
                 this.wait();
             process.setProcessedCpu();
             this.cluster.sendToGPU(process);
+            this.cluster.getStatistics().IncrementnumberOfProcessedBatches();
+            this.cluster.getStatistics().IncrementCPUTimeUnitsBy(processTime);
         }
     }
     /** Updates the time of the cpu.

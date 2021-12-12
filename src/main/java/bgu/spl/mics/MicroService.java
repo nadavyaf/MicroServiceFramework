@@ -1,5 +1,7 @@
 package bgu.spl.mics;
 
+import bgu.spl.mics.application.objects.Flag;
+
 import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -98,9 +100,8 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
      *         			micro-service processing this event.
      * 	       			null in case no micro-service has subscribed to {@code e.getClass()}.
      */
-    protected final <T> Future<T> sendEvent(Event<T> e) {
-        //TODO: implement this.
-        return null; //TODO: delete this line :)
+    protected final <T> Future<T> sendEvent(Event<T> e) throws InterruptedException {
+        return MessageBusImpl.getInstance().sendEvent(e);
     }
 
     /**
@@ -109,7 +110,7 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
      * <p>
      * @param b The broadcast message to send
      */
-    protected final void sendBroadcast(Broadcast b) {
+    protected final void sendBroadcast(Broadcast b) throws InterruptedException {
         MessageBusImpl.getInstance().sendBroadcast(b);
     }
 
@@ -124,7 +125,7 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
      *               {@code e}.
      */
     protected final <T> void complete(Event<T> e, T result) {
-        //TODO: implement this.
+        MessageBusImpl.getInstance().complete(e,result);
     }
 
     /**
@@ -163,6 +164,8 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
             try {
                 Message m = MessageBusImpl.getInstance().awaitMessage(this);
                 callbackMap.get(m).call(m);
+                if (!Flag.flag)
+                    terminate();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

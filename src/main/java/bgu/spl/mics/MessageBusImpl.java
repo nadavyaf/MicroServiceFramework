@@ -3,12 +3,13 @@ package bgu.spl.mics;
 import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.services.GPUService;
 
+import javax.swing.plaf.metal.MetalIconFactory;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
-
 /**
  * The {@link MessageBusImpl class is the implementation of the MessageBus interface.
  * Write your implementation here!
@@ -16,10 +17,10 @@ import java.util.concurrent.LinkedBlockingQueue;
  *
  *
  */
-public class MessageBusImpl implements MessageBus {/** Assiph's comments: should have another field, for the round robin - maybe should be a counter
- that we do % from to the number of Queues that we have.*/
+public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap <Class<? extends Message>, BlockingQueue<MicroService>> messageMap = new ConcurrentHashMap<>();
 	private ConcurrentHashMap <MicroService, LinkedBlockingDeque<Message>> microMap = new ConcurrentHashMap<>();
+	private ConcurrentHashMap <Event, Future> futureMap = new ConcurrentHashMap<>();
 	private static class SingeltonHolder{//Java things, this way when we import messagebusimpl, it will not create any instance (since the funcion is private), but when we call the function, it will just call the .instance once.
 		private static MessageBusImpl instance = new MessageBusImpl();
 	}
@@ -43,14 +44,13 @@ public class MessageBusImpl implements MessageBus {/** Assiph's comments: should
 
 	@Override
 	public <T> void complete(Event<T> e, T result) {
-		// TODO Auto-generated method stub
-
+		futureMap.get(e).resolve(result);
 	}
-	public void sendBroadcast(Broadcast b) {
+	public void sendBroadcast(Broadcast b) throws InterruptedException {
 		BlockingQueue<MicroService> services = messageMap.get(b);
 		//the Iterator is weakly consistent - meaning it will not follow any changes that happens in the BlockingQueue after it started.
 		for (MicroService m : services) {
-			microMap.get(m).addFirst(b);
+			microMap.get(m).putFirst(b);
 			m.notifyAll();
 		}
 	}
@@ -65,10 +65,15 @@ public class MessageBusImpl implements MessageBus {/** Assiph's comments: should
 	 * right way. ***the student will get it in the main (CRMSRunner) or in it's StudentService, not sure yet.***
 	 */
 	@Override
-	public <T> Future<T> sendEvent(Event<T> e) { /** Assiph's Comments: Will be used by a studentService (or student,not sure) for example
+	public <T> Future<T> sendEvent(Event<T> e) throws InterruptedException { /** Assiph's Comments: Will be used by a studentService (or student,not sure) for example
 	 it will enter the event to the right queue using the Messagebus (with get instance) and then use the get method (blocking).*/
-		// TODO Auto-generated method stub
-		return null;
+		Future <T> ans = new Future<>();
+		futureMap.putIfAbsent(e,ans);
+		BlockingQueue <MicroService> service = messageMap.get(e);
+		MicroService m = service.take();
+		service.put(m);
+		microMap.get(m).putLast(e);
+		return ans;
 	}
 
 	@Override
@@ -78,8 +83,11 @@ public class MessageBusImpl implements MessageBus {/** Assiph's comments: should
 
 	@Override
 	public void unregister(MicroService m) {
-		// TODO Auto-generated method stub
-
+		microMap.remove(m);
+		for (Map.Entry<Class<? extends Message>, BlockingQueue<MicroService>> entry: messageMap.entrySet()){
+			BlockingQueue<MicroService> value = entry.getValue();
+			value.remove(m);
+		}
 	}
 
 	@Override

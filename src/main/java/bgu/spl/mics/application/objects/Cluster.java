@@ -11,8 +11,9 @@ import java.util.LinkedList;
  * Add fields and methods to this class as you see fit (including public methods and constructors).
  */
 public class Cluster {
-private LinkedList<GPU> GPUS;
-private LinkedList<CPU> CPUS;
+private LinkedList<GPU> GPUS = new LinkedList<>();
+private LinkedList<CPU> CPUS = new LinkedList<>();
+private Statistics statistics=new Statistics();
 	/**
      * Retrieves the single instance of this class.
      */
@@ -42,5 +43,9 @@ private LinkedList<CPU> CPUS;
 	public void addCPU(CPU cpu)
 	{
 		CPUS.add(cpu);
+	}
+
+	public Statistics getStatistics() {
+		return statistics;
 	}
 }

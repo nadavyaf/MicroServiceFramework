@@ -55,7 +55,7 @@ public interface MessageBus {
      *        {m:m is a Microservice && m.isSubscribed(Broadcast)}:
      *        m.getMessageQueue().size == messageQueueSize +1
      */
-    void sendBroadcast(Broadcast b);
+    void sendBroadcast(Broadcast b) throws InterruptedException;
 
     /**
      * Adds the {@link Event} {@code e} to the message queue of one of the
@@ -70,7 +70,7 @@ public interface MessageBus {
      * @inv: send in round-robin fashion.
      * @post: e.isComplete() && future.get(0,Seconds) = result;
      */
-    <T> Future<T> sendEvent(Event<T> e);
+    <T> Future<T> sendEvent(Event<T> e) throws InterruptedException;
 
     /**
      * Allocates a message-queue for the {@link MicroService} {@code m}.

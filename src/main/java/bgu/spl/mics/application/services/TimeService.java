@@ -3,6 +3,7 @@ package bgu.spl.mics.application.services;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.objects.Flag;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,15 +21,18 @@ public class TimeService extends MicroService{
 	private Timer clock = new Timer();
 	private int speed;
 	private int duration;
-	TimerTask tick;
+	private TimerTask tick;
 	public TimeService(int speed, int duration) {
 		super("TimeService");
 		this.speed = speed;
 		this.duration = duration;
 		tick = new TimerTask() {
-			@Override
 			public void run() {
-				MessageBusImpl.getInstance().sendBroadcast(new TickBroadcast());
+				try {
+					MessageBusImpl.getInstance().sendBroadcast(new TickBroadcast());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		};
 	}
@@ -37,7 +41,7 @@ public class TimeService extends MicroService{
 		Thread.sleep(duration);
 		clock.cancel();
 		this.terminate();
-		System.exit(0);
+		Flag.flag=false;
 	}
 
 }
