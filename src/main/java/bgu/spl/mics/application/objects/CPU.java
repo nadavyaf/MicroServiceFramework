@@ -11,24 +11,20 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class CPU {
     final private int cores;
-    final private LinkedBlockingQueue<DataBatch> CPUdata;
     final private Cluster cluster=Cluster.getInstance();
+    private DataBatch currDatabatch;
+    private int currDatabatchtick;
     private int currTime; // we will get from TimeService pulses,TickBrodcast, which will be caught in the GPUservice and CPUservice and update our time int.
     public int getTime() {
         return currTime;
     }
     public CPU(int numberOfCores) {
         this.cores = numberOfCores;
-        this.CPUdata = new LinkedBlockingQueue<DataBatch>();
         currTime= 1;
     }
 
     public int getCores() {
         return cores;
-    }
-
-    public LinkedBlockingQueue getData() {
-        return CPUdata;
     }
 
     public Cluster getCluster() {
@@ -75,32 +71,36 @@ public class CPU {
 //        return null;
 //    }
     public void process() throws InterruptedException {
-        while (Flag.flag) {
-            DataBatch process = CPUdata.take();
-            int tick = 0;
-            if (process.getType() == Data.Type.Images)
-                tick = 4;
-            if (process.getType() == Data.Type.Text)
-                tick = 2;
-            if (process.getType() == Data.Type.Tabular)
-                tick = 1;
-            int processTime = (32 / this.getCores()) * tick;
-            process.setStartTime(currTime);
-            while (currTime - process.getStartTime() < processTime)
-                this.wait();
-            process.setProcessedCpu();
-            this.cluster.sendToGPU(process);
-            this.cluster.getStatistics().IncrementnumberOfProcessedBatches();
-            this.cluster.getStatistics().IncrementCPUTimeUnitsBy(processTime);
-        }
+            if (currTime - currDatabatch.getStartTime() < currDatabatchtick) {
+                currDatabatch.setProcessedCpu();
+                this.cluster.sendToGPU(currDatabatch);
+                this.cluster.getStatistics().IncrementnumberOfProcessedBatches();
+                this.cluster.getStatistics().IncrementCPUTimeUnitsBy(currDatabatchtick);
+                currDatabatch = null;
+            }
     }
     /** Updates the time of the cpu.
      *
      * @pre none
      * @post @pre(time)<time
      */
-    public void updateTime(){
+    public void updateTime() throws InterruptedException {
+        if (currDatabatch==null) {
+            if (!Cluster.getInstance().getCpuQueue().isEmpty()) {
+                currDatabatch = Cluster.getInstance().getCpuQueue().take();
+                int tick = 0;
+                if (currDatabatch.getType() == Data.Type.Images)
+                    tick = 4;
+                if (currDatabatch.getType() == Data.Type.Text)
+                    tick = 2;
+                if (currDatabatch.getType() == Data.Type.Tabular)
+                    tick = 1;
+                currDatabatchtick = (32 / this.getCores()) * tick;
+                currDatabatch.setStartTime(currTime);
+            }
+        }
     currTime++;
-    this.notifyAll();
+    if (currDatabatch!=null)
+        this.process();
     }
 }

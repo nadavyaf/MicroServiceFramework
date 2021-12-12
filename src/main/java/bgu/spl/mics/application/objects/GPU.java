@@ -159,23 +159,18 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      *        learnedSize = @pre learnedBatches
      *        learnedBatches == learnedSize + 1
      */
-    public void GPULearn(){
-        if (currTime-processedCPUQueue.peek().getStartTime()>=ticks)// should be ticks instead of 10 instead, it is known in the json file we get{
-            System.out.println("Need to implement here!");
-            //implement
-
-        else{
-            //We just wait until the number of ticks is passed, we block the CPU so just let the loop run.
+    public void GPULearn() throws InterruptedException {
+        for (int i=0;i<this.capacity;i++) {
+            DataBatch process = processedCPUQueue.take();
+            process.setStartTime(currTime);
+            while (currTime - process.getStartTime() < ticks) {
+                this.wait();
+            }
+            process.setProcessedCpu();
+            this.learnedBatches++;
+            cluster.getStatistics().IncrementnumberOfProcessedBatches();
+            cluster.getStatistics().IncrementGPUTimeUnitsBy(ticks);
         }
-    }
-
-    /**
-     *
-     * @pre: none
-     * @post: none
-     */
-    public boolean isDone(){
-        return false;
     }
 
     /**
@@ -187,7 +182,6 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      */
     public void updateTime(){
         currTime++;
-        if (!processedCPUQueue.isEmpty())
-            GPULearn();
+        this.notifyAll();
     }
 }

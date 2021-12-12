@@ -1,9 +1,6 @@
 package bgu.spl.mics;
 
-import bgu.spl.mics.application.objects.Flag;
-
 import java.util.HashMap;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * The MicroService is an abstract class that any micro-service in the system
@@ -24,7 +21,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * <p>
  */
 public abstract class MicroService implements Runnable {/** Assiph's comments:I think we should add a field isRegistered. */
-    private HashMap<Class < ? extends Message>,Callback> callbackMap;
+    private final HashMap<Class < ? extends Message>,Callback> callbackMap;
     private boolean terminated = false;
     private final String name;
 
@@ -164,8 +161,6 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
             try {
                 Message m = MessageBusImpl.getInstance().awaitMessage(this);
                 callbackMap.get(m).call(m);
-                if (!Flag.flag)
-                    terminate();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

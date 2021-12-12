@@ -12,13 +12,13 @@ public class Student {
         MSc, PhD
     }
 
-    private int name;
+    private String name;
     private String department;
     private Degree status;
     private int publications;
     private int papersRead;
 
-    public int getName() {
+    public String getName() {
         return name;
     }
 

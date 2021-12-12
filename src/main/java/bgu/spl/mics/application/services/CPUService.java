@@ -26,14 +26,6 @@ public class CPUService extends MicroService {
     protected void initialize() {
         MessageBusImpl.getInstance().register(this);
         this.subscribeBroadcast(TickBroadcast.class,callback);
-        Thread t1 = new Thread(()->{//Still waiting for an answer about how to terminate.
-            try {
-                this.cpu.process();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-        t1.start();
     }
 
 }

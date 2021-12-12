@@ -1,6 +1,9 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.*;
+import bgu.spl.mics.application.messages.TestModelEvent;
+import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.messages.TrainModelEvent;
 import bgu.spl.mics.application.objects.GPU;
 
 import java.util.HashMap;
@@ -14,25 +17,25 @@ import java.util.HashMap;
  * You can add private fields and public methods to this class.
  * You MAY change constructor signatures and even add new public constructors.
  */
-public class GPUService extends MicroService {/** Assiph's comments: I think this service should run between 3 queues - the timeTickQueue
- the eventQueue and the processedCPUQueue, and check each time if they have something inside. if the timeTick has, then we update the time,
- if the eventQueue has then we check if we are currently working on an event (model==null), and if the processedCPU has, then
- to send to the gpu to work on the processed databatch. In the end of the checking (it should be in an infinite while loop, or until interrupted)
-  we should add a wait() method, so we don't implement busy waiting (it will get notified each time something is updated).
- I also think we need to add a thread for this class, so when we initialize it, the thread will start running on it's own.
- *******We also need to add a new Hashmap for the GPUService - subscribedMap which will hold eventTypes and Callbacks, and
- tell each message that comes from the awaitmessage, which callback to do.
- are their call backs. */
+public class GPUService extends MicroService {
     final private GPU gpu;
-    private HashMap<Class < ? extends Message>,Callback> callbackMap;
+    private Callback_TickBroadcastGPU tick;
+    private Callback_TestModelEvent test;
+    private Callback_TrainModelEvent train;
+
     public GPUService(String name, GPU gpu) {
         super(gpu + " " + "service");
         this.gpu = gpu;
-        this.callbackMap = new HashMap<>();
+        tick = new Callback_TickBroadcastGPU(gpu);
+        test = new Callback_TestModelEvent(this);
+        train = new Callback_TrainModelEvent(); // NEED TO IMPLEMENT THE CALLBACK.
     }
     @Override
     protected void initialize() {
-        // TODO Implement this
+       MessageBusImpl.getInstance().register(this);
+       this.subscribeBroadcast(TickBroadcast.class,tick);
+       this.subscribeEvent(TestModelEvent.class,test);
+       this.subscribeEvent(TrainModelEvent.class,train);
     }
     public Boolean isEventSubscribed(Event e){
         return MessageBusImpl.getInstance().isMicroServiceEventRegistered(this,e);

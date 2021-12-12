@@ -67,6 +67,8 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) throws InterruptedException { /** Assiph's Comments: Will be used by a studentService (or student,not sure) for example
 	 it will enter the event to the right queue using the Messagebus (with get instance) and then use the get method (blocking).*/
+		if (messageMap.get(e).isEmpty())
+			return null;
 		Future <T> ans = new Future<>();
 		futureMap.putIfAbsent(e,ans);
 		BlockingQueue <MicroService> service = messageMap.get(e);

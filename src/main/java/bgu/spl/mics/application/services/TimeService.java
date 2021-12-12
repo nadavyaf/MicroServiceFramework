@@ -3,7 +3,6 @@ package bgu.spl.mics.application.services;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.TickBroadcast;
-import bgu.spl.mics.application.objects.Flag;
 
 import java.util.Timer;
 import java.util.TimerTask;

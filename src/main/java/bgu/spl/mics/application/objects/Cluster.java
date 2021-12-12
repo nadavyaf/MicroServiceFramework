@@ -2,6 +2,7 @@ package bgu.spl.mics.application.objects;
 
 
 import java.util.LinkedList;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Passive object representing the cluster.
@@ -14,6 +15,7 @@ public class Cluster {
 private LinkedList<GPU> GPUS = new LinkedList<>();
 private LinkedList<CPU> CPUS = new LinkedList<>();
 private Statistics statistics=new Statistics();
+private LinkedBlockingQueue<DataBatch> cpuQueue= new LinkedBlockingQueue<DataBatch>();
 	/**
      * Retrieves the single instance of this class.
      */
@@ -24,18 +26,14 @@ private Statistics statistics=new Statistics();
 	public static Cluster getInstance() {
 		return SingletonHolder.instance;
 	}
-	/** Assiph's Comments: A thread safe singleton - you can copy the same idea from Messagebus
-	 for creating a singleton.
-	 "Note that the GPUs and CPUs communicate via the cluster, they are not
-	 allowed to directly call each other methods" - it means here we need to add functions that will make the cpu and the gpu "talk"
-	 with each other.*/
+
 
 
 	public void sendToGPU(DataBatch process) {
 	process.gotCreatedGpu().insertProcessedCPU(process);
 	}
-	public void sendToCPU(DataBatch process) {// Still not sure, need to think of a smart way to distribute the GPU Batches.
-
+	public void sendToCPU(DataBatch process) {
+		cpuQueue.add(process);
 	}
 	public void addGPU(GPU gpu){
 		GPUS.add(gpu);
@@ -47,5 +45,17 @@ private Statistics statistics=new Statistics();
 
 	public Statistics getStatistics() {
 		return statistics;
+	}
+
+	public LinkedList<GPU> getGPUS() {
+		return GPUS;
+	}
+
+	public LinkedList<CPU> getCPUS() {
+		return CPUS;
+	}
+
+	public LinkedBlockingQueue<DataBatch> getCpuQueue() {
+		return cpuQueue;
 	}
 }
