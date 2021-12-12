@@ -1,7 +1,10 @@
 package bgu.spl.mics.application.services;
 
+import bgu.spl.mics.Callback_Terminate;
+import bgu.spl.mics.Callback_TickBroadcastTimeservice;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 
 import java.util.Timer;
@@ -21,10 +24,16 @@ public class TimeService extends MicroService{
 	private int speed;
 	private int duration;
 	private TimerTask tick;
+	private int currtime;
+	private Callback_Terminate terminate;
+	private Callback_TickBroadcastTimeservice tickBroadcast;
 	public TimeService(int speed, int duration) {
 		super("TimeService");
 		this.speed = speed;
 		this.duration = duration;
+		tickBroadcast = new Callback_TickBroadcastTimeservice(this);
+		terminate = new Callback_Terminate();
+		currtime=0;
 		tick = new TimerTask() {
 			public void run() {
 				try {
@@ -36,11 +45,15 @@ public class TimeService extends MicroService{
 		};
 	}
 	protected void initialize() throws InterruptedException {
+		this.subscribeBroadcast(TickBroadcast.class,tickBroadcast);
+		this.subscribeBroadcast(TerminateBroadcast.class,terminate);
 		this.clock.scheduleAtFixedRate(tick,0,speed); /**Assiph's comments: creates another thread that sends ticks every speed. */
-		Thread.sleep(duration);
-		clock.cancel();
-		this.terminate();
-		Flag.flag=false;
 	}
+	public void updateTime() throws InterruptedException {
+		currtime=+speed;
+		if (currtime>=duration){
+		MessageBusImpl.getInstance().sendBroadcast(new TerminateBroadcast(this));
+		}
 
+	}
 }

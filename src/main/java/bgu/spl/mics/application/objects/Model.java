@@ -30,8 +30,12 @@ public class Model {
     public status getCurrStatus(){
         return currStatus;
     }
-    public results getResult(){
-        return result;
+    public String getResult(){
+        if (result==results.Good)
+            return "Good";
+        if (result==results.Bad)
+            return "Bad";
+        return "None";
     }
 
     public Student getStudent() {

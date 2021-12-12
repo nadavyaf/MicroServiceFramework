@@ -2,6 +2,9 @@ package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
 
+import java.util.LinkedList;
+import java.util.concurrent.LinkedBlockingQueue;
+
 /**
  * Conference service is in charge of
  * aggregating good results and publishing them via the {@link //PublishConfrenceBroadcast},
@@ -12,9 +15,17 @@ import bgu.spl.mics.MicroService;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class ConferenceService extends MicroService {
+    private LinkedBlockingQueue<String> cfsList;
     public ConferenceService(String name) {
-        super("Change_This_Name");
-        // TODO Implement this
+        super(name);
+        this.cfsList = new LinkedBlockingQueue<>();
+    }
+    public void addToConference(String name){
+        cfsList.add(name);
+    }
+
+    public LinkedBlockingQueue<String> getCfsList() {
+        return cfsList;
     }
 
     @Override

@@ -1,8 +1,10 @@
 package bgu.spl.mics.application.services;
 
+import bgu.spl.mics.Callback_Terminate;
 import bgu.spl.mics.Callback_TickBroadcastCPU;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.CPU;
 
@@ -16,15 +18,18 @@ import bgu.spl.mics.application.objects.CPU;
 public class CPUService extends MicroService {
     private CPU cpu;
     private Callback_TickBroadcastCPU callback;
+    private Callback_Terminate terminate;
     public CPUService(String name,CPU cpu) {
         super(name);
         this.cpu = cpu;
         Callback_TickBroadcastCPU callback = new Callback_TickBroadcastCPU(this.cpu);
+        terminate = new Callback_Terminate();
     }
 
     @Override
     protected void initialize() {
         MessageBusImpl.getInstance().register(this);
+        this.subscribeBroadcast(TerminateBroadcast.class,terminate);
         this.subscribeBroadcast(TickBroadcast.class,callback);
     }
 

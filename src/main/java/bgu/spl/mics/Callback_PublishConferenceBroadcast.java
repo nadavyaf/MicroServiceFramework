@@ -1,8 +1,10 @@
 package bgu.spl.mics;
 
-public class Callback_PublishConferenceBroadcast implements Callback {
-    @Override
-    public void call(Object c) {
+import bgu.spl.mics.application.messages.PublishConferenceBroadcast;
+
+public class Callback_PublishConferenceBroadcast implements Callback<PublishConferenceBroadcast> {
+
+    public void call(PublishConferenceBroadcast c) throws InterruptedException {
 
     }
 }

@@ -2,6 +2,7 @@ package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.*;
 import bgu.spl.mics.application.messages.PublishConferenceBroadcast;
+import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.messages.TestModelEvent;
 import bgu.spl.mics.application.objects.Model;
 import bgu.spl.mics.application.objects.Student;
@@ -23,16 +24,19 @@ public class StudentService extends MicroService {
     private Student student;
     private LinkedBlockingQueue<Message> MessageQueue=null;
     private Callback_PublishConferenceBroadcast publishConference;
+    private Callback_Terminate terminate;
     public StudentService(String name,Student student,LinkedList<Model> models) {
         super(name);
         this.student=student;
         this.models=models;
         publishConference = new Callback_PublishConferenceBroadcast();
+        terminate = new Callback_Terminate();
     }
 
     @Override
     protected void initialize() {
         MessageBusImpl.getInstance().register(this);
+        this.subscribeBroadcast(TerminateBroadcast.class,terminate);
         this.subscribeBroadcast(PublishConferenceBroadcast.class,publishConference);
     }
     public Boolean isEventSubscribed(Event e){

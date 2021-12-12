@@ -10,7 +10,7 @@ public class Callback_TickBroadcastCPU implements Callback<TickBroadcast> {
         public Callback_TickBroadcastCPU(CPU cpu){
             this.cpu=cpu;
         }
-        public void call(TickBroadcast tick) {
+        public void call(TickBroadcast tick) throws InterruptedException {
             cpu.updateTime();
         }
     }

@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.*;
+import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.messages.TestModelEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrainModelEvent;
@@ -22,6 +23,7 @@ public class GPUService extends MicroService {
     private Callback_TickBroadcastGPU tick;
     private Callback_TestModelEvent test;
     private Callback_TrainModelEvent train;
+    private Callback_Terminate terminate;
 
     public GPUService(String name, GPU gpu) {
         super(gpu + " " + "service");
@@ -29,6 +31,7 @@ public class GPUService extends MicroService {
         tick = new Callback_TickBroadcastGPU(gpu);
         test = new Callback_TestModelEvent(this);
         train = new Callback_TrainModelEvent(); // NEED TO IMPLEMENT THE CALLBACK.
+        terminate = new Callback_Terminate();
     }
     @Override
     protected void initialize() {
@@ -36,6 +39,7 @@ public class GPUService extends MicroService {
        this.subscribeBroadcast(TickBroadcast.class,tick);
        this.subscribeEvent(TestModelEvent.class,test);
        this.subscribeEvent(TrainModelEvent.class,train);
+       this.subscribeBroadcast(TerminateBroadcast.class,terminate);
     }
     public Boolean isEventSubscribed(Event e){
         return MessageBusImpl.getInstance().isMicroServiceEventRegistered(this,e);
