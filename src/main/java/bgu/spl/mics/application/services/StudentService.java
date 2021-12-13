@@ -29,7 +29,7 @@ public class StudentService extends MicroService {
         super(name);
         this.student=student;
         this.models=models;
-        publishConference = new Callback_PublishConferenceBroadcast();
+        this.publishConference = new Callback_PublishConferenceBroadcast(this);
         terminate = new Callback_Terminate();
     }
 
@@ -49,7 +49,22 @@ public class StudentService extends MicroService {
         return MessageQueue;
     }
 
-    /**
+    public LinkedList<Model> getModels() {
+        return models;
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public Callback_PublishConferenceBroadcast getPublishConference() {
+        return publishConference;
+    }
+
+    public Callback_Terminate getTerminate() {
+        return terminate;
+    }
+/**
      * Assiph's comments:In here we should create 3 send events that use the message bus (let messagebus be mbs, so we will use
      * mbs.sendEvent()). The 3 events should be TrainModelEvent,TestModelEvent,PublishResultsEvent.
      *

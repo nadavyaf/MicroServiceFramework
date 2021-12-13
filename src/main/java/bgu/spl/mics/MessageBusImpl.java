@@ -72,9 +72,11 @@ public class MessageBusImpl implements MessageBus {
 		Future <T> ans = new Future<>();
 		futureMap.putIfAbsent(e,ans);
 		BlockingQueue <MicroService> service = messageMap.get(e);
-		MicroService m = service.take();
-		service.put(m);
-		microMap.get(m).putLast(e);
+		synchronized (e.getClass()) {
+			MicroService m = service.take();
+			service.put(m);
+			microMap.get(m).putLast(e);
+		}
 		return ans;
 	}
 

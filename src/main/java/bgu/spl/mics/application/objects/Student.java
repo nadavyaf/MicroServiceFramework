@@ -32,6 +32,14 @@ public class Student {
         return "MSc";
     }
 
+    public void addPublication(){
+        this.publications++;
+    }
+    public void addPapersRead(){
+        this.papersRead++;
+    }
+
+
     public int getPublications() {
         return publications;
     }

@@ -1,6 +1,10 @@
 package bgu.spl.mics.application.services;
 
-import bgu.spl.mics.MicroService;
+import bgu.spl.mics.*;
+import bgu.spl.mics.application.messages.PublishResultsEvent;
+import bgu.spl.mics.application.messages.TerminateBroadcast;
+import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.objects.ConfrenceInformation;
 
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -16,9 +20,16 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class ConferenceService extends MicroService {
     private LinkedBlockingQueue<String> cfsList;
-    public ConferenceService(String name) {
+    private ConfrenceInformation cfi;
+    private Callback_Terminate terminate;
+    private Callback_PublishResultsEvent publishEvent;
+    private Callback_TickBroadcastTimeservice tick;
+    public ConferenceService(String name,ConfrenceInformation cfi) {
         super(name);
         this.cfsList = new LinkedBlockingQueue<>();
+        this.cfi=cfi;
+        terminate = new Callback_Terminate();
+        publishEvent = new Callback_PublishResultsEvent(this);
     }
     public void addToConference(String name){
         cfsList.add(name);
@@ -28,10 +39,16 @@ public class ConferenceService extends MicroService {
         return cfsList;
     }
 
+    public ConfrenceInformation getCfi() {
+        return cfi;
+    }
+
     @Override
     protected void initialize() {
-        // TODO Implement this
-
+        MessageBusImpl.getInstance().register(this);
+        this.subscribeBroadcast(TerminateBroadcast.class,terminate);
+        this.subscribeEvent(PublishResultsEvent.class,publishEvent);
+        this.subscribeBroadcast(TickBroadcast.class,tick);
     }
     /**
      * Assiph's comment:In this Service we should send PublishConferenceBroadcast, in a similar way we did in studentservice. Note that
