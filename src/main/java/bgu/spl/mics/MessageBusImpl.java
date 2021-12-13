@@ -44,7 +44,8 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public <T> void complete(Event<T> e, T result) {
-		futureMap.get(e).resolve(result);
+		futureMap.remove(e).resolve(result);
+
 	}
 	public void sendBroadcast(Broadcast b) throws InterruptedException {
 		BlockingQueue<MicroService> services = messageMap.get(b);
@@ -76,6 +77,7 @@ public class MessageBusImpl implements MessageBus {
 			MicroService m = service.take();
 			service.put(m);
 			microMap.get(m).putLast(e);
+			m.notifyAll();
 		}
 		return ans;
 	}

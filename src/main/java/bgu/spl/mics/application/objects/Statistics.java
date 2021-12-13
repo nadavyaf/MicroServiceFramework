@@ -1,34 +1,30 @@
 package bgu.spl.mics.application.objects;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Statistics {
+    private AtomicInteger CPUProcessed;
+    private AtomicInteger CPUTimeUnits;
+    private AtomicInteger GPUTimeUnits;
     private LinkedBlockingQueue<String> modelTrained;
-    AtomicInteger numberOfProcessedBatches;
-    AtomicInteger CPUTimeUnits;
-    AtomicInteger GPUTimeUnits;
 
-    public void addTrainedModel(String model){
-        modelTrained.add(model);
-    }
-    public void IncrementnumberOfProcessedBatches(){
-        numberOfProcessedBatches.getAndIncrement();
-    }
-    public void IncrementCPUTimeUnitsBy(int by){
-        CPUTimeUnits.getAndAdd(by);
-    }
-    public void IncrementGPUTimeUnitsBy(int by){
-        GPUTimeUnits.getAndAdd(by);
+    public Statistics() {}
+
+    public void incrementCPUProcessed(){
+        CPUProcessed.incrementAndGet();
     }
 
-    public LinkedBlockingQueue<String> getModelTrained() {
-        return modelTrained;
+    public void incrementCPUTimeUnits(){
+        CPUTimeUnits.incrementAndGet();
     }
 
-    public int getNumberOfProcessedBatches() {
-        return numberOfProcessedBatches.get();
+    public void incrementGPUTimeUnits(){
+        GPUTimeUnits.incrementAndGet();
+    }
+
+    public int getCPUProcessed() {
+        return CPUProcessed.get();
     }
 
     public int getCPUTimeUnits() {
@@ -37,5 +33,13 @@ public class Statistics {
 
     public int getGPUTimeUnits() {
         return GPUTimeUnits.get();
+    }
+
+    public LinkedBlockingQueue<String> getModelTrained() {
+        return modelTrained;
+    }
+
+    public void addTrainedModel(String name){
+        this.getModelTrained().add(name);
     }
 }

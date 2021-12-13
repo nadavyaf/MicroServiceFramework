@@ -14,5 +14,6 @@ private ConferenceService cfs;
         if (model.getResult()== "Good"){
             cfs.addToConference(model.getName());
         }
+        cfs.complete(c,"Published.");
     }
 }

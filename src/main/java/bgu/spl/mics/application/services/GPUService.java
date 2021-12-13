@@ -24,34 +24,64 @@ public class GPUService extends MicroService {
     private Callback_TestModelEvent test;
     private Callback_TrainModelEvent train;
     private Callback_Terminate terminate;
+    private Event event;
 
     public GPUService(String name, GPU gpu) {
         super(gpu + " " + "service");
         this.gpu = gpu;
-        tick = new Callback_TickBroadcastGPU(gpu);
+        tick = new Callback_TickBroadcastGPU(this);
         test = new Callback_TestModelEvent(this);
-        train = new Callback_TrainModelEvent(); // NEED TO IMPLEMENT THE CALLBACK.
+        train = new Callback_TrainModelEvent(this); // NEED TO IMPLEMENT THE CALLBACK.
         terminate = new Callback_Terminate();
+        this.event = null;
     }
+
     @Override
     protected void initialize() {
-       MessageBusImpl.getInstance().register(this);
-       this.subscribeBroadcast(TickBroadcast.class,tick);
-       this.subscribeEvent(TestModelEvent.class,test);
-       this.subscribeEvent(TrainModelEvent.class,train);
-       this.subscribeBroadcast(TerminateBroadcast.class,terminate);
+        MessageBusImpl.getInstance().register(this);
+        this.subscribeBroadcast(TickBroadcast.class, tick);
+        this.subscribeEvent(TestModelEvent.class, test);
+        this.subscribeEvent(TrainModelEvent.class, train);
+        this.subscribeBroadcast(TerminateBroadcast.class, terminate);
     }
-    public Boolean isEventSubscribed(Event e){
-        return MessageBusImpl.getInstance().isMicroServiceEventRegistered(this,e);
+
+    public Boolean isEventSubscribed(Event e) {
+        return MessageBusImpl.getInstance().isMicroServiceEventRegistered(this, e);
     }
-    public Boolean isBroadcastSubscribed(Broadcast b){
-        return MessageBusImpl.getInstance().isMicroServiceBroadCastRegistered(this,b);
+
+    public Boolean isBroadcastSubscribed(Broadcast b) {
+        return MessageBusImpl.getInstance().isMicroServiceBroadCastRegistered(this, b);
     }
 
     public GPU getGpu() {
         return gpu;
     }
+
+    public Callback_TickBroadcastGPU getTick() {
+        return tick;
+    }
+
+    public Callback_TestModelEvent getTest() {
+        return test;
+    }
+
+    public Callback_TrainModelEvent getTrain() {
+        return train;
+    }
+
+    public Callback_Terminate getTerminate() {
+        return terminate;
+    }
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
 }
+
 
 /**
  * Assiph's Comment: in GPU and CPU, both of the Services should be used to send and bring messages. So in GPU case, the

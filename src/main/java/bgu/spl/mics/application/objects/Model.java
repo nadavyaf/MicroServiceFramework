@@ -9,9 +9,9 @@ public class Model {
     private Data data;
     private String name;
     private Student student;
-    private status currStatus=status.PreTrained;
+    private Status status=Status.PreTrained;
     private results result=results.None;
-    private enum status{PreTrained,Training,Trained,Tested};
+    private enum Status{PreTrained,Training,Trained,Tested};
     private enum results {None,Good,Bad}
 
     public Model(Data data, String name,Student student){
@@ -27,8 +27,8 @@ public class Model {
     public String getName() {
         return name;
     }
-    public status getCurrStatus(){
-        return currStatus;
+    public Status getCurrStatus(){
+        return status;
     }
     public String getResult(){
         if (result==results.Good)
@@ -42,4 +42,20 @@ public class Model {
         return student;
     }
 
+
+    public void updateStatus(){
+        if(this.getCurrStatus() == Status.PreTrained){
+            this.status = Status.Training;
+        }
+        else if(this.status == Status.Training){
+            this.status = Status.Trained;
+        }
+        else if(this.status == Status.Trained){
+            this.status = Status.Tested;
+        }
+    }
+
+    public boolean isTrained(){
+        return this.status == Status.Trained;
+    }
 }

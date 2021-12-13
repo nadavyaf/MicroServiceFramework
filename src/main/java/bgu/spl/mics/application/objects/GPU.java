@@ -18,6 +18,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     private Type type;
     private Model model;
     private Cluster cluster;
+    private DataBatch currBatch;
     final private ArrayBlockingQueue<DataBatch> processedCPUQueue;
     int learnedBatches;
     private int capacity;
@@ -26,6 +27,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
 
     public GPU(Type type) {
         this.type = type;
+        this.currBatch=null;
         this.model = null;
         this.learnedBatches = 0;
         cluster = Cluster.getInstance();
@@ -123,14 +125,14 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     }
     /**
      * Divide all the data recieved into data batches, add each batch to clusterQueue.
-     * @param data
      * @pre: data != null
      * @inv: data.size >= 0
      * @post: data.size == 0
      *        clusterSize = @pre clusterQueue.size
      *        clusterQueue.size == clusterSize + numberofDataBatches(The number of data batches created)
      */
-    public LinkedList<DataBatch> divideAll(Data data){
+    public LinkedList<DataBatch> divideAll(){
+            Data data = this.getModel().getData();
             LinkedList<DataBatch> dataList= new LinkedList<>();
             for (int i =0;i<data.getNumOfBatches();i++){
                 dataList.add(new DataBatch(data.getType(),this));
@@ -160,16 +162,15 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      *        learnedBatches == learnedSize + 1
      */
     public void GPULearn() throws InterruptedException {
-        for (int i=0;i<this.capacity;i++) {
-            DataBatch process = processedCPUQueue.take();
-            process.setStartTime(currTime);
-            while (currTime - process.getStartTime() < ticks) {
-                this.wait();
-            }
-            process.setProcessedCpu();
+        this.getCluster().getStatistics().incrementGPUTimeUnits();
+        if(currTime - this.currBatch.getStartTime() >= ticks) {
+            currBatch.setLearnedGpu();
             this.learnedBatches++;
-            cluster.getStatistics().IncrementnumberOfProcessedBatches();
-            cluster.getStatistics().IncrementGPUTimeUnitsBy(ticks);
+            currBatch = null;
+            if(learnedBatches == model.getData().getNumOfBatches()){
+                learnedBatches = 0;
+                this.model.updateStatus();
+            }
         }
     }
 
@@ -180,8 +181,29 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      * @post none
      *
      */
-    public void updateTime(){
+
+    /**
+     *
+     * @pre !processedCPUQueue.isEmpty()
+     * @inv none
+     * @post none
+     *
+     */
+    public void updateTime() throws InterruptedException {
+        if(currBatch == null) {
+            if (!this.processedCPUQueue.isEmpty()) {
+                currBatch = this.processedCPUQueue.take();
+                currBatch.setStartTime(currTime);
+            }
+        }
         currTime++;
-        this.notifyAll();
+        if(currBatch != null){
+            this.GPULearn();
+        }
     }
+    public void setModel(Model m){
+        this.model=m;
+    }
+
+
 }
