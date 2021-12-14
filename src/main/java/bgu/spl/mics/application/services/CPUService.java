@@ -1,6 +1,10 @@
 package bgu.spl.mics.application.services;
 
-import bgu.spl.mics.MicroService;
+import bgu.spl.mics.*;
+import bgu.spl.mics.application.messages.TerminateBroadcast;
+import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.objects.CPU;
+import bgu.spl.mics.application.objects.Cluster;
 
 /**
  * CPU service is responsible for handling the {@link //DataPreProcessEvent}.
@@ -10,14 +14,25 @@ import bgu.spl.mics.MicroService;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class CPUService extends MicroService {
-    public CPUService(String name) {
-        super("Change_This_Name");
-        // TODO Implement this
+    private CPU cpu;
+    private Callback_TickBroadcastCPU callback;
+    private Callback_Terminate terminateCallback;
+    public CPUService(String name, CPU cpu) {
+        super(name);
+        this.cpu = cpu;
+        this.callback = new Callback_TickBroadcastCPU(this.cpu);
+        this.terminateCallback = new Callback_Terminate(this);
     }
 
     @Override
     protected void initialize() {
-        // TODO Implement this
+        MessageBusImpl.getInstance().register(this);
+        this.subscribeBroadcast(TickBroadcast.class, this.callback);
+        this.subscribeBroadcast(TerminateBroadcast.class, this.terminateCallback);
+        Cluster.getInstance().addCPU(this.cpu);
+    }
 
+    public CPU getCpu() {
+        return cpu;
     }
 }

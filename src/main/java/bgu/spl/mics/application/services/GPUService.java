@@ -1,9 +1,12 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.*;
+import bgu.spl.mics.application.messages.TerminateBroadcast;
+import bgu.spl.mics.application.messages.TestModelEvent;
+import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.messages.TrainModelEvent;
+import bgu.spl.mics.application.objects.Cluster;
 import bgu.spl.mics.application.objects.GPU;
-
-import java.util.HashMap;
 
 /**
  * GPU service is responsible for handling the
@@ -24,15 +27,28 @@ public class GPUService extends MicroService {/** Assiph's comments: I think thi
  tell each message that comes from the awaitmessage, which callback to do.
  are their call backs. */
     final private GPU gpu;
-    private HashMap<Class < ? extends Message>,Callback> callbackMap;
+    private Callback_TickBroadcastGPU tickCallback;
+    private Callback_TestModelEvent testModelCallback;
+    private Callback_TrainModelEvent trainModelEventCallback;
+    private Callback_Terminate terminateCallback;
+    private Event event;
     public GPUService(String name, GPU gpu) {
         super(gpu + " " + "service");
         this.gpu = gpu;
-        this.callbackMap = new HashMap<>();
+        this.tickCallback = new Callback_TickBroadcastGPU(this);
+        this.testModelCallback = new Callback_TestModelEvent(this);
+        this.trainModelEventCallback = new Callback_TrainModelEvent(this);
+        this.terminateCallback = new Callback_Terminate(this);
+        this.event = null;
     }
     @Override
     protected void initialize() {
-        // TODO Implement this
+        MessageBusImpl.getInstance().register(this);
+        this.subscribeBroadcast(TickBroadcast.class, tickCallback);
+        this.subscribeBroadcast(TerminateBroadcast.class, this.terminateCallback);
+        this.subscribeEvent(TestModelEvent.class, testModelCallback);
+        this.subscribeEvent(TrainModelEvent.class, trainModelEventCallback);
+        Cluster.getInstance().addGPU(this.gpu);
     }
     public Boolean isEventSubscribed(Event e){
         return MessageBusImpl.getInstance().isMicroServiceEventRegistered(this,e);
@@ -41,6 +57,17 @@ public class GPUService extends MicroService {/** Assiph's comments: I think thi
         return MessageBusImpl.getInstance().isMicroServiceBroadCastRegistered(this,b);
     }
 
+    public GPU getGpu(){
+        return gpu;
+    }
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
 }
 /**
  * Assiph's Comment: in GPU and CPU, both of the Services should be used to send and bring messages. So in GPU case, the

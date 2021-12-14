@@ -1,7 +1,5 @@
 package bgu.spl.mics.application.objects;
 
-import java.util.concurrent.LinkedBlockingQueue;
-
 /**
  * Passive object representing a single CPU.
  * Add all the fields described in the assignment as private fields.
@@ -9,69 +7,37 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class CPU {
     final private int cores;
-    final private LinkedBlockingQueue<DataBatch> CPUdata;
     final private Cluster cluster;
-    private int currTime; // we will get from TimeService pulses,TickBrodcast, which will be caught in the GPUservice and CPUservice and update our time int.
+    private int currTime;
+    private DataBatch currDataBatch;
+    private int currDataBatchTick = 0;
+
     public int getTime() {
         return currTime;
     }
+
     public CPU(int numberOfCores) {
         this.cores = numberOfCores;
-        this.CPUdata = new LinkedBlockingQueue<DataBatch>();
         this.cluster = Cluster.getInstance();
-        currTime= 1;// need to think.
+        this.currDataBatch = null;
+        currTime= 1;
     }
 
     public int getCores() {
         return cores;
     }
 
-    public LinkedBlockingQueue getData() {
-        return CPUdata;
-    }
-
     public Cluster getCluster() {
         return cluster;
     }
 
-    /**Gets data from the Cluster and add it to the DataBatch of a cpu.
-     *
-     * @param d
-     * @pre none
-     * @post data.length=@pre(data.length + 1)
-     *
-     */
-    public void addData(DataBatch d){
-        try {
-            CPUdata.put(d);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    public void process() throws InterruptedException {
+        this.cluster.getStatistics().incrementCPUTimeUnits();
+        if(currTime - currDataBatch.getStartTime() >= currDataBatchTick) {
+            currDataBatch.setProcessedCpu();
+            this.cluster.sendGPU(currDataBatch);
+            this.cluster.getStatistics().incrementCPUProcessed();
         }
-    }
-
-    /** works on the Databatches, and processes them.
-     *
-     * @pre (!data.isEmpty)
-     * @post if currTime-datapeek()>10 then data.length=@pre(data.length - 1)
-     * @return
-     */
-    public DataBatch Proccessed(){//Processes the first element in the data LinkedList, and then pops it.
-        updateTime();
-        if (currTime - CPUdata.peek().getStartTime() > 10)// should be ticks instead of 10 instead, it is known in the json file we get{
-        {
-            System.out.println("Need to implement here!");
-            //implement
-            try {
-                return CPUdata.take();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        else{
-
-            //We just wait until the number of ticks is passed, we block the CPU so just let the loop run.
-        }
-        return null;
     }
 
     /** Updates the time of the cpu.
@@ -79,20 +45,35 @@ public class CPU {
      * @pre none
      * @post @pre(time)<time
      */
-    public void updateTime(){//we will need something like this also in GPU.
-    currTime = currTime + 1; // Need to check if it is actually good.
+    public void updateTime() throws InterruptedException {
+        boolean updated=false;
+        if(currDataBatch == null){
+            synchronized (Cluster.getInstance().getCpuQueue()) {
+                if (!Cluster.getInstance().getCpuQueue().isEmpty()) {
+                    currDataBatch = Cluster.getInstance().getCpuQueue().take();
+                    updated = true;
+                }
+            }
+            if (updated) {
+                int ticks = 0;
+                if (currDataBatch.getType() == Data.Type.Images) {
+                    ticks = 4;
+                }
+                if (currDataBatch.getType() == Data.Type.Text) {
+                    ticks = 2;
+                }
+                if (currDataBatch.getType() == Data.Type.Tabular) {
+                    ticks = 1;
+                }
+                currDataBatchTick = (32 / this.getCores()) * ticks;
+                currDataBatch.setStartTime(currTime);
+            }
+        }
+        currTime++;
+        if(currDataBatch != null){
+            this.process();
+        }
     }
 
-    /**
-     * @pre !data.isEmpty()
-     * @inv none
-     * @post none
-     */
-
-    public void updateTick(){
-        updateTime();
-        if (!CPUdata.isEmpty())
-        Proccessed();
-    }
 
 }

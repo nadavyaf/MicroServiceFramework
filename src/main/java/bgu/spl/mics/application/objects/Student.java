@@ -8,17 +8,26 @@ public class Student {
     /**
      * Enum representing the Degree the student is studying for.
      */
-    enum Degree {
+    public enum Degree {
         MSc, PhD
     }
 
-    private int name;
+
+    private String name;
     private String department;
     private Degree status;
     private int publications;
     private int papersRead;
 
-    public int getName() {
+    public Student(String name, String department, Degree status){
+        this.name = name;
+        this.department = department;
+        this.status = status;
+        this.publications = 0;
+        this.papersRead = 0;
+    }
+
+    public String getName() {
         return name;
     }
 
@@ -38,5 +47,13 @@ public class Student {
 
     public int getPapersRead() {
         return papersRead;
+    }
+
+    public void addPublication(){
+        this.publications += 1;
+    }
+
+    public void addPapersRead(){
+        this.papersRead += 1;
     }
 }

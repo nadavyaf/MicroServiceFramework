@@ -1,6 +1,12 @@
 package bgu.spl.mics.application.services;
 
-import bgu.spl.mics.MicroService;
+import bgu.spl.mics.*;
+import bgu.spl.mics.application.messages.PublishResultsEvent;
+import bgu.spl.mics.application.messages.TerminateBroadcast;
+import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.objects.ConfrenceInformation;
+
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Conference service is in charge of
@@ -12,19 +18,42 @@ import bgu.spl.mics.MicroService;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class ConferenceService extends MicroService {
-    public ConferenceService(String name) {
-        super("Change_This_Name");
-        // TODO Implement this
+    private LinkedBlockingQueue<String> cfsList;
+    private Callback_Terminate terminateCallback;
+    private ConfrenceInformation cfi;
+    private Callback_PublishResultsEvent publishResultsCallback;
+    private Callback_TickBroadcastConference tickCallback;
+    public ConferenceService(String name, ConfrenceInformation cfi) {
+        super(name);
+        this.cfsList = new LinkedBlockingQueue<>();
+        this.terminateCallback = new Callback_Terminate(this);
+        this.cfi = cfi;
+        this.publishResultsCallback = new Callback_PublishResultsEvent(this);
+        this.tickCallback = new Callback_TickBroadcastConference(this);
     }
 
     @Override
     protected void initialize() {
-        // TODO Implement this
-
+        MessageBusImpl.getInstance().register(this);
+        this.subscribeBroadcast(TerminateBroadcast.class, this.terminateCallback);
+        this.subscribeEvent(PublishResultsEvent.class, this.publishResultsCallback);
+        this.subscribeBroadcast(TickBroadcast.class, this.tickCallback);
     }
-    /**
-     * Assiph's comment:In this Service we should send PublishConferenceBroadcast, in a similar way we did in studentservice. Note that
-     * this is a Broadcast, we don't wait for an answer, we just update the system.
-     */
+
+    public LinkedBlockingQueue<String> getCfsList() {
+        return cfsList;
+    }
+
+    public void addToCfs(String name){
+        this.getCfsList().add(name);
+    }
+
+    public Callback_Terminate getTerminateCallback() {
+        return terminateCallback;
+    }
+
+    public ConfrenceInformation getCfi() {
+        return cfi;
+    }
 
 }

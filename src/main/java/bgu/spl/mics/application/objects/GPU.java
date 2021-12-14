@@ -14,23 +14,23 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     /**
      * Enum representing the type of the GPU.
      */
-    enum Type {RTX3090, RTX2080, GTX1080}
+    public enum Type {RTX3090, RTX2080, GTX1080}
 
     private Type type;
     private Model model;
     private Cluster cluster;
-    final private LinkedList<DataBatch> clusterQueue;
     final private ArrayBlockingQueue<DataBatch> processedCPUQueue;
     int learnedBatches;
     private int capacity;
     private int currTime;
     private int ticks;
+    private DataBatch currBatch;
 
     public GPU(Type type) {
         this.type = type;
         this.model = null;
         this.learnedBatches = 0;
-        this.clusterQueue = new LinkedList<DataBatch>();
+        cluster = Cluster.getInstance();
         currTime = 1;//need to think.
         if(this.type == Type.RTX3090){
             this.capacity = 32;
@@ -45,6 +45,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
             this.ticks=4;
         }
         this.processedCPUQueue = new ArrayBlockingQueue<DataBatch>(capacity);
+        this.currBatch = null;
     }
 
 
@@ -57,15 +58,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
 
     }
 
-    /**
-     *
-     * Return the clusterQueue, which holds databatches that are sent to the cluster.
-     * @pre: none
-     * @post: none
-     */
-    public LinkedList<DataBatch> getClusterQueue() {
-        return clusterQueue;
-    }
+
 
 
     /**
@@ -95,6 +88,10 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      */
     public Model getModel() {
         return model;
+    }
+
+    public void setModel(Model model) {
+        this.model = model;
     }
 
     /**
@@ -136,42 +133,26 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
         return currTime;
     }
 
-    /**
-     * Helper which creates a dataBatch and add 1000 sample from data to dataBatch. If data is empty, throw
-     * an exception.
-     * @param data
-     * @pre: data != null
-     * @post: size == @pre data.size
-     *        data.size == size - 1000
-     */
-    public DataBatch divide1000(Data data){
-        return null;
-    }
 
     /**
      * Divide all the data recieved into data batches, add each batch to clusterQueue.
-     * @param data
      * @pre: data != null
      * @inv: data.size >= 0
      * @post: data.size == 0
      *        clusterSize = @pre clusterQueue.size
      *        clusterQueue.size == clusterSize + numberofDataBatches(The number of data batches created)
      */
-    public void divideAll(Data data){
+    public LinkedList<DataBatch> divideAll(){
+        Data data = this.getModel().getData();
+        LinkedList<DataBatch> ans = new LinkedList<>();
+        while(ans.size() < data.getNumOfBatches()){
+            DataBatch db = new DataBatch(data.getType(), this);
+            ans.add(db);
+        }
+        return ans;
     }
 
-    /**
-     * Release data batches for the cluster to allocate. If the clusterQueue is empty or the capacity
-     * of the GPU is 0, throw an error.
-     * @pre: clusterQueue != null, capacity > 0
-     * @inv: capacity >=0
-     * @post: clusterSize = @pre clusterQueue.size
-     *        clusterQueue.size == clusterSize - 1
-     *        capacitySize = @pre capacity
-     *        capacity == capacitySize - 1
-     */
-    public void clusterSend(){
-    }
+
 
 
     /**
@@ -183,6 +164,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      *        processedCPUQueue.size == processedSize + 1
      */
     public void insertProcessedCPU(DataBatch data){
+        processedCPUQueue.add(data);
     }
 
     /**
@@ -193,23 +175,18 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      *        learnedSize = @pre learnedBatches
      *        learnedBatches == learnedSize + 1
      */
-    public void GPULearn(){
-        if (currTime-processedCPUQueue.peek().getStartTime()>=ticks)// should be ticks instead of 10 instead, it is known in the json file we get{
-            System.out.println("Need to implement here!");
-            //implement
-
-        else{
-            //We just wait until the number of ticks is passed, we block the CPU so just let the loop run.
+    public void GPULearn() throws InterruptedException {
+        this.getCluster().getStatistics().incrementGPUTimeUnits();
+        if(currTime - this.currBatch.getStartTime() >= ticks) {
+            currBatch.setLearnedGpu();
+            this.learnedBatches++;
+            currBatch = null;
+            if(learnedBatches == model.getData().getNumOfBatches()){
+                learnedBatches = 0;
+                this.model.updateStatus();
+                Cluster.getInstance().getStatistics().addTrainedModel(this.model.getName());
+            }
         }
-    }
-
-    /**
-     *
-     * @pre: none
-     * @post: none
-     */
-    public boolean isDone(){
-        return false;
     }
 
     /**
@@ -219,9 +196,16 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      * @post none
      *
      */
-    public void updateTime(){
+    public void updateTime() throws InterruptedException {
+        if(currBatch == null) {
+            if (!this.processedCPUQueue.isEmpty()) {
+                currBatch = this.processedCPUQueue.take();
+                currBatch.setStartTime(currTime);
+            }
+        }
         currTime++;
-        if (!processedCPUQueue.isEmpty())
-            GPULearn();
+        if(currBatch != null){
+            this.GPULearn();
+        }
     }
 }
