@@ -16,9 +16,9 @@ public class Callback_FinishedBroadcast implements Callback<FinishedBroadcast>{
         String result = sts.getFuture().get();
         if (result.equals("Trained"))
             sts.setFuture(sts.sendEvent(new TestModelEvent(model)));
-        else if (result.equals("Good")|| result.equals("Bad"))
+        else if (result.equals("Good"))
             sts.setFuture(sts.sendEvent(new PublishResultsEvent(model)));
-        else if (result.equals("Published")){
+        else if (result.equals("Published")||result.equals("Bad")){
             if (sts.getCurrModel()+1<sts.getModels().size()){
                 sts.incrementcurrModel();
                 sts.setFuture(sts.sendEvent(new TrainModelEvent(sts.getModels().get(sts.getCurrModel()))));

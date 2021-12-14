@@ -17,10 +17,10 @@ public class Callback_TrainModelEvent implements Callback<TrainModelEvent>{
     gpus.setEvent(c);
     GPU gpu = gpus.getGpu();
     gpu.setModel(c.getModel());
-    LinkedList<DataBatch> divide= gpu.divideAll();
+    gpu.divideAll();
     gpu.getModel().updateStatus();
-    for (int i =0;i<gpu.getCapacity()&&!divide.isEmpty();i++){
-        Cluster.getInstance().sendToCPU(divide.pollFirst());
+    for (int i =0;i<gpu.getCapacity()&&!gpu.getDataList().isEmpty();i++){
+        Cluster.getInstance().sendToCPU(gpu.getDataList().pollFirst());
     }
     }
 }

@@ -23,15 +23,15 @@ public class CPUService extends MicroService {
     public CPUService(String name,CPU cpu) {
         super(name);
         this.cpu = cpu;
-        Callback_TickBroadcastCPU callback = new Callback_TickBroadcastCPU(this.cpu);
+        callback = new Callback_TickBroadcastCPU(this.cpu);
         terminate = new Callback_Terminate(this);
     }
 
     @Override
     protected void initialize() {
         MessageBusImpl.getInstance().register(this);
-        this.subscribeBroadcast(TerminateBroadcast.class,terminate);
         this.subscribeBroadcast(TickBroadcast.class,callback);
+        this.subscribeBroadcast(TerminateBroadcast.class,terminate);
         Cluster.getInstance().addCPU(cpu);
     }
 

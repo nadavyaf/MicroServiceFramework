@@ -24,12 +24,14 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     private int capacity;
     private int currTime;
     private int ticks;
+    private LinkedList <DataBatch> dataList;
 
     public GPU(Type type) {
         this.type = type;
         this.currBatch=null;
         this.model = null;
         this.learnedBatches = 0;
+        dataList = new LinkedList<DataBatch>();
         cluster = Cluster.getInstance();
         currTime = 1;//need to think.
         if(this.type == Type.RTX3090){
@@ -131,15 +133,16 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      *        clusterSize = @pre clusterQueue.size
      *        clusterQueue.size == clusterSize + numberofDataBatches(The number of data batches created)
      */
-    public LinkedList<DataBatch> divideAll(){
+    public void divideAll(){
             Data data = this.getModel().getData();
-            LinkedList<DataBatch> dataList= new LinkedList<>();
             for (int i =0;i<data.getNumOfBatches();i++){
-                dataList.add(new DataBatch(data.getType(),this));
+                this.dataList.add(new DataBatch(data.getType(),this));
             }
-            return dataList;
     }
 
+    public LinkedList<DataBatch> getDataList() {
+        return dataList;
+    }
 
     /**
      * Insert the processed and learned event into the learned queue for the message bus to take.
@@ -162,10 +165,12 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      *        learnedBatches == learnedSize + 1
      */
     public void GPULearn() throws InterruptedException {
-        this.getCluster().getStatistics().incrementGPUTimeUnits();
+        Cluster.getInstance().getStatistics().incrementGPUTimeUnits();
         if(currTime - this.currBatch.getStartTime() >= ticks) {
             currBatch.setLearnedGpu();
             this.learnedBatches++;
+            if (!dataList.isEmpty())
+            Cluster.getInstance().sendToCPU(dataList.pollFirst());
             currBatch = null;
             if(learnedBatches == model.getData().getNumOfBatches()){
                 learnedBatches = 0;

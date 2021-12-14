@@ -58,7 +58,7 @@ public class CRMSRunner {
         for (JsonElement cpu : jsonArrayCPU){
             CPU newCpu = new CPU(cpu.getAsInt());
             System.out.println(newCpu.getCores());
-            CPUService cpus = new CPUService("Gpu Service" + i,newCpu);
+            CPUService cpus = new CPUService("Cpu Service" + i,newCpu);
             Thread cpuservicet = new Thread(cpus);
             threadList.add(cpuservicet);
             cpuservicet.start();
@@ -134,6 +134,8 @@ public class CRMSRunner {
                 System.out.println(model);
             }
         }
-
+        System.out.println("Amount of GPUTimeUnits: " + Cluster.getInstance().getStatistics().getGPUTimeUnits());
+        System.out.println("Amount of CPUTimeUnits: " + Cluster.getInstance().getStatistics().getCPUTimeUnits());
+        System.out.println("Amount of Batches processed by CPU: " + Cluster.getInstance().getStatistics().getCPUProcessed());
     }
 }

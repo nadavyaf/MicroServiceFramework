@@ -32,7 +32,7 @@ public class GPUService extends MicroService {
         this.gpu = gpu;
         tick = new Callback_TickBroadcastGPU(this);
         test = new Callback_TestModelEvent(this);
-        train = new Callback_TrainModelEvent(this); // NEED TO IMPLEMENT THE CALLBACK.
+        train = new Callback_TrainModelEvent(this);
         terminate = new Callback_Terminate(this);
         this.event = null;
     }

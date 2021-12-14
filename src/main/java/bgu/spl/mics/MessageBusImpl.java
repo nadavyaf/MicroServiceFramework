@@ -1,6 +1,8 @@
 package bgu.spl.mics;
 
 import bgu.spl.mics.application.messages.FinishedBroadcast;
+import bgu.spl.mics.application.messages.TerminateBroadcast;
+import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.services.GPUService;
 
@@ -30,7 +32,6 @@ public class MessageBusImpl implements MessageBus {
 		return SingeltonHolder.instance;
 			}
 
-	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {/**Assiph's comments: if the message doesn't exist,
 	 add it with a new LinkedBlockingQueue (FIFO) and then just add the element into that queue.*/
 		messageMap.putIfAbsent(type,new LinkedBlockingQueue<>());
@@ -48,11 +49,11 @@ public class MessageBusImpl implements MessageBus {
 
 	}
 	public void sendBroadcast(Broadcast b) throws InterruptedException {
-		BlockingQueue<MicroService> services = messageMap.get(b);
+		BlockingQueue<MicroService> services = messageMap.get(b.getClass());
 		//the Iterator is weakly consistent - meaning it will not follow any changes that happens in the BlockingQueue after it started.
+		if (services!=null)//can happen if it sendsbroadcast in the middle of subscribing to broadcast.
 		for (MicroService m : services) {
 			microMap.get(m).putFirst(b);
-			m.notifyAll();
 		}
 	}
 
@@ -68,26 +69,26 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) throws InterruptedException { /** Assiph's Comments: Will be used by a studentService (or student,not sure) for example
 	 it will enter the event to the right queue using the Messagebus (with get instance) and then use the get method (blocking).*/
-		if (messageMap.get(e).isEmpty())
+	while (messageMap.get(e.getClass())==null){
+//when the student sends an event faster than the microservice registered to it.
+	}
+	 if (messageMap.get(e.getClass()).isEmpty())
 			return null;
 		Future <T> ans = new Future<>();
 		futureMap.putIfAbsent(e,ans);
-		BlockingQueue <MicroService> service = messageMap.get(e);
+		BlockingQueue <MicroService> service = messageMap.get(e.getClass());
 		synchronized (e.getClass()) {
 			MicroService m = service.take();
 			service.put(m);
 			microMap.get(m).putLast(e);
-			m.notifyAll();
 		}
 		return ans;
 	}
 
-	@Override
 	public void register(MicroService m) {
 		microMap.putIfAbsent(m,new LinkedBlockingDeque<>());
 	}
 
-	@Override
 	public void unregister(MicroService m) {
 		microMap.remove(m);
 		for (Map.Entry<Class<? extends Message>, BlockingQueue<MicroService>> entry: messageMap.entrySet()){
@@ -96,7 +97,6 @@ public class MessageBusImpl implements MessageBus {
 		}
 	}
 
-	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 		BlockingQueue<Message> events = microMap.get(m);
 		if (events==null)
@@ -104,7 +104,8 @@ public class MessageBusImpl implements MessageBus {
 		if (m.getClass().isInstance(GPUService.class)){
 			GPUService cast = (GPUService) m;
 		while (events.isEmpty()||(cast.getGpu().getModel()!=null && events.peek() instanceof Event))
-			m.wait();
+			System.out.println(m.getName() + "waiting!");
+			events.wait();
 		}
 			return events.take(); // this also handles the other options, it waits until we have something in the queue, and then takes it out.
 	}
@@ -114,10 +115,10 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	public Boolean isMicroServiceEventRegistered(MicroService m,Event e) {
-		return messageMap.get(e).contains(m);
+		return messageMap.get(e.getClass()).contains(m);
 	}
 
 	public Boolean isMicroServiceBroadCastRegistered(MicroService m,Broadcast b){
-		return messageMap.get(b).contains(m);
+		return messageMap.get(b.getClass()).contains(m);
 	}
 }

@@ -9,7 +9,11 @@ public class Statistics {
     private AtomicInteger GPUTimeUnits;
     private LinkedBlockingQueue<String> modelTrained;
 
-    public Statistics() {}
+    public Statistics() {
+        CPUProcessed = new AtomicInteger(0);
+        CPUTimeUnits = new AtomicInteger(0);
+        GPUTimeUnits = new AtomicInteger(0);
+    }
 
     public void incrementCPUProcessed(){
         CPUProcessed.incrementAndGet();
