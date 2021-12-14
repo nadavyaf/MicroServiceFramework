@@ -1,6 +1,9 @@
 package bgu.spl.mics.application.services;
 
-import bgu.spl.mics.*;
+import bgu.spl.mics.Callback_Terminate;
+import bgu.spl.mics.Callback_TickBroadcastCPU;
+import bgu.spl.mics.MessageBusImpl;
+import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.CPU;
@@ -16,23 +19,20 @@ import bgu.spl.mics.application.objects.Cluster;
 public class CPUService extends MicroService {
     private CPU cpu;
     private Callback_TickBroadcastCPU callback;
-    private Callback_Terminate terminateCallback;
-    public CPUService(String name, CPU cpu) {
+    private Callback_Terminate terminate;
+    public CPUService(String name,CPU cpu) {
         super(name);
         this.cpu = cpu;
-        this.callback = new Callback_TickBroadcastCPU(this.cpu);
-        this.terminateCallback = new Callback_Terminate(this);
+        Callback_TickBroadcastCPU callback = new Callback_TickBroadcastCPU(this.cpu);
+        terminate = new Callback_Terminate(this);
     }
 
     @Override
     protected void initialize() {
         MessageBusImpl.getInstance().register(this);
-        this.subscribeBroadcast(TickBroadcast.class, this.callback);
-        this.subscribeBroadcast(TerminateBroadcast.class, this.terminateCallback);
-        Cluster.getInstance().addCPU(this.cpu);
+        this.subscribeBroadcast(TerminateBroadcast.class,terminate);
+        this.subscribeBroadcast(TickBroadcast.class,callback);
+        Cluster.getInstance().addCPU(cpu);
     }
 
-    public CPU getCpu() {
-        return cpu;
-    }
 }

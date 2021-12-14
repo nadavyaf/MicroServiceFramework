@@ -6,6 +6,7 @@ import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.ConfrenceInformation;
 
+import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -19,41 +20,39 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class ConferenceService extends MicroService {
     private LinkedBlockingQueue<String> cfsList;
-    private Callback_Terminate terminateCallback;
     private ConfrenceInformation cfi;
-    private Callback_PublishResultsEvent publishResultsCallback;
-    private Callback_TickBroadcastConference tickCallback;
-    public ConferenceService(String name, ConfrenceInformation cfi) {
+    private Callback_Terminate terminate;
+    private Callback_PublishResultsEvent publishEvent;
+    private Callback_TickBroadcastConference tick;
+    public ConferenceService(String name,ConfrenceInformation cfi) {
         super(name);
         this.cfsList = new LinkedBlockingQueue<>();
-        this.terminateCallback = new Callback_Terminate(this);
-        this.cfi = cfi;
-        this.publishResultsCallback = new Callback_PublishResultsEvent(this);
-        this.tickCallback = new Callback_TickBroadcastConference(this);
+        this.cfi=cfi;
+        terminate = new Callback_Terminate(this);
+        publishEvent = new Callback_PublishResultsEvent(this);
     }
-
-    @Override
-    protected void initialize() {
-        MessageBusImpl.getInstance().register(this);
-        this.subscribeBroadcast(TerminateBroadcast.class, this.terminateCallback);
-        this.subscribeEvent(PublishResultsEvent.class, this.publishResultsCallback);
-        this.subscribeBroadcast(TickBroadcast.class, this.tickCallback);
+    public void addToConference(String name){
+        cfsList.add(name);
     }
 
     public LinkedBlockingQueue<String> getCfsList() {
         return cfsList;
     }
 
-    public void addToCfs(String name){
-        this.getCfsList().add(name);
-    }
-
-    public Callback_Terminate getTerminateCallback() {
-        return terminateCallback;
-    }
-
     public ConfrenceInformation getCfi() {
         return cfi;
     }
+
+    @Override
+    protected void initialize() {
+        MessageBusImpl.getInstance().register(this);
+        this.subscribeBroadcast(TerminateBroadcast.class,terminate);
+        this.subscribeEvent(PublishResultsEvent.class,publishEvent);
+        this.subscribeBroadcast(TickBroadcast.class,tick);
+    }
+    /**
+     * Assiph's comment:In this Service we should send PublishConferenceBroadcast, in a similar way we did in studentservice. Note that
+     * this is a Broadcast, we don't wait for an answer, we just update the system.
+     */
 
 }

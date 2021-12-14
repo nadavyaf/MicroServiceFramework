@@ -1,5 +1,4 @@
 package bgu.spl.mics;
-
 import java.util.concurrent.TimeUnit;
 
 /**

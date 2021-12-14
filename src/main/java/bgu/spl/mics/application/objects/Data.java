@@ -8,7 +8,7 @@ public class Data {
     /**
      * Enum representing the Data type.
      */
-    public enum Type {
+   public enum Type {
         Images, Text, Tabular
     }
 

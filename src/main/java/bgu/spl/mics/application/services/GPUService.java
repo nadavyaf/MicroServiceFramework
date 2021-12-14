@@ -8,6 +8,8 @@ import bgu.spl.mics.application.messages.TrainModelEvent;
 import bgu.spl.mics.application.objects.Cluster;
 import bgu.spl.mics.application.objects.GPU;
 
+import java.util.HashMap;
+
 /**
  * GPU service is responsible for handling the
  * {@link //TrainModelEvent} and {@link //TestModelEvent},
@@ -17,48 +19,60 @@ import bgu.spl.mics.application.objects.GPU;
  * You can add private fields and public methods to this class.
  * You MAY change constructor signatures and even add new public constructors.
  */
-public class GPUService extends MicroService {/** Assiph's comments: I think this service should run between 3 queues - the timeTickQueue
- the eventQueue and the processedCPUQueue, and check each time if they have something inside. if the timeTick has, then we update the time,
- if the eventQueue has then we check if we are currently working on an event (model==null), and if the processedCPU has, then
- to send to the gpu to work on the processed databatch. In the end of the checking (it should be in an infinite while loop, or until interrupted)
-  we should add a wait() method, so we don't implement busy waiting (it will get notified each time something is updated).
- I also think we need to add a thread for this class, so when we initialize it, the thread will start running on it's own.
- *******We also need to add a new Hashmap for the GPUService - subscribedMap which will hold eventTypes and Callbacks, and
- tell each message that comes from the awaitmessage, which callback to do.
- are their call backs. */
+public class GPUService extends MicroService {
     final private GPU gpu;
-    private Callback_TickBroadcastGPU tickCallback;
-    private Callback_TestModelEvent testModelCallback;
-    private Callback_TrainModelEvent trainModelEventCallback;
-    private Callback_Terminate terminateCallback;
+    private Callback_TickBroadcastGPU tick;
+    private Callback_TestModelEvent test;
+    private Callback_TrainModelEvent train;
+    private Callback_Terminate terminate;
     private Event event;
+
     public GPUService(String name, GPU gpu) {
         super(gpu + " " + "service");
         this.gpu = gpu;
-        this.tickCallback = new Callback_TickBroadcastGPU(this);
-        this.testModelCallback = new Callback_TestModelEvent(this);
-        this.trainModelEventCallback = new Callback_TrainModelEvent(this);
-        this.terminateCallback = new Callback_Terminate(this);
+        tick = new Callback_TickBroadcastGPU(this);
+        test = new Callback_TestModelEvent(this);
+        train = new Callback_TrainModelEvent(this); // NEED TO IMPLEMENT THE CALLBACK.
+        terminate = new Callback_Terminate(this);
         this.event = null;
     }
+
     @Override
     protected void initialize() {
         MessageBusImpl.getInstance().register(this);
-        this.subscribeBroadcast(TickBroadcast.class, tickCallback);
-        this.subscribeBroadcast(TerminateBroadcast.class, this.terminateCallback);
-        this.subscribeEvent(TestModelEvent.class, testModelCallback);
-        this.subscribeEvent(TrainModelEvent.class, trainModelEventCallback);
-        Cluster.getInstance().addGPU(this.gpu);
-    }
-    public Boolean isEventSubscribed(Event e){
-        return MessageBusImpl.getInstance().isMicroServiceEventRegistered(this,e);
-    }
-    public Boolean isBroadcastSubscribed(Broadcast b){
-        return MessageBusImpl.getInstance().isMicroServiceBroadCastRegistered(this,b);
+        this.subscribeBroadcast(TickBroadcast.class, tick);
+        this.subscribeEvent(TestModelEvent.class, test);
+        this.subscribeEvent(TrainModelEvent.class, train);
+        this.subscribeBroadcast(TerminateBroadcast.class, terminate);
+        Cluster.getInstance().addGPU(gpu);
     }
 
-    public GPU getGpu(){
+    public Boolean isEventSubscribed(Event e) {
+        return MessageBusImpl.getInstance().isMicroServiceEventRegistered(this, e);
+    }
+
+    public Boolean isBroadcastSubscribed(Broadcast b) {
+        return MessageBusImpl.getInstance().isMicroServiceBroadCastRegistered(this, b);
+    }
+
+    public GPU getGpu() {
         return gpu;
+    }
+
+    public Callback_TickBroadcastGPU getTick() {
+        return tick;
+    }
+
+    public Callback_TestModelEvent getTest() {
+        return test;
+    }
+
+    public Callback_TrainModelEvent getTrain() {
+        return train;
+    }
+
+    public Callback_Terminate getTerminate() {
+        return terminate;
     }
 
     public Event getEvent() {
@@ -69,6 +83,8 @@ public class GPUService extends MicroService {/** Assiph's comments: I think thi
         this.event = event;
     }
 }
+
+
 /**
  * Assiph's Comment: in GPU and CPU, both of the Services should be used to send and bring messages. So in GPU case, the
  * GPUService should be responsible for bringing the data to the GPU, and putting it in the right Queues, and also after 2 scenarios:

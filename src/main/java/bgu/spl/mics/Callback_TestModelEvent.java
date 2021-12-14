@@ -21,26 +21,25 @@ public class Callback_TestModelEvent implements Callback<TestModelEvent> {
         if (c.getModel().getStudent().getStatus().equals("PhD")) {
             if (random >= 2) {//=80%
                 result = "Good";
-                gpuService.getGpu().getModel().setCurrResults(Model.Results.Good);
+                c.getModel().setResult(Model.results.Good);
             } else {
                 result = "Bad";
-                gpuService.getGpu().getModel().setCurrResults(Model.Results.Bad);
-
+                c.getModel().setResult(Model.results.Bad);
             }
         }
         else{
-            if (random >= 4){//=60%
-                result = "Good";
-                gpuService.getGpu().getModel().setCurrResults(Model.Results.Good);
-        }
+                if (random >= 4) {//=60%
+                    result = "Good";
+                    c.getModel().setResult(Model.results.Good);
+                }
+                else {
+                    result = "Bad";
+                    c.getModel().setResult(Model.results.Bad);
+                }
 
-            else {
-                result = "Bad";
-                gpuService.getGpu().getModel().setCurrResults(Model.Results.Bad);
             }
+
+            Cluster.getInstance().getStatistics().addTrainedModel(c.getModel().getName());
+            gpuService.complete(c, result);
         }
-        c.getModel().updateStatus();
-        gpuService.complete(c,result);
-        Cluster.getInstance().getStatistics().addTrainedModel(c.getModel().getName());
     }
-}

@@ -11,99 +11,129 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.LinkedList;
-import java.util.List;
 
 /** This is the Main class of Compute Resources Management System application. You should parse the input file,
  * create the different instances of the objects, and run the system.
  * In the end, you should output a text file.
  */
 public class CRMSRunner {
-    public static void main(String[] args) throws FileNotFoundException {
-        System.out.println("Hello World!");
-        TimeService clock = new TimeService(1000,100000);
-        File input = new File("C:/Users/nadav/IdeaProjects/JavaMasterclass/SPL2/example_input.json");
+    public static void main(String[] args) throws FileNotFoundException, InterruptedException {
+        LinkedList <Thread> threadList = new LinkedList<>();
+        File input = new File("C:/Users/Assiph/IdeaProjects/SPL2/example_input.json");
         JsonElement fileElement = JsonParser.parseReader(new FileReader(input));
         JsonObject fileObject = fileElement.getAsJsonObject();
-        JsonArray jsonArrayOfStudent = fileObject.get("student").getAsJsonArray();
-        List<StudentService> studentServiceList = new LinkedList<>();
-        for(JsonElement studentElement : jsonArrayOfStudent) {
-            JsonObject studentObject = studentElement.getAsJsonObject();
-            String name = studentObject.get("name").getAsString();
-            String department = studentObject.get("department").getAsString();
-            String degree = studentObject.get("degree").getAsString();
-            Student.Degree deg = null;
-            if (degree.equals("MSc")) {
-                deg = Student.Degree.MSc;
-            } else {
-                deg = Student.Degree.PhD;
+        LinkedList <StudentService> studentServiceList = new LinkedList();
+        LinkedList <ConferenceService> cfsList = new LinkedList<>();
+        int speed = fileObject.get("TickTime").getAsInt();
+        int duration = fileObject.get("Duration").getAsInt();
+        System.out.println(speed);
+        System.out.println(duration);
+        TimeService clock = new TimeService(speed,duration);
+        Thread clockt = new Thread(clock);
+        threadList.add(clockt);
+        clockt.start();
+        JsonArray jsonArrayOfStudents = fileObject.get("Students").getAsJsonArray();
+        JsonArray jsonArrayGPU = fileObject.get("GPUS").getAsJsonArray();
+        int i =0;
+        for (JsonElement gpu : jsonArrayGPU){
+            String type="";
+            type = gpu.getAsString();
+            GPU newGpu=null;
+            if (type.equals("RTX3090")){
+                newGpu = new GPU(GPU.Type.RTX3090);
             }
-            Student student = new Student(name, department, deg);
-            JsonArray jsonArrayofModels = studentObject.get("models").getAsJsonArray();
-            List<Model> modelList = new LinkedList<>();
-            for (JsonElement modelElement : jsonArrayofModels) {
-                JsonObject modelObject = modelElement.getAsJsonObject();
-                String modelName = modelObject.get("name").getAsString();
-                String type = modelObject.get("type").getAsString();
-                Data.Type dataType = null;
-                if (dataType.equals("images") || dataType.equals("Images")) {
-                    dataType = Data.Type.Images;
-                } else if (dataType.equals("Text")) {
-                    dataType = Data.Type.Text;
-                } else if (dataType.equals("Tabular")) {
-                    dataType = Data.Type.Tabular;
-                }
-                Integer size = modelObject.get("size").getAsInt();
-                Data modelData = new Data(dataType, size);
-                Model model = new Model(modelName, modelData, student);
-                modelList.add(model);
-            }
-            StudentService sts = new StudentService(name + " service", student, (LinkedList<Model>) modelList);
-            studentServiceList.add(sts);
-        }
-        JsonArray jsonArrayOfGpus = fileObject.get("GPUS").getAsJsonArray();
-        List<GPUService> gpuServiceList = new LinkedList<>();
-        int i = 0;
-        for(JsonElement gpuElement : jsonArrayOfGpus){
-            JsonObject gpuObject = gpuElement.getAsJsonObject();
-            String gpuType = "";
-            GPU.Type type = null;
-            if(gpuType.equals("RTX3090")){
-                type = GPU.Type.RTX3090;
-            }
-            else if(gpuType.equals("RTX2080")){
-                type = GPU.Type.RTX2080;
-            }
-            else if(gpuType.equals("GTX1080")){
-                type = GPU.Type.GTX1080;
-            }
-            GPU gpu = new GPU(type);
-            GPUService gpus = new GPUService("GPU Service " + i, gpu);
-            gpuServiceList.add(gpus);
+            if (type.equals("RTX2080"))
+                newGpu = new GPU(GPU.Type.RTX2080);
+            if (type.equals("GTX1080"))
+                newGpu= new GPU(GPU.Type.GTX1080);
+            System.out.println(newGpu.getType());
+            GPUService gpus = new GPUService("Gpu Service" + i,newGpu);
+            Thread gpuservicet = new Thread(gpus);
+            threadList.add(gpuservicet);
+            gpuservicet.start();
             i++;
         }
-        JsonArray jsonArrayofCpus = fileObject.get("CPUS").getAsJsonArray();
-        List<CPUService> cpuServiceList = new LinkedList<>();
-        int j = 0;
-        for(JsonElement cpuElement : jsonArrayofCpus){
-            JsonObject cpuObject = cpuElement.getAsJsonObject();
-            Integer cpuCores = cpuObject.get("").getAsInt();
-            CPU cpu = new CPU(cpuCores);
-            CPUService cpus = new CPUService("CPU Service " + j, cpu);
-            cpuServiceList.add(cpus);
-            j++;
+        i=0;
+        JsonArray jsonArrayCPU = fileObject.get("CPUS").getAsJsonArray();
+        for (JsonElement cpu : jsonArrayCPU){
+            CPU newCpu = new CPU(cpu.getAsInt());
+            System.out.println(newCpu.getCores());
+            CPUService cpus = new CPUService("Gpu Service" + i,newCpu);
+            Thread cpuservicet = new Thread(cpus);
+            threadList.add(cpuservicet);
+            cpuservicet.start();
+            i++;
         }
-        JsonArray jsonArrayofConferences = fileObject.get("Conferences").getAsJsonArray();
-        List<ConferenceService> conferenceServiceList = new LinkedList<>();
-        for(JsonElement conferenceElement : jsonArrayofConferences){
-            JsonObject conferenceObject = conferenceElement.getAsJsonObject();
-            String name = conferenceObject.get("name").getAsString();
-            Integer date = conferenceObject.get("date").getAsInt();
-            ConfrenceInformation conference = new ConfrenceInformation(name, date);
-            ConferenceService conferenceService = new ConferenceService(name + " service", conference);
-            conferenceServiceList.add(conferenceService);
+        JsonArray jsonArrayConference = fileObject.get("Conferences").getAsJsonArray();
+        for (JsonElement con : jsonArrayConference){
+            JsonObject conferenceJsonObject = con.getAsJsonObject();
+            String name = conferenceJsonObject.get("name").getAsString();
+            int date = conferenceJsonObject.get("date").getAsInt();
+            ConfrenceInformation cfi = new ConfrenceInformation(name,date);
+            ConferenceService cfs = new ConferenceService(name + " service",cfi);
+            cfsList.add(cfs);
+            System.out.println(cfi.getName() + ":" + date);
+            System.out.println(cfs.getName() + ":" + cfi.getDate());
+            Thread conferencet = new Thread(cfs);
+            threadList.add(conferencet);
+            conferencet.start();
         }
-        Integer tickTime = fileObject.get("TickTime").getAsInt();
-        Integer duration = fileObject.get("Duration").getAsInt();
-        TimeService timeService = new TimeService(tickTime, duration);
+        for (JsonElement st : jsonArrayOfStudents){
+            JsonObject studentJsonObject = st.getAsJsonObject();
+            String name = studentJsonObject.get("name").getAsString();
+            String depertment = studentJsonObject.get("department").getAsString();
+            String statusget = studentJsonObject.get("status").getAsString();
+            Student.Degree deg=null;
+            if (statusget.equals("MSc"))
+            deg= Student.Degree.MSc;
+            if (statusget.equals("PhD"))
+                deg= Student.Degree.PhD;
+            Student student = new Student(name,depertment,deg);
+            JsonArray jsonArrayOfModels = studentJsonObject.get("models").getAsJsonArray();
+            LinkedList<Model> modelList= new LinkedList<Model>();
+            for (JsonElement mdl : jsonArrayOfModels){
+                JsonObject modelJsonObject = mdl.getAsJsonObject();
+                String modelName = modelJsonObject.get("name").getAsString();
+                String typeget = modelJsonObject.get("type").getAsString();
+                Data.Type type=null;
+                if (typeget.equals("images")||typeget.equals("Images"))
+                    type = Data.Type.Images;
+                if (typeget.equals("Tabular")||typeget.equals("tabular"))
+                    type = Data.Type.Tabular;
+                if (typeget.equals("Text")||typeget.equals("text"))
+                    type = Data.Type.Text;
+                int size = modelJsonObject.get("size").getAsInt();
+                Data data = new Data(type,size);
+                Model model = new Model(data,modelName,student);
+                modelList.add(model);
+            }
+            StudentService studentService = new StudentService(student.getName() + " service",student,modelList);
+            studentServiceList.add(studentService);
+            System.out.println(student.getName() + " " + student.getDepartment() + " " + student.getStatus());
+            System.out.println(studentService.getName() + " " + studentService.getStudent().getName()+ ":");
+            for (Model m : modelList){
+                System.out.print(m.getName() + " " + m.getData().getSize() + " " + m.getData().getType()+ ", ");
+            }
+            System.out.println();
+            Thread studentservicet = new Thread(studentService);
+            threadList.add(studentservicet);
+            studentservicet.start();
+        }
+        for (Thread thread : threadList)
+            thread.join();
+        for (StudentService studentService : studentServiceList){
+            System.out.println(studentService.getStudent().getName() + " read" + studentService.getStudent().getPapersRead() + " and trained:");
+            for (Model model : studentService.getModels()){
+                if (model.getCurrStatus()== Model.Status.Trained||model.getCurrStatus()== Model.Status.Tested)
+                System.out.println(model.getName() + " " + model.getCurrStatus() + " " + model.getResult());
+            }
+        }
+        for (ConferenceService cfs : cfsList){
+            System.out.println(cfs.getName() + " published:");
+            for (String model : cfs.getCfsList()){
+                System.out.println(model);
+            }
+        }
+
     }
 }

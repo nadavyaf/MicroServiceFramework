@@ -43,5 +43,3 @@ public class Statistics {
         this.getModelTrained().add(name);
     }
 }
-
-

@@ -18,34 +18,33 @@ import java.util.concurrent.LinkedBlockingQueue;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class StudentService extends MicroService {
-    private LinkedList<Model> modelList;
+    private LinkedList<Model> models;
+    private Student student;
     private LinkedBlockingQueue<Message> MessageQueue=null;
-    private final Student student;
-    private Callback_PublishConferenceBroadcast publishConferenceCallback;
-    private Callback_Terminate terminateCallback;
+    private Callback_PublishConferenceBroadcast publishConference;
     private Callback_FinishedBroadcast finished;
+    private Callback_Terminate terminate;
+    private Future <String> future;
     private int currModel;
-    private Future<String> future;
-    public StudentService(String name, Student student, LinkedList<Model> modelList) {
+    public StudentService(String name,Student student,LinkedList<Model> models) {
         super(name);
-        this.publishConferenceCallback = new Callback_PublishConferenceBroadcast(this);
-        this.terminateCallback = new Callback_Terminate(this);
-        this.student = student;
-        this.modelList = modelList;
-        this.finished = new Callback_FinishedBroadcast(this);
-        this.currModel = 0;
+        this.student=student;
+        this.models=models;
         this.future = new Future<String>();
+        this.publishConference = new Callback_PublishConferenceBroadcast(this);
+        terminate = new Callback_Terminate(this);
+        currModel=0;
+        this.finished = new Callback_FinishedBroadcast(this);
     }
 
     @Override
     protected void initialize() throws InterruptedException {
         MessageBusImpl.getInstance().register(this);
-        this.subscribeBroadcast(PublishConferenceBroadcast.class, this.publishConferenceCallback);
-        this.subscribeBroadcast(TerminateBroadcast.class, this.terminateCallback);
-        this.subscribeBroadcast(FinishedBroadcast.class, this.finished);
-        if(!this.modelList.isEmpty()) {
-            this.future = this.sendEvent(new TrainModelEvent(this.getModelList().getFirst()));
-        }
+        this.subscribeBroadcast(TerminateBroadcast.class,terminate);
+        this.subscribeBroadcast(PublishConferenceBroadcast.class,publishConference);
+        this.subscribeBroadcast(FinishedBroadcast.class,this.finished);
+        if (!models.isEmpty())
+        this.future=this.sendEvent(new TrainModelEvent(models.getFirst()));
     }
     public Boolean isEventSubscribed(Event e){
         return MessageBusImpl.getInstance().isMicroServiceEventRegistered(this,e);
@@ -57,20 +56,28 @@ public class StudentService extends MicroService {
         return MessageQueue;
     }
 
-    public LinkedList<Model> getModelList() {
-        return modelList;
+    public LinkedList<Model> getModels() {
+        return models;
     }
 
     public Student getStudent() {
         return student;
     }
 
-    public void incrementCurrModel(){
-        this.currModel++;
+    public Callback_PublishConferenceBroadcast getPublishConference() {
+        return publishConference;
+    }
+
+    public Callback_Terminate getTerminate() {
+        return terminate;
     }
 
     public int getCurrModel() {
         return currModel;
+    }
+
+    public void incrementcurrModel(){
+        this.currModel++;
     }
 
     public Future<String> getFuture() {
@@ -80,10 +87,9 @@ public class StudentService extends MicroService {
     public void setFuture(Future<String> future) {
         this.future = future;
     }
-
     /**
      * Assiph's comments:In here we should create 3 send events that use the message bus (let messagebus be mbs, so we will use
-     * mbs.sendEvent()). The 2 events should be TrainModelEvent,TestModelEvent,PublishResultsEvent.
+     * mbs.sendEvent()). The 3 events should be TrainModelEvent,TestModelEvent,PublishResultsEvent.
      *
      *
      */

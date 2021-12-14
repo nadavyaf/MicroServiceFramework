@@ -14,20 +14,20 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     /**
      * Enum representing the type of the GPU.
      */
-    public enum Type {RTX3090, RTX2080, GTX1080}
-
+   public enum Type {RTX3090, RTX2080, GTX1080}
     private Type type;
     private Model model;
     private Cluster cluster;
+    private DataBatch currBatch;
     final private ArrayBlockingQueue<DataBatch> processedCPUQueue;
     int learnedBatches;
     private int capacity;
     private int currTime;
     private int ticks;
-    private DataBatch currBatch;
 
     public GPU(Type type) {
         this.type = type;
+        this.currBatch=null;
         this.model = null;
         this.learnedBatches = 0;
         cluster = Cluster.getInstance();
@@ -45,7 +45,6 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
             this.ticks=4;
         }
         this.processedCPUQueue = new ArrayBlockingQueue<DataBatch>(capacity);
-        this.currBatch = null;
     }
 
 
@@ -57,10 +56,6 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
         return Type.RTX3090;
 
     }
-
-
-
-
     /**
      * Return the processedQueue, which holds the processed data batches.
      * @pre: none
@@ -88,10 +83,6 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      */
     public Model getModel() {
         return model;
-    }
-
-    public void setModel(Model model) {
-        this.model = model;
     }
 
     /**
@@ -132,8 +123,6 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     public int getCurrTime() {
         return currTime;
     }
-
-
     /**
      * Divide all the data recieved into data batches, add each batch to clusterQueue.
      * @pre: data != null
@@ -143,16 +132,13 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      *        clusterQueue.size == clusterSize + numberofDataBatches(The number of data batches created)
      */
     public LinkedList<DataBatch> divideAll(){
-        Data data = this.getModel().getData();
-        LinkedList<DataBatch> ans = new LinkedList<>();
-        while(ans.size() < data.getNumOfBatches()){
-            DataBatch db = new DataBatch(data.getType(), this);
-            ans.add(db);
-        }
-        return ans;
+            Data data = this.getModel().getData();
+            LinkedList<DataBatch> dataList= new LinkedList<>();
+            for (int i =0;i<data.getNumOfBatches();i++){
+                dataList.add(new DataBatch(data.getType(),this));
+            }
+            return dataList;
     }
-
-
 
 
     /**
@@ -196,6 +182,14 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      * @post none
      *
      */
+
+    /**
+     *
+     * @pre !processedCPUQueue.isEmpty()
+     * @inv none
+     * @post none
+     *
+     */
     public void updateTime() throws InterruptedException {
         if(currBatch == null) {
             if (!this.processedCPUQueue.isEmpty()) {
@@ -208,4 +202,9 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
             this.GPULearn();
         }
     }
+    public void setModel(Model m){
+        this.model=m;
+    }
+
+
 }

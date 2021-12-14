@@ -21,9 +21,9 @@ import java.util.HashMap;
  * <p>
  */
 public abstract class MicroService implements Runnable {/** Assiph's comments:I think we should add a field isRegistered. */
+    private final HashMap<Class < ? extends Message>,Callback> callbackMap;
     private boolean terminated = false;
     private final String name;
-    private final HashMap<Class < ? extends Message>,Callback> callbackMap;
 
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
@@ -56,8 +56,8 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
      *                 queue.
      */
     protected final <T, E extends Event<T>> void subscribeEvent(Class<E> type, Callback<E> callback) {
-        this.callbackMap.putIfAbsent(type, callback);
-        MessageBusImpl.getInstance().subscribeEvent(type, this);
+        this.callbackMap.putIfAbsent(type,callback);
+        MessageBusImpl.getInstance().subscribeEvent(type,this);
     }
 
     /**
@@ -81,8 +81,8 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
      *                 queue.
      */
     protected final <B extends Broadcast> void subscribeBroadcast(Class<B> type, Callback<B> callback) {
-        this.callbackMap.putIfAbsent(type, callback);
-        MessageBusImpl.getInstance().subscribeBroadcast(type, this);
+        this.callbackMap.putIfAbsent(type,callback);
+        MessageBusImpl.getInstance().subscribeBroadcast(type,this);
     }
 
     /**
@@ -122,7 +122,7 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
      *               {@code e}.
      */
     protected final <T> void complete(Event<T> e, T result) throws InterruptedException {
-        MessageBusImpl.getInstance().complete(e, result);
+        MessageBusImpl.getInstance().complete(e,result);
     }
 
     /**
@@ -161,10 +161,10 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
             try {
                 Message m = MessageBusImpl.getInstance().awaitMessage(this);
                 callbackMap.get(m).call(m);
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
         }
     }
 

@@ -8,22 +8,19 @@ import bgu.spl.mics.application.services.GPUService;
 
 import java.util.LinkedList;
 
-public class Callback_TrainModelEvent implements Callback<TrainModelEvent> {
-    private final GPUService gpus;
-
-    public Callback_TrainModelEvent(GPUService gpus) {
-        this.gpus = gpus;
+public class Callback_TrainModelEvent implements Callback<TrainModelEvent>{
+    private GPUService gpus;
+    public Callback_TrainModelEvent(GPUService gpus){
+        this.gpus=gpus;
     }
-
-    @Override
-    public void call(TrainModelEvent c) {
-        gpus.setEvent(c);
-        GPU gpu = gpus.getGpu();
-        gpu.setModel(c.getModel());
-        LinkedList<DataBatch> dataList = gpu.divideAll();
-        gpu.getModel().updateStatus();
-        for(int i=0; i<gpu.getCapacity() && !dataList.isEmpty(); i++){
-            Cluster.getInstance().sendCPU(dataList.pollFirst());
-        }
+    public void call(TrainModelEvent c) throws InterruptedException {
+    gpus.setEvent(c);
+    GPU gpu = gpus.getGpu();
+    gpu.setModel(c.getModel());
+    LinkedList<DataBatch> divide= gpu.divideAll();
+    gpu.getModel().updateStatus();
+    for (int i =0;i<gpu.getCapacity()&&!divide.isEmpty();i++){
+        Cluster.getInstance().sendToCPU(divide.pollFirst());
+    }
     }
 }

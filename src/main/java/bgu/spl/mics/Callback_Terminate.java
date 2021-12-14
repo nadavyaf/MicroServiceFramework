@@ -3,14 +3,11 @@ package bgu.spl.mics;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
 
 public class Callback_Terminate implements Callback<TerminateBroadcast> {
-    private MicroService ms;
-
-    public Callback_Terminate(MicroService ms) {
-        this.ms = ms;
+    private MicroService microService;
+    public Callback_Terminate(MicroService microService){
+        this.microService=microService;
     }
-
-    @Override
-    public void call(TerminateBroadcast c) {
-        ms.terminate();
+    public void call(TerminateBroadcast c) throws InterruptedException {
+    this.microService.terminate();
     }
 }

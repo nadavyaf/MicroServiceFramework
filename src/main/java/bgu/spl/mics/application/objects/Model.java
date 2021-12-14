@@ -6,71 +6,60 @@ package bgu.spl.mics.application.objects;
  * Add fields and methods to this class as you see fit (including public methods and constructors).
  */
 public class Model {
-    private String name;
     private Data data;
+    private String name;
     private Student student;
-    public enum Status {Pretrained, Training, Trained, Tested};
-    public enum Results {None, Good, Bad};
-    private Status currStatus;
-    private Results currResults;
+    private Status status=Status.PreTrained;
+    private results result=results.None;
+    public enum Status{PreTrained,Training,Trained,Tested};
+    public enum results {None,Good,Bad}
 
-    public Model(String name, Data data, Student student) {
-        this.name = name;
+    public Model(Data data, String name,Student student){
         this.data = data;
+        this.name = name;
         this.student = student;
-        this.currStatus = Status.Pretrained;
-        this.currResults = Results.None;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public Data getData() {
         return data;
     }
 
+    public String getName() {
+        return name;
+    }
+    public Status getCurrStatus(){
+        return status;
+    }
+    public String getResult(){
+        if (result==results.Good)
+            return "Good";
+        if (result==results.Bad)
+            return "Bad";
+        return "None";
+    }
+
     public Student getStudent() {
         return student;
     }
 
-    public Status getCurrStatus() {
-        return currStatus;
-    }
-
-    public Results getCurrResults() {
-        return currResults;
-    }
-
-    public void setCurrResults(Results currResults) {
-        this.currResults = currResults;
-    }
-
-    public String resultsToString(){
-        if (this.getCurrResults() == Results.Good){
-            return "Good";
-        }
-        if (this.getCurrResults() == Results.Bad){
-            return "Bad";
-        }
-        else{
-            return "Null";
-        }
-    }
 
     public void updateStatus(){
-        if(this.getCurrStatus() == Status.Pretrained){
-            this.currStatus = Status.Training;
+        if(this.getCurrStatus() == Status.PreTrained){
+            this.status = Status.Training;
         }
-        else if(this.currStatus == Status.Training){
-            this.currStatus = Status.Trained;
+        else if(this.status == Status.Training){
+            this.status = Status.Trained;
         }
-        else if(this.currStatus == Status.Trained){
-            this.currStatus = Status.Tested;
+        else if(this.status == Status.Trained){
+            this.status = Status.Tested;
         }
     }
 
     public boolean isTrained(){
-        return this.currStatus == Status.Trained;
+        return this.status == Status.Trained;
+    }
+
+    public void setResult(results result) {
+        this.result = result;
     }
 }
