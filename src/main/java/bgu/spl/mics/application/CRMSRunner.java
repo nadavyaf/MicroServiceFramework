@@ -23,6 +23,7 @@ public class CRMSRunner {
         JsonElement fileElement = JsonParser.parseReader(new FileReader(input));
         JsonObject fileObject = fileElement.getAsJsonObject();
         LinkedList <StudentService> studentServiceList = new LinkedList();
+        LinkedList <ConferenceService> cfsList = new LinkedList<>();
         int speed = fileObject.get("TickTime").getAsInt();
         int duration = fileObject.get("Duration").getAsInt();
         System.out.println(speed);
@@ -70,6 +71,7 @@ public class CRMSRunner {
             int date = conferenceJsonObject.get("date").getAsInt();
             ConfrenceInformation cfi = new ConfrenceInformation(name,date);
             ConferenceService cfs = new ConferenceService(name + " service",cfi);
+            cfsList.add(cfs);
             System.out.println(cfi.getName() + ":" + date);
             System.out.println(cfs.getName() + ":" + cfi.getDate());
             Thread conferencet = new Thread(cfs);
@@ -125,7 +127,13 @@ public class CRMSRunner {
                 if (model.getCurrStatus()== Model.Status.Trained||model.getCurrStatus()== Model.Status.Tested)
                 System.out.println(model.getName() + " " + model.getCurrStatus() + " " + model.getResult());
             }
-
         }
+        for (ConferenceService cfs : cfsList){
+            System.out.println(cfs.getName() + " published:");
+            for (String model : cfs.getCfsList()){
+                System.out.println(model);
+            }
+        }
+
     }
 }
