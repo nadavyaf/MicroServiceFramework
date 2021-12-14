@@ -24,16 +24,13 @@ public class TimeService extends MicroService{
 	private int speed;
 	private int duration;
 	private TimerTask tick;
-	private int currtime;
+	private TimerTask endTick;
 	private Callback_Terminate terminate;
-	private Callback_TickBroadcastTimeservice tickBroadcast;
 	public TimeService(int speed, int duration) {
 		super("TimeService");
 		this.speed = speed;
 		this.duration = duration;
-		tickBroadcast = new Callback_TickBroadcastTimeservice(this);
-		terminate = new Callback_Terminate();
-		currtime=0;
+		terminate = new Callback_Terminate(this);
 		tick = new TimerTask() {
 			public void run() {
 				try {
@@ -43,17 +40,20 @@ public class TimeService extends MicroService{
 				}
 			}
 		};
+		endTick = new TimerTask() {
+			public void run() {
+				try {
+					MessageBusImpl.getInstance().sendBroadcast(new TerminateBroadcast());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		};
 	}
 	protected void initialize() throws InterruptedException {
-		this.subscribeBroadcast(TickBroadcast.class,tickBroadcast);
 		this.subscribeBroadcast(TerminateBroadcast.class,terminate);
-		this.clock.scheduleAtFixedRate(tick,0,speed); /**Assiph's comments: creates another thread that sends ticks every speed. */
+		this.clock.scheduleAtFixedRate(tick,0,speed);/**Assiph's comments: creates another thread that sends ticks every speed. */
+		this.clock.schedule(endTick,duration);
 	}
-	public void updateTime() throws InterruptedException {
-		currtime=+speed;
-		if (currtime>=duration){
-		MessageBusImpl.getInstance().sendBroadcast(new TerminateBroadcast(this));
-		}
 
 	}
-}

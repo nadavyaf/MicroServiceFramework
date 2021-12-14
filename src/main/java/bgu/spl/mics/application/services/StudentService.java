@@ -1,9 +1,7 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.*;
-import bgu.spl.mics.application.messages.PublishConferenceBroadcast;
-import bgu.spl.mics.application.messages.TerminateBroadcast;
-import bgu.spl.mics.application.messages.TestModelEvent;
+import bgu.spl.mics.application.messages.*;
 import bgu.spl.mics.application.objects.Model;
 import bgu.spl.mics.application.objects.Student;
 
@@ -24,20 +22,29 @@ public class StudentService extends MicroService {
     private Student student;
     private LinkedBlockingQueue<Message> MessageQueue=null;
     private Callback_PublishConferenceBroadcast publishConference;
+    private Callback_FinishedBroadcast finished;
     private Callback_Terminate terminate;
+    private Future <String> future;
+    private int currModel;
     public StudentService(String name,Student student,LinkedList<Model> models) {
         super(name);
         this.student=student;
         this.models=models;
+        this.future = new Future<String>();
         this.publishConference = new Callback_PublishConferenceBroadcast(this);
-        terminate = new Callback_Terminate();
+        terminate = new Callback_Terminate(this);
+        currModel=0;
+        this.finished = new Callback_FinishedBroadcast(this);
     }
 
     @Override
-    protected void initialize() {
+    protected void initialize() throws InterruptedException {
         MessageBusImpl.getInstance().register(this);
         this.subscribeBroadcast(TerminateBroadcast.class,terminate);
         this.subscribeBroadcast(PublishConferenceBroadcast.class,publishConference);
+        this.subscribeBroadcast(FinishedBroadcast.class,this.finished);
+        if (!models.isEmpty())
+        this.future=this.sendEvent(new TrainModelEvent(models.getFirst()));
     }
     public Boolean isEventSubscribed(Event e){
         return MessageBusImpl.getInstance().isMicroServiceEventRegistered(this,e);
@@ -64,7 +71,23 @@ public class StudentService extends MicroService {
     public Callback_Terminate getTerminate() {
         return terminate;
     }
-/**
+
+    public int getCurrModel() {
+        return currModel;
+    }
+
+    public void incrementcurrModel(){
+        this.currModel++;
+    }
+
+    public Future<String> getFuture() {
+        return future;
+    }
+
+    public void setFuture(Future<String> future) {
+        this.future = future;
+    }
+    /**
      * Assiph's comments:In here we should create 3 send events that use the message bus (let messagebus be mbs, so we will use
      * mbs.sendEvent()). The 3 events should be TrainModelEvent,TestModelEvent,PublishResultsEvent.
      *

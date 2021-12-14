@@ -28,7 +28,7 @@ public class ConferenceService extends MicroService {
         super(name);
         this.cfsList = new LinkedBlockingQueue<>();
         this.cfi=cfi;
-        terminate = new Callback_Terminate();
+        terminate = new Callback_Terminate(this);
         publishEvent = new Callback_PublishResultsEvent(this);
     }
     public void addToConference(String name){

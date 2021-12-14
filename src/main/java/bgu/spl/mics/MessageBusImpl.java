@@ -1,5 +1,6 @@
 package bgu.spl.mics;
 
+import bgu.spl.mics.application.messages.FinishedBroadcast;
 import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.services.GPUService;
 
@@ -36,15 +37,14 @@ public class MessageBusImpl implements MessageBus {
 		messageMap.get(type).add(m);
 	}
 
-	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
 		messageMap.putIfAbsent(type,new LinkedBlockingQueue<>());
 		messageMap.get(type).add(m);
 	}
 
-	@Override
-	public <T> void complete(Event<T> e, T result) {
+	public <T> void complete(Event<T> e, T result) throws InterruptedException {
 		futureMap.remove(e).resolve(result);
+		MessageBusImpl.getInstance().sendBroadcast(new FinishedBroadcast());
 
 	}
 	public void sendBroadcast(Broadcast b) throws InterruptedException {

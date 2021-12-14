@@ -5,6 +5,7 @@ import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.messages.TestModelEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrainModelEvent;
+import bgu.spl.mics.application.objects.Cluster;
 import bgu.spl.mics.application.objects.GPU;
 
 import java.util.HashMap;
@@ -32,7 +33,7 @@ public class GPUService extends MicroService {
         tick = new Callback_TickBroadcastGPU(this);
         test = new Callback_TestModelEvent(this);
         train = new Callback_TrainModelEvent(this); // NEED TO IMPLEMENT THE CALLBACK.
-        terminate = new Callback_Terminate();
+        terminate = new Callback_Terminate(this);
         this.event = null;
     }
 
@@ -43,6 +44,7 @@ public class GPUService extends MicroService {
         this.subscribeEvent(TestModelEvent.class, test);
         this.subscribeEvent(TrainModelEvent.class, train);
         this.subscribeBroadcast(TerminateBroadcast.class, terminate);
+        Cluster.getInstance().addGPU(gpu);
     }
 
     public Boolean isEventSubscribed(Event e) {

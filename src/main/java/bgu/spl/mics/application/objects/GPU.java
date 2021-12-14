@@ -170,6 +170,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
             if(learnedBatches == model.getData().getNumOfBatches()){
                 learnedBatches = 0;
                 this.model.updateStatus();
+                Cluster.getInstance().getStatistics().addTrainedModel(this.model.getName());
             }
         }
     }

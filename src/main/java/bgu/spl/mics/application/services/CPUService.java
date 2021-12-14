@@ -7,6 +7,7 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.CPU;
+import bgu.spl.mics.application.objects.Cluster;
 
 /**
  * CPU service is responsible for handling the {@link //DataPreProcessEvent}.
@@ -23,7 +24,7 @@ public class CPUService extends MicroService {
         super(name);
         this.cpu = cpu;
         Callback_TickBroadcastCPU callback = new Callback_TickBroadcastCPU(this.cpu);
-        terminate = new Callback_Terminate();
+        terminate = new Callback_Terminate(this);
     }
 
     @Override
@@ -31,6 +32,7 @@ public class CPUService extends MicroService {
         MessageBusImpl.getInstance().register(this);
         this.subscribeBroadcast(TerminateBroadcast.class,terminate);
         this.subscribeBroadcast(TickBroadcast.class,callback);
+        Cluster.getInstance().addCPU(cpu);
     }
 
 }

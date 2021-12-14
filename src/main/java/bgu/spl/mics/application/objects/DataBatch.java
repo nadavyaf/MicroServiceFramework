@@ -11,6 +11,7 @@ public class DataBatch {
     private int StartTime;
     private Data.Type type;
     private GPU createdGpu;
+    private int startIndex;
     //Assiph's comment: maybe add a field of which gpu? so we know from which one it came.
 
     public DataBatch(Data.Type type, GPU gpu){
@@ -18,6 +19,7 @@ public class DataBatch {
         this.learnedGpu = false;
         this.type = type;
         this.createdGpu = gpu;
+        this.startIndex = 0;
     }
 
     public boolean isProcessedCpu() {

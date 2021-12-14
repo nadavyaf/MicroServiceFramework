@@ -13,7 +13,7 @@ public class Callback_TestModelEvent implements Callback<TestModelEvent> {
         this.gpuService = gpu;
     }
 
-    public void call(TestModelEvent c) {
+    public void call(TestModelEvent c) throws InterruptedException {
         Random rand = new Random();
         String result;
         int random = rand.nextInt(11);

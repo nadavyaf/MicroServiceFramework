@@ -9,11 +9,11 @@ private ConferenceService cfs;
     public Callback_PublishResultsEvent(ConferenceService cfs){
         this.cfs = cfs;
     }
-    public void call(PublishResultsEvent c) {
+    public void call(PublishResultsEvent c) throws InterruptedException {
         Model model = c.getModel();
         if (model.getResult()== "Good"){
             cfs.addToConference(model.getName());
         }
-        cfs.complete(c,"Published.");
+        cfs.complete(c,"Published");
     }
 }

@@ -43,7 +43,7 @@ public interface MessageBus {
      * @pre: e!= null && result!=null
      * @post: future.get(0,Seconds) = result;
      */
-    <T> void complete(Event<T> e, T result);
+    <T> void complete(Event<T> e, T result) throws InterruptedException;
 
     /**
      * Adds the {@link Broadcast} {@code b} to the message queues of all the

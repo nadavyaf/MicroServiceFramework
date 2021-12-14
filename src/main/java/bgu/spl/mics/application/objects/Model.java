@@ -11,7 +11,7 @@ public class Model {
     private Student student;
     private Status status=Status.PreTrained;
     private results result=results.None;
-    private enum Status{PreTrained,Training,Trained,Tested};
+    public enum Status{PreTrained,Training,Trained,Tested};
     private enum results {None,Good,Bad}
 
     public Model(Data data, String name,Student student){

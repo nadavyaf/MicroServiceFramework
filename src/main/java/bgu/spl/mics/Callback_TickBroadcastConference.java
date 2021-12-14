@@ -14,7 +14,7 @@ public class Callback_TickBroadcastConference implements Callback<TickBroadcast>
         this.cfs.getCfi().updateTime();
         if (this.cfs.getCfi().getCurrTime()>=this.cfs.getCfi().getDate()){
             this.cfs.sendBroadcast(new PublishConferenceBroadcast(this.cfs));
-            this.cfs.terminate();
+            MessageBusImpl.getInstance().unregister(this.cfs);
         }
 
 
