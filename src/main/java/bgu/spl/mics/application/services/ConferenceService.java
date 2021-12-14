@@ -23,7 +23,7 @@ public class ConferenceService extends MicroService {
     private ConfrenceInformation cfi;
     private Callback_Terminate terminate;
     private Callback_PublishResultsEvent publishEvent;
-    private Callback_TickBroadcastTimeservice tick;
+    private Callback_TickBroadcastConference tick;
     public ConferenceService(String name,ConfrenceInformation cfi) {
         super(name);
         this.cfsList = new LinkedBlockingQueue<>();

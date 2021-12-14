@@ -72,7 +72,7 @@ public class CPU {
 //    }
     public void process() throws InterruptedException {
         this.cluster.getStatistics().incrementCPUTimeUnits();
-            if (currTime - currDataBatch.getStartTime() < currDataBatchTick) {
+            if (currTime - currDataBatch.getStartTime() >= currDataBatchTick) {
                 currDataBatch.setProcessedCpu();
                 this.cluster.sendToGPU(currDataBatch);
                 this.cluster.getStatistics().incrementCPUProcessed();

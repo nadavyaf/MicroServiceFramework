@@ -8,7 +8,7 @@ public class Data {
     /**
      * Enum representing the Data type.
      */
-    enum Type {
+   public enum Type {
         Images, Text, Tabular
     }
 
@@ -17,9 +17,9 @@ public class Data {
     private int size;
     private int numOfBatches;
 
-    public Data(Type type, int processed, int size) {
+    public Data(Type type, int size) {
         this.type = type;
-        this.processed = processed;
+        this.processed = 0;
         this.size = size;
         this.numOfBatches = getSize()/1000;
     }

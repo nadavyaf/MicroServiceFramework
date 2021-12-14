@@ -12,7 +12,7 @@ public class Model {
     private Status status=Status.PreTrained;
     private results result=results.None;
     public enum Status{PreTrained,Training,Trained,Tested};
-    private enum results {None,Good,Bad}
+    public enum results {None,Good,Bad}
 
     public Model(Data data, String name,Student student){
         this.data = data;
@@ -57,5 +57,9 @@ public class Model {
 
     public boolean isTrained(){
         return this.status == Status.Trained;
+    }
+
+    public void setResult(results result) {
+        this.result = result;
     }
 }

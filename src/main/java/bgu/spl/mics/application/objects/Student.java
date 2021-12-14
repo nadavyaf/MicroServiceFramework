@@ -10,7 +10,7 @@ public class Student {
     /**
      * Enum representing the Degree the student is studying for.
      */
-    enum Degree {
+    public enum Degree {
         MSc, PhD
     }
 
@@ -19,6 +19,14 @@ public class Student {
     private Degree status;
     private int publications;
     private int papersRead;
+
+    public Student(String name,String department,Degree status){
+        this.name=name;
+        this.department=department;
+        this.status=status;
+        this.publications=0;
+        this.papersRead=0;
+    }
 
     public String getName() {
         return name;
