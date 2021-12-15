@@ -22,6 +22,7 @@ private StudentService st;
             while (modelita.hasNext()&&flag){
                 Model model = (Model) modelita.next();
                 if (model.getName()==modelName) {
+                    model.setPublished(true);
                     st.getStudent().addPublication();
                     System.out.println(this.st.getStudent() + " added publication!");
                     flag=false;

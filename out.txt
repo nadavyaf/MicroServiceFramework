@@ -1,22 +1,25 @@
-Simba read 2 and published: 1
-YOLO10 Trained Bad
-ResNet9000 Trained Bad
-LessEfficientNet Trained Good
-Zazu read 3 and published: 0
-Pumba read 2 and published: 1
-Bert Trained Good
-Timon read 3 and published: 0
-Percepetron Trained None
-Nala read 2 and published: 1
-YOLO9000 Trained Good
+Simba read 3 and published: 1
+YOLO10 Trained Good and published.
+ResNet9000 Trained 
+Zazu read 4 and published: 0
+Pumba read 4 and published: 0
+Bert Trained 
+Timon read 2 and published: 2
+Percepetron Trained Good and published.
+GNN Trained Good and published.
+MoreStyleGAN Trained Bad
+ConditionalGAN Trained Bad
+Nala read 3 and published: 1
+YOLO9000 Trained Good and published.
 ICML service published:
-LessEfficientNet
+Percepetron
 NeurIPS service published:
 CVPR service published:
+YOLO10
 ECCV service published:
-AISTATS service published:
 YOLO9000
-Bert
-Amount of GPUTimeUnits: 12897
-Amount of CPUTimeUnits: 23473
-Amount of Batches processed by CPU: 6306
+AISTATS service published:
+GNN
+Amount of GPUTimeUnits: 65692
+Amount of CPUTimeUnits: 325334
+Amount of Batches processed by CPU: 58719

@@ -17,7 +17,7 @@ import java.util.LinkedList;
 public class CRMSRunner {
     public static void main(String[] args) throws IOException, InterruptedException {
         LinkedList <Thread> threadList = new LinkedList<>();
-        File input = new File("C:/Users/nadav/IdeaProjects/JavaMasterclass/SPL2/example_input.json");
+        File input = new File("C://Users//Assiph//IdeaProjects//SPL2//example_input.json");
         JsonElement fileElement = JsonParser.parseReader(new FileReader(input));
         JsonObject fileObject = fileElement.getAsJsonObject();
         LinkedList <StudentService> studentServiceList = new LinkedList();
@@ -122,8 +122,13 @@ public class CRMSRunner {
         for (StudentService studentService : studentServiceList){
             System.out.println(studentService.getStudent().getName() + " read " + studentService.getStudent().getPapersRead() + " and published: " + studentService.getStudent().getPublications());
             for (Model model : studentService.getModels()){
-                if (model.getCurrStatus()== Model.Status.Trained||model.getCurrStatus()== Model.Status.Tested)
-                System.out.println(model.getName() + " " + model.getCurrStatus() + " " + model.getResult());
+                if (model.getCurrStatus()== Model.Status.Trained||model.getCurrStatus()== Model.Status.Tested) {
+                    System.out.print(model.getName() + " " + model.getCurrStatus() + " ");
+                    if (!model.getResult().equals("None")) {
+                        System.out.print(model.getResult());
+                    }
+                    System.out.println();
+                }
             }
         }
         for (ConferenceService cfs : cfsList){
@@ -143,8 +148,14 @@ public class CRMSRunner {
         for (StudentService studentService : studentServiceList) {
             pw.println(studentService.getStudent().getName() + " read " + studentService.getStudent().getPapersRead() + " and published: " + studentService.getStudent().getPublications());
             for (Model model : studentService.getModels()) {
-                if (model.getCurrStatus() == Model.Status.Trained || model.getCurrStatus() == Model.Status.Tested)
-                    pw.println(model.getName() + " " + model.getCurrStatus() + " " + model.getResult());
+                if (model.getCurrStatus() == Model.Status.Trained || model.getCurrStatus() == Model.Status.Tested) {
+                    pw.print(model.getName() + " " + model.getCurrStatus() + " ");
+                    if (!model.getResult().equals("None"))
+                        pw.print(model.getResult());
+                    if (model.getPublished())
+                        pw.print(" and published.");
+                    pw.println();
+                }
             }
         }
         for (ConferenceService cfs : cfsList){
