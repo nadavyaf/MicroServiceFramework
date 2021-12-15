@@ -1,13 +1,8 @@
 package bgu.spl.mics;
 
 import bgu.spl.mics.application.messages.FinishedBroadcast;
-import bgu.spl.mics.application.messages.TerminateBroadcast;
-import bgu.spl.mics.application.messages.TickBroadcast;
-import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.services.GPUService;
 
-import javax.swing.plaf.metal.MetalIconFactory;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,21 +71,24 @@ public class MessageBusImpl implements MessageBus {
 	while (messageMap.get(e.getClass())==null){
 //when the student sends an event faster than the microservice registered to it.
 	}
-	 if (messageMap.get(e.getClass()).isEmpty())
-			return null;
-		Future <T> ans = new Future<>();
-		futureMap.putIfAbsent(e,ans);
-		BlockingQueue <MicroService> service = messageMap.get(e.getClass());
-		synchronized (e.getClass()) {//else we will have round robin problem.
-			MicroService m = service.take();
-			service.put(m);
-			microMap.get(m).putLast(e);
-			synchronized (m) {//The caller of the wait(), notify(), and notifyAll() methods is required to own the monitor for which it's invoking these methods.
-				m.notifyAll();
-			}
-		}
-		return ans;
+	 if (messageMap.get(e.getClass()).isEmpty()) {
+	 	return null;
+	 }
+
+	 Future <T> ans = new Future<>();
+	 futureMap.putIfAbsent(e,ans);
+	 BlockingQueue <MicroService> service = messageMap.get(e.getClass());
+	 synchronized (e.getClass()) {//else we will have round robin problem.
+	 	MicroService m = service.take();
+	 	service.put(m);
+	 	microMap.get(m).putLast(e);
+	 	synchronized (m) {//The caller of the wait(), notify(), and notifyAll() methods is required to own the monitor for which it's invoking these methods.
+	 		m.notifyAll();
+	 	}
+	 }
+	 return ans;
 	}
+
 
 	public void register(MicroService m) {
 		microMap.putIfAbsent(m,new LinkedBlockingDeque<>());

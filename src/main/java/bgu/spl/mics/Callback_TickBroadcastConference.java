@@ -15,8 +15,6 @@ public class Callback_TickBroadcastConference implements Callback<TickBroadcast>
             this.cfs.sendBroadcast(new PublishConferenceBroadcast(this.cfs));
             System.out.println("Sent a broadcast");
             MessageBusImpl.getInstance().unregister(this.cfs);
-            System.out.println("Message map contained: " + MessageBusImpl.getInstance().getMessageMap().containsValue(this.cfs));
-            System.out.println("Micro map contained " + MessageBusImpl.getInstance().getMicroMap().containsKey(this.cfs));
         }
 
 

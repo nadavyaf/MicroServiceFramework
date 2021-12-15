@@ -19,7 +19,7 @@ import java.util.LinkedList;
 public class CRMSRunner {
     public static void main(String[] args) throws FileNotFoundException, InterruptedException {
         LinkedList <Thread> threadList = new LinkedList<>();
-        File input = new File("C:/Users/Assiph/IdeaProjects/SPL2/example_input.json");
+        File input = new File("C:/Users/nadav/IdeaProjects/JavaMasterclass/SPL2/example_input.json");
         JsonElement fileElement = JsonParser.parseReader(new FileReader(input));
         JsonObject fileObject = fileElement.getAsJsonObject();
         LinkedList <StudentService> studentServiceList = new LinkedList();
