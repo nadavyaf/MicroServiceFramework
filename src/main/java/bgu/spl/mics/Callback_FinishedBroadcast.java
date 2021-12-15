@@ -16,7 +16,8 @@ public class Callback_FinishedBroadcast implements Callback<FinishedBroadcast>{
     }
     public void call(FinishedBroadcast c) throws InterruptedException {
         Model model = sts.getModels().get(sts.getCurrModel());
-        if(sts.getFuture().get(1, TimeUnit.MILLISECONDS) != null) {
+        System.out.println(sts.getName());
+        if (sts.getFuture().get(1, TimeUnit.MILLISECONDS) != null) {
             String result = sts.getFuture().get();
             if (result.equals("Trained"))
                 sts.setFuture(sts.sendEvent(new TestModelEvent(model)));
@@ -27,7 +28,9 @@ public class Callback_FinishedBroadcast implements Callback<FinishedBroadcast>{
                     sts.incrementcurrModel();
                     sts.setFuture(sts.sendEvent(new TrainModelEvent(sts.getModels().get(sts.getCurrModel()))));
                 }
+
             }
+
 
         }
     }

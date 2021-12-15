@@ -6,6 +6,7 @@ import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.ConfrenceInformation;
 
+import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -29,7 +30,7 @@ public class ConferenceService extends MicroService {
         this.cfi=cfi;
         terminate = new Callback_Terminate(this);
         publishEvent = new Callback_PublishResultsEvent(this);
-        this.tick = new Callback_TickBroadcastConference(this);
+        tick = new Callback_TickBroadcastConference(this);
     }
     public void addToConference(String name){
         cfsList.add(name);
@@ -46,9 +47,9 @@ public class ConferenceService extends MicroService {
     @Override
     protected void initialize() {
         MessageBusImpl.getInstance().register(this);
+        this.subscribeBroadcast(TickBroadcast.class,tick);
         this.subscribeBroadcast(TerminateBroadcast.class,terminate);
         this.subscribeEvent(PublishResultsEvent.class,publishEvent);
-        this.subscribeBroadcast(TickBroadcast.class,tick);
     }
     /**
      * Assiph's comment:In this Service we should send PublishConferenceBroadcast, in a similar way we did in studentservice. Note that

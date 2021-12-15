@@ -1,5 +1,7 @@
 package bgu.spl.mics;
 
+import bgu.spl.mics.application.messages.TrainModelEvent;
+
 import java.util.HashMap;
 
 /**
@@ -154,7 +156,6 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
      * The entry point of the micro-service. TODO: you must complete this code
      * otherwise you will end up in an infinite loop.
      */
-    @Override
     public final void run() {
         try {
             initialize();

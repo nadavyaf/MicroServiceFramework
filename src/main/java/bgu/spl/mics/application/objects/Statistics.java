@@ -10,10 +10,10 @@ public class Statistics {
     private LinkedBlockingQueue<String> modelTrained;
 
     public Statistics() {
-        this.CPUTimeUnits = new AtomicInteger();
-        this.CPUProcessed = new AtomicInteger();
-        this.GPUTimeUnits = new AtomicInteger();
-        this.modelTrained = new LinkedBlockingQueue<>();
+        CPUProcessed = new AtomicInteger(0);
+        CPUTimeUnits = new AtomicInteger(0);
+        GPUTimeUnits = new AtomicInteger(0);
+        modelTrained = new LinkedBlockingQueue<>();
     }
 
     public void incrementCPUProcessed(){

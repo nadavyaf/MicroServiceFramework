@@ -30,8 +30,8 @@ public class CPUService extends MicroService {
     @Override
     protected void initialize() {
         MessageBusImpl.getInstance().register(this);
-        this.subscribeBroadcast(TerminateBroadcast.class,terminate);
         this.subscribeBroadcast(TickBroadcast.class,callback);
+        this.subscribeBroadcast(TerminateBroadcast.class,terminate);
         Cluster.getInstance().addCPU(cpu);
     }
 

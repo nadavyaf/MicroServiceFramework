@@ -9,6 +9,6 @@ public class Callback_Terminate implements Callback<TerminateBroadcast> {
     }
     public void call(TerminateBroadcast c) throws InterruptedException {
     MessageBusImpl.getInstance().unregister(this.microService);
-    System.out.println(this.microService.isTerminated());
+        System.out.println(this.microService.getName() + "Terminated");
     }
 }

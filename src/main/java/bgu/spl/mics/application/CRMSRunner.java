@@ -19,7 +19,7 @@ import java.util.LinkedList;
 public class CRMSRunner {
     public static void main(String[] args) throws FileNotFoundException, InterruptedException {
         LinkedList <Thread> threadList = new LinkedList<>();
-        File input = new File("C:/Users/nadav/IdeaProjects/JavaMasterclass/SPL2/example_input.json");
+        File input = new File("C:/Users/Assiph/IdeaProjects/SPL2/example_input.json");
         JsonElement fileElement = JsonParser.parseReader(new FileReader(input));
         JsonObject fileObject = fileElement.getAsJsonObject();
         LinkedList <StudentService> studentServiceList = new LinkedList();
@@ -28,6 +28,10 @@ public class CRMSRunner {
         int duration = fileObject.get("Duration").getAsInt();
         System.out.println(speed);
         System.out.println(duration);
+        TimeService clock = new TimeService(speed,duration);
+        Thread clockt = new Thread(clock);
+        threadList.add(clockt);
+        clockt.start();
         JsonArray jsonArrayOfStudents = fileObject.get("Students").getAsJsonArray();
         JsonArray jsonArrayGPU = fileObject.get("GPUS").getAsJsonArray();
         int i =0;
@@ -68,25 +72,23 @@ public class CRMSRunner {
             ConfrenceInformation cfi = new ConfrenceInformation(name,date);
             ConferenceService cfs = new ConferenceService(name + " service",cfi);
             cfsList.add(cfs);
+            System.out.println(cfi.getName() + ":" + date);
+            System.out.println(cfs.getName() + ":" + cfi.getDate());
             Thread conferencet = new Thread(cfs);
             threadList.add(conferencet);
             conferencet.start();
         }
-        TimeService clock = new TimeService(speed,duration);
-        Thread clockt = new Thread(clock);
-        threadList.add(clockt);
-        clockt.start();
         for (JsonElement st : jsonArrayOfStudents){
             JsonObject studentJsonObject = st.getAsJsonObject();
             String name = studentJsonObject.get("name").getAsString();
-            String department = studentJsonObject.get("department").getAsString();
+            String depertment = studentJsonObject.get("department").getAsString();
             String statusget = studentJsonObject.get("status").getAsString();
             Student.Degree deg=null;
             if (statusget.equals("MSc"))
             deg= Student.Degree.MSc;
             if (statusget.equals("PhD"))
                 deg= Student.Degree.PhD;
-            Student student = new Student(name,department,deg);
+            Student student = new Student(name,depertment,deg);
             JsonArray jsonArrayOfModels = studentJsonObject.get("models").getAsJsonArray();
             LinkedList<Model> modelList= new LinkedList<Model>();
             for (JsonElement mdl : jsonArrayOfModels){
@@ -113,14 +115,14 @@ public class CRMSRunner {
                 System.out.print(m.getName() + " " + m.getData().getSize() + " " + m.getData().getType()+ ", ");
             }
             System.out.println();
-            Thread studentServiceT = new Thread(studentService);
-            threadList.add(studentServiceT);
-            studentServiceT.start();
+            Thread studentservicet = new Thread(studentService);
+            threadList.add(studentservicet);
+            studentservicet.start();
         }
         for (Thread thread : threadList)
             thread.join();
         for (StudentService studentService : studentServiceList){
-            System.out.println(studentService.getStudent().getName() + " read" + studentService.getStudent().getPapersRead() + " and trained:" + studentService.getStudent().getPublications());
+            System.out.println(studentService.getStudent().getName() + " read" + studentService.getStudent().getPapersRead() + " and trained:");
             for (Model model : studentService.getModels()){
                 if (model.getCurrStatus()== Model.Status.Trained||model.getCurrStatus()== Model.Status.Tested)
                 System.out.println(model.getName() + " " + model.getCurrStatus() + " " + model.getResult());
@@ -132,8 +134,8 @@ public class CRMSRunner {
                 System.out.println(model);
             }
         }
-        System.out.println("GPU Time Units used: " + Cluster.getInstance().getStatistics().getGPUTimeUnits());
-        System.out.println("CPU Time units used: " + Cluster.getInstance().getStatistics().getCPUTimeUnits());
-        System.out.println("Number of batches processed by the CPU: " + Cluster.getInstance().getStatistics().getCPUProcessed());
+        System.out.println("Amount of GPUTimeUnits: " + Cluster.getInstance().getStatistics().getGPUTimeUnits());
+        System.out.println("Amount of CPUTimeUnits: " + Cluster.getInstance().getStatistics().getCPUTimeUnits());
+        System.out.println("Amount of Batches processed by CPU: " + Cluster.getInstance().getStatistics().getCPUProcessed());
     }
 }
