@@ -54,7 +54,7 @@ public class TimeService extends MicroService{
 		MessageBusImpl.getInstance().register(this);
 		this.subscribeBroadcast(TerminateBroadcast.class,terminate);
 		this.clock.scheduleAtFixedRate(tick,0,speed);/**Assiph's comments: creates another thread that sends ticks every speed. */
-		this.clock.schedule(endTick,duration);
+		this.clock.schedule(endTick,(duration*speed)-speed);//does an extra tick if we don't subscribe by speed.
 	}
 
 	}

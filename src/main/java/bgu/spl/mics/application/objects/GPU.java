@@ -170,7 +170,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
             currBatch.setLearnedGpu();
             this.learnedBatches++;
             if (!dataList.isEmpty())
-            Cluster.getInstance().sendToCPU(dataList.pollFirst());
+                Cluster.getInstance().sendToCPU(dataList.pollFirst());
             currBatch = null;
             if(learnedBatches == model.getData().getNumOfBatches()){
                 learnedBatches = 0;

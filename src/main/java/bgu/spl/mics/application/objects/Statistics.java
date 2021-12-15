@@ -13,6 +13,7 @@ public class Statistics {
         CPUProcessed = new AtomicInteger(0);
         CPUTimeUnits = new AtomicInteger(0);
         GPUTimeUnits = new AtomicInteger(0);
+        modelTrained = new LinkedBlockingQueue<>();
     }
 
     public void incrementCPUProcessed(){
