@@ -126,6 +126,9 @@ public class CRMSRunner {
             for (Model model : studentService.getModels()){
                 if (model.getCurrStatus()== Model.Status.Trained||model.getCurrStatus()== Model.Status.Tested)
                 System.out.println(model.getName() + " " + model.getCurrStatus() + " " + model.getResult());
+                if (!(model.getResult().equals(Model.results.None))){
+                    System.out.print(model.getResult());
+                }
             }
         }
         for (ConferenceService cfs : cfsList){
@@ -137,5 +140,11 @@ public class CRMSRunner {
         System.out.println("Amount of GPUTimeUnits: " + Cluster.getInstance().getStatistics().getGPUTimeUnits());
         System.out.println("Amount of CPUTimeUnits: " + Cluster.getInstance().getStatistics().getCPUTimeUnits());
         System.out.println("Amount of Batches processed by CPU: " + Cluster.getInstance().getStatistics().getCPUProcessed());
+        for(GPU gpu : Cluster.getInstance().getGPUS()){
+            System.out.println(gpu.getType() + " Number of ticks: " + gpu.getNumOfTicks());
+        }
+        for (CPU cpu : Cluster.getInstance().getCPUS()){
+            System.out.println(cpu.getCores() + " Number of ticks: " + cpu.getNumOfTicks());
+        }
     }
 }
