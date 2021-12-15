@@ -1,11 +1,10 @@
 package bgu.spl.mics;
 
 import bgu.spl.mics.application.messages.TickBroadcast;
-import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.services.GPUService;
 
 public class Callback_TickBroadcastGPU implements Callback<TickBroadcast>{
-    private GPUService gpus;
+    private final GPUService gpus;
     public Callback_TickBroadcastGPU(GPUService gpus){
         this.gpus=gpus;
     }

@@ -1,9 +1,5 @@
 package bgu.spl.mics.application.objects;
 
-import bgu.spl.mics.MessageBusImpl;
-
-import java.util.concurrent.LinkedBlockingQueue;
-
 /**
  * Passive object representing a single CPU.
  * Add all the fields described in the assignment as private fields.
@@ -16,14 +12,16 @@ public class CPU {
     //NEED TO DELETE
     private int numOfTicks;
     private int currDataBatchTick;
-    private int currTime; // we will get from TimeService pulses,TickBrodcast, which will be caught in the GPUservice and CPUservice and update our time int.
-    public int getTime() {
-        return currTime;
-    }
+    private int currTime;
+
     public CPU(int numberOfCores) {
         this.cores = numberOfCores;
         currTime= 1;
         numOfTicks=0;
+    }
+
+    public int getTime() {
+        return currTime;
     }
 
     public int getCores() {
@@ -34,20 +32,6 @@ public class CPU {
         return cluster;
     }
 
-//    /**Gets data from the Cluster and add it to the DataBatch of a cpu.
-//     *
-//     * @param d
-//     * @pre none
-//     * @post data.length=@pre(data.length + 1)
-//     *
-//     */
-//    public void addData(DataBatch d){
-//        try {
-//            CPUdata.put(d);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     /** works on the Databatches, and processes them.
      *
@@ -55,31 +39,14 @@ public class CPU {
      * @post if currTime-datapeek()>10 then data.length=@pre(data.length - 1)
      * @return
      */
-//    public DataBatch Proccessed(){//Processes the first element in the data LinkedList, and then pops it.
-//        updateTime();
-//        if (currTime - CPUdata.peek().getStartTime() > 10)// should be ticks instead of 10 instead, it is known in the json file we get{
-//        {
-//            System.out.println("Need to implement here!");
-//            //implement
-//            try {
-//                return CPUdata.take();
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        else{
-//
-//            //We just wait until the number of ticks is passed, we block the CPU so just let the loop run.
-//        }
-//        return null;
-//    }
+
     public void process() throws InterruptedException {
         Cluster.getInstance().getStatistics().incrementCPUTimeUnits();
         this.numOfTicks++;
             if (currTime - currDataBatch.getStartTime() >= currDataBatchTick) {
                 currDataBatch.setProcessedCpu();
-                this.cluster.sendToGPU(currDataBatch);
-                this.cluster.getStatistics().incrementCPUProcessed();
+                Cluster.getInstance().sendToGPU(currDataBatch);
+                Cluster.getInstance().getStatistics().incrementCPUProcessed();
                 currDataBatch = null;
             }
     }

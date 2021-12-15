@@ -149,6 +149,10 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
         return name;
     }
 
+    public boolean isTerminated() {
+        return terminated;
+    }
+
     /**
      * The entry point of the micro-service. TODO: you must complete this code
      * otherwise you will end up in an infinite loop.

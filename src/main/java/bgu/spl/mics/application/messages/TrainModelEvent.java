@@ -9,7 +9,7 @@ public class TrainModelEvent implements Event<String> {/** Assiph's Comment: Jus
     public TrainModelEvent(Model M) {
     this.m=M;
     }
-    public Model getModel() {//Assiph added.
+    public Model getModel() {
         return this.m;
     }
 }

@@ -1,0 +1,22 @@
+Simba read 2 and published: 1
+YOLO10 Trained Bad
+ResNet9000 Trained Bad
+LessEfficientNet Trained Good
+Zazu read 3 and published: 0
+Pumba read 2 and published: 1
+Bert Trained Good
+Timon read 3 and published: 0
+Percepetron Trained None
+Nala read 2 and published: 1
+YOLO9000 Trained Good
+ICML service published:
+LessEfficientNet
+NeurIPS service published:
+CVPR service published:
+ECCV service published:
+AISTATS service published:
+YOLO9000
+Bert
+Amount of GPUTimeUnits: 12897
+Amount of CPUTimeUnits: 23473
+Amount of Batches processed by CPU: 6306

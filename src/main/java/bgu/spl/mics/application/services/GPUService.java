@@ -8,8 +8,6 @@ import bgu.spl.mics.application.messages.TrainModelEvent;
 import bgu.spl.mics.application.objects.Cluster;
 import bgu.spl.mics.application.objects.GPU;
 
-import java.util.HashMap;
-
 /**
  * GPU service is responsible for handling the
  * {@link //TrainModelEvent} and {@link //TestModelEvent},
@@ -41,9 +39,9 @@ public class GPUService extends MicroService {
     protected void initialize() {
         MessageBusImpl.getInstance().register(this);
         this.subscribeBroadcast(TickBroadcast.class, tick);
+        this.subscribeBroadcast(TerminateBroadcast.class, terminate);
         this.subscribeEvent(TestModelEvent.class, test);
         this.subscribeEvent(TrainModelEvent.class, train);
-        this.subscribeBroadcast(TerminateBroadcast.class, terminate);
         Cluster.getInstance().addGPU(gpu);
     }
 
