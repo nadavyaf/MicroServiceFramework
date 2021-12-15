@@ -1,7 +1,6 @@
 package bgu.spl.mics.application.objects;
 
 
-import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -12,8 +11,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Add fields and methods to this class as you see fit (including public methods and constructors).
  */
 public class Cluster {
-private LinkedList<GPU> GPUS = new LinkedList<>();
-private LinkedList<CPU> CPUS = new LinkedList<>();
+private LinkedBlockingQueue<GPU> GPUS = new LinkedBlockingQueue<>();
+private LinkedBlockingQueue<CPU> CPUS = new LinkedBlockingQueue<>();
 private Statistics statistics=new Statistics();
 private LinkedBlockingQueue<DataBatch> cpuQueue= new LinkedBlockingQueue<DataBatch>();
 	/**
@@ -47,11 +46,11 @@ private LinkedBlockingQueue<DataBatch> cpuQueue= new LinkedBlockingQueue<DataBat
 		return statistics;
 	}
 
-	public LinkedList<GPU> getGPUS() {
+	public LinkedBlockingQueue<GPU> getGPUS() {
 		return GPUS;
 	}
 
-	public LinkedList<CPU> getCPUS() {
+	public LinkedBlockingQueue<CPU> getCPUS() {
 		return CPUS;
 	}
 

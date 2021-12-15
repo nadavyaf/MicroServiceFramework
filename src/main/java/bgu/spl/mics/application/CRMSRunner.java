@@ -7,9 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.util.LinkedList;
 
 /** This is the Main class of Compute Resources Management System application. You should parse the input file,
@@ -17,7 +15,7 @@ import java.util.LinkedList;
  * In the end, you should output a text file.
  */
 public class CRMSRunner {
-    public static void main(String[] args) throws FileNotFoundException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         LinkedList <Thread> threadList = new LinkedList<>();
         File input = new File("C:/Users/nadav/IdeaProjects/JavaMasterclass/SPL2/example_input.json");
         JsonElement fileElement = JsonParser.parseReader(new FileReader(input));
@@ -122,7 +120,7 @@ public class CRMSRunner {
         for (Thread thread : threadList)
             thread.join();
         for (StudentService studentService : studentServiceList){
-            System.out.println(studentService.getStudent().getName() + " read" + studentService.getStudent().getPapersRead() + " and trained:");
+            System.out.println(studentService.getStudent().getName() + " read " + studentService.getStudent().getPapersRead() + " and published: " + studentService.getStudent().getPublications());
             for (Model model : studentService.getModels()){
                 if (model.getCurrStatus()== Model.Status.Trained||model.getCurrStatus()== Model.Status.Tested)
                 System.out.println(model.getName() + " " + model.getCurrStatus() + " " + model.getResult());
@@ -137,5 +135,28 @@ public class CRMSRunner {
         System.out.println("Amount of GPUTimeUnits: " + Cluster.getInstance().getStatistics().getGPUTimeUnits());
         System.out.println("Amount of CPUTimeUnits: " + Cluster.getInstance().getStatistics().getCPUTimeUnits());
         System.out.println("Amount of Batches processed by CPU: " + Cluster.getInstance().getStatistics().getCPUProcessed());
+
+        File file = new File("out.txt");
+        FileWriter fw = new FileWriter(file);
+        PrintWriter pw = new PrintWriter(fw);
+
+        for (StudentService studentService : studentServiceList) {
+            pw.println(studentService.getStudent().getName() + " read " + studentService.getStudent().getPapersRead() + " and published: " + studentService.getStudent().getPublications());
+            for (Model model : studentService.getModels()) {
+                if (model.getCurrStatus() == Model.Status.Trained || model.getCurrStatus() == Model.Status.Tested)
+                    pw.println(model.getName() + " " + model.getCurrStatus() + " " + model.getResult());
+            }
+        }
+        for (ConferenceService cfs : cfsList){
+            pw.println(cfs.getName() + " published:");
+            for (String model : cfs.getCfsList()){
+                pw.println(model);
+            }
+        }
+        pw.println("Amount of GPUTimeUnits: " + Cluster.getInstance().getStatistics().getGPUTimeUnits());
+        pw.println("Amount of CPUTimeUnits: " + Cluster.getInstance().getStatistics().getCPUTimeUnits());
+        pw.println("Amount of Batches processed by CPU: " + Cluster.getInstance().getStatistics().getCPUProcessed());
+
+        pw.close();
     }
 }
