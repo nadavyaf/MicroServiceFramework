@@ -1,8 +1,14 @@
 package bgu.spl.mics;
 
 import bgu.spl.mics.application.messages.FinishedBroadcast;
+import bgu.spl.mics.application.messages.PublishResultsEvent;
+import bgu.spl.mics.application.messages.TerminateBroadcast;
+import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.services.GPUService;
 
+import javax.swing.plaf.metal.MetalIconFactory;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -65,30 +71,27 @@ public class MessageBusImpl implements MessageBus {
 	 * when we get the result, we will create a Future object, use result on it and return it, this should return it to the student in the
 	 * right way. ***the student will get it in the main (CRMSRunner) or in it's StudentService, not sure yet.***
 	 */
-	@Override
 	public <T> Future<T> sendEvent(Event<T> e) throws InterruptedException { /** Assiph's Comments: Will be used by a studentService (or student,not sure) for example
 	 it will enter the event to the right queue using the Messagebus (with get instance) and then use the get method (blocking).*/
 	while (messageMap.get(e.getClass())==null){
 //when the student sends an event faster than the microservice registered to it.
 	}
-	 if (messageMap.get(e.getClass()).isEmpty()) {
-	 	return null;
-	 }
-
-	 Future <T> ans = new Future<>();
-	 futureMap.putIfAbsent(e,ans);
-	 BlockingQueue <MicroService> service = messageMap.get(e.getClass());
-	 synchronized (e.getClass()) {//else we will have round robin problem.
-	 	MicroService m = service.take();
-	 	service.put(m);
-	 	microMap.get(m).putLast(e);
-	 	synchronized (m) {//The caller of the wait(), notify(), and notifyAll() methods is required to own the monitor for which it's invoking these methods.
-	 		m.notifyAll();
-	 	}
-	 }
-	 return ans;
+		if (messageMap.get(e.getClass()).isEmpty()) {
+			return null;
+		}
+		Future <T> ans = new Future<>();
+		futureMap.putIfAbsent(e,ans);
+		BlockingQueue <MicroService> service = messageMap.get(e.getClass());
+		synchronized (e.getClass()) {//else we will have round robin problem.
+			MicroService m = service.take();
+			service.put(m);
+			microMap.get(m).putLast(e);
+			synchronized (m) {//The caller of the wait(), notify(), and notifyAll() methods is required to own the monitor for which it's invoking these methods.
+				m.notifyAll();
+			}
+		}
+		return ans;
 	}
-
 
 	public void register(MicroService m) {
 		microMap.putIfAbsent(m,new LinkedBlockingDeque<>());

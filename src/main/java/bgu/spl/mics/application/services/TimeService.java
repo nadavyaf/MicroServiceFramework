@@ -22,18 +22,22 @@ public class TimeService extends MicroService{
 	private Timer clock = new Timer();
 	private int speed;
 	private int duration;
+	private int counter;
 	private TimerTask tick;
 	private TimerTask endTick;
 	private Callback_Terminate terminate;
 	public TimeService(int speed, int duration) {
 		super("TimeService");
 		this.speed = speed;
+		this.counter = 0;
 		this.duration = duration;
 		terminate = new Callback_Terminate(this);
 		tick = new TimerTask() {
 			public void run() {
 				try {
 					MessageBusImpl.getInstance().sendBroadcast(new TickBroadcast());
+					counter++;
+					System.out.println(counter);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

@@ -9,39 +9,34 @@ import bgu.spl.mics.application.services.StudentService;
 
 import java.util.concurrent.TimeUnit;
 
-public class Callback_FinishedBroadcast implements Callback<FinishedBroadcast> {
+public class Callback_FinishedBroadcast implements Callback<FinishedBroadcast>{
     StudentService sts;
-
-    public Callback_FinishedBroadcast(StudentService sts) {
-        this.sts = sts;
+    public Callback_FinishedBroadcast(StudentService sts){
+        this.sts=sts;
     }
-
     public void call(FinishedBroadcast c) throws InterruptedException {
         Model model = sts.getModels().get(sts.getCurrModel());
-        System.out.println(sts.getName());
-        if (sts.getFuture() == null) {
+        if (sts.getFuture() == null) { //if there are no conferences anymore, and our future is null meaning we sent it and in the sentevent we got null back, we want to proceed to the next model, as there are no conferences left.
             if (sts.getCurrModel() + 1 < sts.getModels().size()) {
                 sts.incrementcurrModel();
                 sts.setFuture(sts.sendEvent(new TrainModelEvent(sts.getModels().get(sts.getCurrModel()))));
             }
-            if (sts.getFuture().get(1, TimeUnit.MILLISECONDS) != null) {
+        }
+           else if (sts.getFuture().get(1, TimeUnit.MILLISECONDS) != null) {
                 String result = sts.getFuture().get();
-                if (result.equals("Trained")) {
+                if (result.equals("Trained"))
                     sts.setFuture(sts.sendEvent(new TestModelEvent(model)));
-                }
-                else if (result.equals("Good")) {
+                else if (result.equals("Good"))
                     sts.setFuture(sts.sendEvent(new PublishResultsEvent(model)));
-                }
                 else if (result.equals("Published") || result.equals("Bad")) {
                     if (sts.getCurrModel() + 1 < sts.getModels().size()) {
                         sts.incrementcurrModel();
                         sts.setFuture(sts.sendEvent(new TrainModelEvent(sts.getModels().get(sts.getCurrModel()))));
                     }
+
                 }
 
+
             }
-
-
         }
-    }
 }
