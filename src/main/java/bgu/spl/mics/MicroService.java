@@ -100,6 +100,7 @@ public abstract class MicroService implements Runnable {/** Assiph's comments:I 
      * 	       			null in case no micro-service has subscribed to {@code e.getClass()}.
      */
     protected final <T> Future<T> sendEvent(Event<T> e) throws InterruptedException {
+
         return MessageBusImpl.getInstance().sendEvent(e);
     }
 
