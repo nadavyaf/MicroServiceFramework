@@ -30,7 +30,7 @@ public class StudentService extends MicroService {
         super(name);
         this.student=student;
         this.models=models;
-        this.future = new Future<String>();
+        this.future = new Future<>();
         this.publishConference = new Callback_PublishConferenceBroadcast(this);
         terminate = new Callback_Terminate(this);
         currModel=0;

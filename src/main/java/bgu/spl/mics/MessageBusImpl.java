@@ -1,11 +1,8 @@
 package bgu.spl.mics;
 
 import bgu.spl.mics.application.messages.FinishedBroadcast;
-import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.services.GPUService;
 
-import javax.swing.plaf.metal.MetalIconFactory;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,15 +28,15 @@ public class MessageBusImpl implements MessageBus {
 			}
 
 	@Override
-	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {/**Assiph's comments: if the message doesn't exist,
-	 add it with a new LinkedBlockingQueue (FIFO) and then just add the element into that queue.*/
-		messageMap.putIfAbsent(type,new LinkedBlockingQueue<>());
+	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
+		messageMap.putIfAbsent(type ,new LinkedBlockingQueue<>());
 		messageMap.get(type).add(m);
 	}
 
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
 		messageMap.putIfAbsent(type,new LinkedBlockingQueue<>());
 		messageMap.get(type).add(m);
+
 	}
 
 	public <T> void complete(Event<T> e, T result) throws InterruptedException {
@@ -48,11 +45,16 @@ public class MessageBusImpl implements MessageBus {
 
 	}
 	public void sendBroadcast(Broadcast b) throws InterruptedException {
-		BlockingQueue<MicroService> services = messageMap.get(b);
-		//the Iterator is weakly consistent - meaning it will not follow any changes that happens in the BlockingQueue after it started.
-		for (MicroService m : services) {
-			microMap.get(m).putFirst(b);
-			m.notifyAll();
+		BlockingQueue<MicroService> services = messageMap.get(b.getClass());
+		if (services != null) {
+			for (MicroService m : services) {
+				if(microMap.get(m) != null){
+					microMap.get(m).putFirst(b);
+					synchronized (m) {
+						m.notifyAll();
+					}
+				}
+			}
 		}
 	}
 
@@ -68,16 +70,21 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) throws InterruptedException { /** Assiph's Comments: Will be used by a studentService (or student,not sure) for example
 	 it will enter the event to the right queue using the Messagebus (with get instance) and then use the get method (blocking).*/
-		if (messageMap.get(e).isEmpty())
+	while(messageMap.get(e.getClass()) == null){
+
+	}
+	if (messageMap.get(e.getClass()).isEmpty())
 			return null;
 		Future <T> ans = new Future<>();
 		futureMap.putIfAbsent(e,ans);
-		BlockingQueue <MicroService> service = messageMap.get(e);
+		BlockingQueue <MicroService> service = messageMap.get(e.getClass());
 		synchronized (e.getClass()) {
 			MicroService m = service.take();
 			service.put(m);
 			microMap.get(m).putLast(e);
-			m.notifyAll();
+			synchronized (m) {
+				m.notifyAll();
+			}
 		}
 		return ans;
 	}
@@ -89,6 +96,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void unregister(MicroService m) {
+		m.terminate();
 		microMap.remove(m);
 		for (Map.Entry<Class<? extends Message>, BlockingQueue<MicroService>> entry: messageMap.entrySet()){
 			BlockingQueue<MicroService> value = entry.getValue();
@@ -99,14 +107,18 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 		BlockingQueue<Message> events = microMap.get(m);
-		if (events==null)
+		if (events==null) {
 			throw new IllegalArgumentException("The microservice is not registered!");
-		if (m.getClass().isInstance(GPUService.class)){
-			GPUService cast = (GPUService) m;
-		while (events.isEmpty()||(cast.getGpu().getModel()!=null && events.peek() instanceof Event))
-			m.wait();
 		}
-			return events.take(); // this also handles the other options, it waits until we have something in the queue, and then takes it out.
+		if (m.getClass() == GPUService.class) {
+			GPUService cast = (GPUService) m;
+			while (events.isEmpty()||(cast.getGpu().getModel()!=null && events.peek() instanceof Event)) {
+				synchronized (m) {
+					m.wait();
+				}
+			}
+		}
+			return events.take();
 	}
 
 	public Boolean isMicroServiceRegistered(MicroService m){
@@ -114,10 +126,22 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	public Boolean isMicroServiceEventRegistered(MicroService m,Event e) {
-		return messageMap.get(e).contains(m);
+		return messageMap.get(e.getClass()).contains(m);
 	}
 
 	public Boolean isMicroServiceBroadCastRegistered(MicroService m,Broadcast b){
-		return messageMap.get(b).contains(m);
+		return messageMap.get(b.getClass()).contains(m);
+	}
+
+	public ConcurrentHashMap<Class<? extends Message>, BlockingQueue<MicroService>> getMessageMap() {
+		return messageMap;
+	}
+
+	public ConcurrentHashMap<MicroService, LinkedBlockingDeque<Message>> getMicroMap() {
+		return microMap;
+	}
+
+	public ConcurrentHashMap<Event, Future> getFutureMap() {
+		return futureMap;
 	}
 }

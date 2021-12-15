@@ -6,7 +6,6 @@ import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.ConfrenceInformation;
 
-import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -30,6 +29,7 @@ public class ConferenceService extends MicroService {
         this.cfi=cfi;
         terminate = new Callback_Terminate(this);
         publishEvent = new Callback_PublishResultsEvent(this);
+        this.tick = new Callback_TickBroadcastConference(this);
     }
     public void addToConference(String name){
         cfsList.add(name);

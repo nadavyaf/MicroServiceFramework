@@ -5,12 +5,12 @@ import bgu.spl.mics.application.objects.Model;
 
 public class TrainModelEvent implements Event<String> {/** Assiph's Comment: Just remember that after this event finishes, you need
  to send another event called TestModelEvent.*/
-    Model m = null;
+    private Model m = null;
 
     public TrainModelEvent(Model M) {
-    this.m=m;
+    this.m=M;
     }
-    public Model getModel() {//Assiph added.
+    public Model getModel() {
         return this.m;
     }
 }

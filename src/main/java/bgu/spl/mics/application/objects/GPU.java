@@ -1,7 +1,8 @@
 package bgu.spl.mics.application.objects;
 
 import java.util.LinkedList;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 
 /**
@@ -19,7 +20,8 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     private Model model;
     private Cluster cluster;
     private DataBatch currBatch;
-    final private ArrayBlockingQueue<DataBatch> processedCPUQueue;
+    final private LinkedBlockingQueue<DataBatch> processedCPUQueue;
+    private LinkedList<DataBatch> dataList;
     int learnedBatches;
     private int capacity;
     private int currTime;
@@ -31,7 +33,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
         this.model = null;
         this.learnedBatches = 0;
         cluster = Cluster.getInstance();
-        currTime = 1;//need to think.
+        currTime = 1;
         if(this.type == Type.RTX3090){
             this.capacity = 32;
             this.ticks=1;
@@ -44,7 +46,8 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
             this.capacity = 8;
             this.ticks=4;
         }
-        this.processedCPUQueue = new ArrayBlockingQueue<DataBatch>(capacity);
+        this.processedCPUQueue = new LinkedBlockingQueue<DataBatch>(capacity);
+        this.dataList = new LinkedList<>();
     }
 
 
@@ -61,7 +64,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      * @pre: none
      * @post: none
      */
-    public ArrayBlockingQueue<DataBatch> getProcessedCPUQueue() {
+    public Queue<DataBatch> getProcessedCPUQueue() {
         return processedCPUQueue;
     }
 
@@ -131,13 +134,11 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      *        clusterSize = @pre clusterQueue.size
      *        clusterQueue.size == clusterSize + numberofDataBatches(The number of data batches created)
      */
-    public LinkedList<DataBatch> divideAll(){
+    public void divideAll(){
             Data data = this.getModel().getData();
-            LinkedList<DataBatch> dataList= new LinkedList<>();
             for (int i =0;i<data.getNumOfBatches();i++){
-                dataList.add(new DataBatch(data.getType(),this));
+                dataList.addLast(new DataBatch(data.getType(),this));
             }
-            return dataList;
     }
 
 
@@ -167,6 +168,9 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
             currBatch.setLearnedGpu();
             this.learnedBatches++;
             currBatch = null;
+            if(!dataList.isEmpty()) {
+                Cluster.getInstance().sendToCPU(dataList.removeFirst());
+            }
             if(learnedBatches == model.getData().getNumOfBatches()){
                 learnedBatches = 0;
                 this.model.updateStatus();
@@ -206,5 +210,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
         this.model=m;
     }
 
-
+    public LinkedList<DataBatch> getDataList() {
+        return dataList;
+    }
 }

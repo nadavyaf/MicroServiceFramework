@@ -2,11 +2,8 @@ package bgu.spl.mics;
 
 import bgu.spl.mics.application.messages.PublishConferenceBroadcast;
 import bgu.spl.mics.application.objects.Model;
-import bgu.spl.mics.application.objects.Student;
-import bgu.spl.mics.application.services.ConferenceService;
 import bgu.spl.mics.application.services.StudentService;
 
-import javax.swing.text.html.HTMLDocument;
 import java.util.Iterator;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -26,11 +23,14 @@ private StudentService st;
                 Model model = (Model) modelita.next();
                 if (model.getName()==modelName) {
                     st.getStudent().addPublication();
+                    System.out.println(this.st.getStudent() + " added publication!");
                     flag=false;
                 }
             }
-            if (flag)
+            if (flag) {
                 st.getStudent().addPapersRead();
+                System.out.println(this.st.getStudent() + " added paper read!");
+            }
         }
 
     }

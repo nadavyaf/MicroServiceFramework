@@ -22,6 +22,7 @@ public class TimeService extends MicroService{
 	private Timer clock = new Timer();
 	private int speed;
 	private int duration;
+	private int counter = 0;
 	private TimerTask tick;
 	private TimerTask endTick;
 	private Callback_Terminate terminate;
@@ -33,6 +34,8 @@ public class TimeService extends MicroService{
 		tick = new TimerTask() {
 			public void run() {
 				try {
+					counter++;
+					System.out.println(counter);
 					MessageBusImpl.getInstance().sendBroadcast(new TickBroadcast());
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -43,6 +46,7 @@ public class TimeService extends MicroService{
 			public void run() {
 				try {
 					MessageBusImpl.getInstance().sendBroadcast(new TerminateBroadcast());
+					clock.cancel();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -50,9 +54,10 @@ public class TimeService extends MicroService{
 		};
 	}
 	protected void initialize() throws InterruptedException {
+		MessageBusImpl.getInstance().register(this);
 		this.subscribeBroadcast(TerminateBroadcast.class,terminate);
-		this.clock.scheduleAtFixedRate(tick,0,speed);/**Assiph's comments: creates another thread that sends ticks every speed. */
-		this.clock.schedule(endTick,duration);
+		this.clock.scheduleAtFixedRate(tick,0,speed);
+		this.clock.schedule(endTick,(duration*speed)-speed);
 	}
 
 	}
