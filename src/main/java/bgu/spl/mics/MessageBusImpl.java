@@ -1,14 +1,6 @@
 package bgu.spl.mics;
-
 import bgu.spl.mics.application.messages.FinishedBroadcast;
-import bgu.spl.mics.application.messages.PublishResultsEvent;
-import bgu.spl.mics.application.messages.TerminateBroadcast;
-import bgu.spl.mics.application.messages.TickBroadcast;
-import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.services.GPUService;
-
-import javax.swing.plaf.metal.MetalIconFactory;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -97,10 +89,6 @@ public class MessageBusImpl implements MessageBus {
 		microMap.putIfAbsent(m,new LinkedBlockingDeque<>());
 		System.out.println(microMap.size());
 	}
-	public void print(){
-		System.out.println(microMap.size());
-	}
-
 	public void unregister(MicroService m) {
 			m.terminate();
 			microMap.remove(m);

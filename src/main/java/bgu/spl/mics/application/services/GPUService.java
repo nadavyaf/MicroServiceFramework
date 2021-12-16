@@ -35,7 +35,6 @@ public class GPUService extends MicroService {
         this.event = null;
     }
 
-    @Override
     protected void initialize() {
         MessageBusImpl.getInstance().register(this);
         this.subscribeBroadcast(TickBroadcast.class, tick);
