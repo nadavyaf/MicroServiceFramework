@@ -1,5 +1,6 @@
 package bgu.spl.mics.application;
 
+import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.application.objects.*;
 import bgu.spl.mics.application.services.*;
 import com.google.gson.JsonArray;
@@ -131,6 +132,15 @@ public class CRMSRunner {
                 }
             }
         }
+
+        for (CPU cpu : Cluster.getInstance().getCPUS()){
+            System.out.println("CPU time: " + cpu.getTime());
+            System.out.println("CPU numofTicks: " + cpu.getNumOfTicks());
+        }
+        for (GPU gpu : Cluster.getInstance().getGPUS()){
+            System.out.println("GPU time: " + gpu.getCurrTime());
+        }
+
         for (ConferenceService cfs : cfsList){
             System.out.println(cfs.getName() + " published:");
             for (String model : cfs.getCfsList()){
@@ -140,7 +150,6 @@ public class CRMSRunner {
         System.out.println("Amount of GPUTimeUnits: " + Cluster.getInstance().getStatistics().getGPUTimeUnits());
         System.out.println("Amount of CPUTimeUnits: " + Cluster.getInstance().getStatistics().getCPUTimeUnits());
         System.out.println("Amount of Batches processed by CPU: " + Cluster.getInstance().getStatistics().getCPUProcessed());
-
         File file = new File("out.txt");
         FileWriter fw = new FileWriter(file);
         PrintWriter pw = new PrintWriter(fw);

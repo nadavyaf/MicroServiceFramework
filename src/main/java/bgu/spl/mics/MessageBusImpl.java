@@ -95,6 +95,10 @@ public class MessageBusImpl implements MessageBus {
 
 	public void register(MicroService m) {
 		microMap.putIfAbsent(m,new LinkedBlockingDeque<>());
+		System.out.println(microMap.size());
+	}
+	public void print(){
+		System.out.println(microMap.size());
 	}
 
 	public void unregister(MicroService m) {
