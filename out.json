@@ -5,7 +5,7 @@
             "department": "Computer Science",
             "status": "MSc",
             "publications": 0,
-            "papersRead": 0,
+            "papersRead": 1,
             "trainedModels": [
                 {
                     "name": "YOLO10",
@@ -14,7 +14,25 @@
                         "size": 200000
                     },
                     "status": "Trained",
-                    "results": "None"
+                    "results": "Bad"
+                },
+                {
+                    "name": "ResNet9000",
+                    "data": {
+                        "type": "Images",
+                        "size": 200000
+                    },
+                    "status": "Trained",
+                    "results": "Bad"
+                },
+                {
+                    "name": "LessEfficientNet",
+                    "data": {
+                        "type": "Images",
+                        "size": 20000
+                    },
+                    "status": "Trained",
+                    "results": "Bad"
                 }
             ]
         },
@@ -23,14 +41,14 @@
             "department": "EE",
             "status": "PhD",
             "publications": 0,
-            "papersRead": 0,
+            "papersRead": 1,
             "trainedModels": []
         },
         {
             "name": "Pumba",
             "department": "Computer Science",
             "status": "PhD",
-            "publications": 0,
+            "publications": 1,
             "papersRead": 0,
             "trainedModels": [
                 {
@@ -40,13 +58,22 @@
                         "size": 1000000
                     },
                     "status": "Trained",
-                    "results": "Good"
+                    "results": "Bad"
                 },
                 {
                     "name": "GPT4",
                     "data": {
                         "type": "Text",
                         "size": 1000000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                },
+                {
+                    "name": "GPT5",
+                    "data": {
+                        "type": "Text",
+                        "size": 200000
                     },
                     "status": "Trained",
                     "results": "None"
@@ -58,7 +85,7 @@
             "department": "SE",
             "status": "MSc",
             "publications": 0,
-            "papersRead": 0,
+            "papersRead": 1,
             "trainedModels": [
                 {
                     "name": "Percepetron",
@@ -67,7 +94,7 @@
                         "size": 1000000
                     },
                     "status": "Trained",
-                    "results": "Good"
+                    "results": "Bad"
                 }
             ]
         },
@@ -76,22 +103,13 @@
             "department": "Computer Science",
             "status": "PhD",
             "publications": 0,
-            "papersRead": 0,
+            "papersRead": 1,
             "trainedModels": [
                 {
                     "name": "YOLO9000",
                     "data": {
                         "type": "Images",
                         "size": 100000
-                    },
-                    "status": "Trained",
-                    "results": "Good"
-                },
-                {
-                    "name": "VIT2",
-                    "data": {
-                        "type": "Images",
-                        "size": 1000000
                     },
                     "status": "Trained",
                     "results": "None"
@@ -105,10 +123,10 @@
             "date": 20000,
             "publications":" [
                 {
-                    "name": "YOLO9000
+                    "name": "GPT4
                     "data": {
-                        "type": "Images",
-                        "size": 100000
+                        "type": "Text",
+                        "size": 1000000
                     },
                     "status": "Trained",
                     "status": "Good",
@@ -123,15 +141,6 @@
             "name": "CVPR",
             "date": 30000,
             "publications":" [
-                {
-                    "name": "Bert
-                    "data": {
-                        "type": "Text",
-                        "size": 1000000
-                    },
-                    "status": "Trained",
-                    "status": "Good",
-                }
             ]
         },
             "name": "ECCV",
@@ -142,18 +151,9 @@
             "name": "AISTATS",
             "date": 50000,
             "publications":" [
-                {
-                    "name": "Percepetron
-                    "data": {
-                        "type": "Tabular",
-                        "size": 1000000
-                    },
-                    "status": "Trained",
-                    "status": "Good",
-                }
             ]
         },
     ],
-gpuTimeUsed: 13168
-cpuTimeUsed: 35847
-batchesProcessed: 8921
+gpuTimeUsed: 62580
+cpuTimeUsed: 132442
+batchesProcessed: 31064
