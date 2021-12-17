@@ -40,6 +40,6 @@ public class Callback_TestModelEvent implements Callback<TestModelEvent> {
             }
 
             Cluster.getInstance().getStatistics().addTrainedModel(c.getModel().getName());
-            gpuService.complete(c, result);
+            gpuService.complete(c, c.getModel());
         }
     }

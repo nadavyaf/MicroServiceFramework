@@ -154,7 +154,9 @@ public class CRMSRunner {
         PrintWriter pw = new PrintWriter(fw);
         pw.println("{");
         pw.println("    \"students\": [");
+        int num=0;
         for (StudentService studentService : studentServiceList) {
+            num++;
             pw.println("        {");
             pw.println("            \"name\": \"" + studentService.getStudent().getName() + "\""  + ",");
             pw.println("            \"department\": \"" + studentService.getStudent().getDepartment() + "\""  + ",");
@@ -190,33 +192,52 @@ public class CRMSRunner {
             }
             else
             pw.println("]");
+            if (num!=studentServiceList.size())
             pw.println("        },");
         }
+        pw.println("        }");
         pw.println("    ],");
         pw.println("    \"conferences\": [");
         pw.println("        {");
+        boolean first=true;
+        int last=0;
         for (ConferenceService cfs : cfsList){
+            last++;
+            if (!first)
+                pw.println("        {");
+            first=false;
             pw.println("            \"name\": \"" + cfs.getCfi().getName() + "\""  + ",");
             pw.println("            \"date\": " + cfs.getCfi().getDate()  + ",");
-            pw.println("            \"publications\":\"" + " [");
+            pw.print("            \"publications\":" + " [");
+            Boolean firsty = true;
             for (Model model : cfs.getCfsList()){
+                if (firsty)
+                    pw.println();
+                firsty=false;
                 pw.println("                {");
-                pw.println("                    \"name\": \"" + model.getName());
+                pw.println("                    \"name\": \"" + model.getName() + "\"" + ",");
                 pw.println("                    \"data\": {");
                 pw.println("                        \"type\": \"" + model.getData().getType() + "\""  + ",");
                 pw.println("                        \"size\": " + model.getData().getSize());
                 pw.println("                    },");
                 pw.println("                    \"status\": \"" + model.getCurrStatus() + "\""  + ",");
-                pw.println("                    \"status\": \"" + model.getResult() + "\""  + ",");
+                pw.println("                    \"results\": \"" + model.getResult() + "\"");
                 pw.println("                }");
             }
+            if (firsty)
+                pw.println("]");
+            else
             pw.println("            ]");
+            if (last<cfsList.size())
             pw.println("        },");
+            else
+                pw.println("        }");
         }
         pw.println("    ],");
-        pw.println("gpuTimeUsed: " + Cluster.getInstance().getStatistics().getGPUTimeUnits());
-        pw.println("cpuTimeUsed: " + Cluster.getInstance().getStatistics().getCPUTimeUnits());
-        pw.println("batchesProcessed: " + Cluster.getInstance().getStatistics().getCPUProcessed());
+        pw.println("\"" + "gpuTimeUsed\": " + Cluster.getInstance().getStatistics().getGPUTimeUnits() + ",");
+        pw.println("\"" + "cpuTimeUsed\": " + Cluster.getInstance().getStatistics().getCPUTimeUnits() + ",");
+        pw.println("\"" + "batchesProcessed\": " + Cluster.getInstance().getStatistics().getCPUProcessed());
+        pw.println("}");
         pw.close();
     }
 }

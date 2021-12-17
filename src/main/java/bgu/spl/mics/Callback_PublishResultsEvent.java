@@ -11,9 +11,9 @@ private ConferenceService cfs;
     }
     public void call(PublishResultsEvent c) throws InterruptedException {
         Model model = c.getModel();
-        if (model.getResult()== "Good"){
+        if (model.getResult().equals("Good")){
             cfs.addToConference(model);
         }
-        cfs.complete(c,"Published");
+        cfs.complete(c,model);
     }
 }

@@ -24,7 +24,7 @@ public class StudentService extends MicroService {
     private Callback_PublishConferenceBroadcast publishConference;
     private Callback_FinishedBroadcast finished;
     private Callback_Terminate terminate;
-    private Future <String> future;
+    private Future <Model> future;
     private int currModel;
     public StudentService(String name,Student student,LinkedList<Model> models) {
         super(name);
@@ -80,11 +80,11 @@ public class StudentService extends MicroService {
         this.currModel++;
     }
 
-    public Future<String> getFuture() {
+    public Future<Model> getFuture() {
         return future;
     }
 
-    public void setFuture(Future<String> future) {
+    public void setFuture(Future<Model> future) {
         this.future = future;
     }
     /**
