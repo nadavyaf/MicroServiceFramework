@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.objects;
+
+import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 
 /**
@@ -25,7 +26,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     private int numOfTicks;
     private int currTime;
     private int ticks;
-    private LinkedBlockingQueue<DataBatch> dataList;
+    private LinkedList <DataBatch> dataList;
 
     public GPU(Type type) {
         numOfTicks=0;
@@ -33,7 +34,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
         this.currBatch=null;
         this.model = null;
         this.learnedBatches = 0;
-        dataList = new LinkedBlockingQueue<>();
+        dataList = new LinkedList<DataBatch>();
         cluster = Cluster.getInstance();
         currTime = 1;//need to think.
         if(this.type == Type.RTX3090){
@@ -142,7 +143,7 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
             }
     }
 
-    public LinkedBlockingQueue<DataBatch> getDataList() {
+    public LinkedList<DataBatch> getDataList() {
         return dataList;
     }
 
@@ -152,8 +153,8 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      * @pre: none
      * @post: this.getprocessedCPUQueue.contains(data) == true
      */
-    public void insertProcessedCPU(DataBatch data) throws InterruptedException {
-            processedCPUQueue.add(data);
+    public void insertProcessedCPU(DataBatch data){
+        processedCPUQueue.add(data);
     }
 
     /**
@@ -171,13 +172,13 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
         if(currTime - this.currBatch.getStartTime() >= ticks) {
             currBatch.setLearnedGpu();
             this.learnedBatches++;
+            if (!dataList.isEmpty())
+                Cluster.getInstance().sendToCPU(dataList.pollFirst());
             currBatch = null;
-            if(learnedBatches == model.getData().getNumOfBatches()){//maybe need to change ****
+            if(learnedBatches == model.getData().getNumOfBatches()){
                 learnedBatches = 0;
                 this.model.updateStatus();
                 Cluster.getInstance().getStatistics().addTrainedModel(this.model.getName());
-                Cluster.getInstance().removeQueue(this.getType(),this.getDataList());
-                this.notifyAll();
             }
         }
     }

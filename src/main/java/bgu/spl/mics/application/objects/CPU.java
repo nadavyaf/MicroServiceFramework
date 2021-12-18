@@ -1,7 +1,5 @@
 package bgu.spl.mics.application.objects;
 
-import java.util.concurrent.LinkedBlockingQueue;
-
 /**
  * Passive object representing a single CPU.
  * Add all the fields described in the assignment as private fields.
@@ -15,7 +13,6 @@ public class CPU {
     private int numOfTicks;
     private int currDataBatchTick;
     private int currTime;
-    private LinkedBlockingQueue<Thread> ThreadList= new LinkedBlockingQueue();
 
     public CPU(int numberOfCores) {
         this.cores = numberOfCores;
@@ -48,22 +45,7 @@ public class CPU {
         this.numOfTicks++;
             if (currTime - currDataBatch.getStartTime() >= currDataBatchTick) {
                 currDataBatch.setProcessedCpu();
-                Thread send = new Thread(()-> {
-                    try {
-                        Cluster.getInstance().sendToGPU(currDataBatch);
-                    }
-                    catch (Exception IllegalStateException) {
-                        synchronized (currDataBatch.gotCreatedGpu()) {
-                            try {
-                                currDataBatch.gotCreatedGpu().wait();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
-                ThreadList.add(send);
-                send.start();
+                Cluster.getInstance().sendToGPU(currDataBatch);
                 Cluster.getInstance().getStatistics().incrementCPUProcessed();
                 currDataBatch = null;
             }
@@ -76,13 +58,12 @@ public class CPU {
     public void updateTime() throws InterruptedException {
         boolean updated=false;
         if(currDataBatch == null){
-//            synchronized (Cluster.getInstance().getCpuQueue()) {
-//                if (!Cluster.getInstance().getCpuQueue().isEmpty()) {
-//                    currDataBatch = Cluster.getInstance().getCpuQueue().take();
-//                    updated = true;
-//                }
-//            }
-            currDataBatch = Cluster.getInstance().takeCPU();
+            synchronized (Cluster.getInstance().getCpuQueue()) {
+                if (!Cluster.getInstance().getCpuQueue().isEmpty()) {
+                    currDataBatch = Cluster.getInstance().getCpuQueue().take();
+                    updated = true;
+                }
+            }
             if (updated) {
                 int ticks = 0;
                 if (currDataBatch.getType() == Data.Type.Images) {
@@ -106,9 +87,5 @@ public class CPU {
 
     public int getNumOfTicks() {
         return numOfTicks;
-    }
-
-    public LinkedBlockingQueue<Thread> getThreadList() {
-        return ThreadList;
     }
 }
