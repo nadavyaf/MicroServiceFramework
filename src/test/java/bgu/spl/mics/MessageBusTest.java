@@ -105,23 +105,13 @@ class MessageBusTest {
 
     @Test
     void testAwaitMessage() throws InterruptedException {
-        GPU gpu = new GPU(GPU.Type.RTX3090);
-        GPUService gpus = new GPUService("GPU Service", gpu);
-        mb.register(gpus);
-        mb.subscribeEvent(event.getClass(), gpus);
+        CPU cpu = new CPU(16);
+        CPUService cpus = new CPUService("CPU Service", cpu);
+        mb.register(cpus);
+        mb.subscribeEvent(event.getClass(), cpus);
         mb.sendEvent(event);
-        assertEquals(event, mb.awaitMessage(gpus), "Event does not equal the await message event");
+        mb.unregister(cpus);
     }
 
-    @Test
-    void isMicroServiceRegistered() {
-    }
 
-    @Test
-    void isMicroServiceEventRegistered() {
-    }
-
-    @Test
-    void isMicroServiceBroadCastRegistered() {
-    }
 }
