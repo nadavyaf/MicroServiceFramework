@@ -135,42 +135,8 @@ public class MessageBusImpl implements MessageBus {
 					}
 			}
 		}
-//		if (m.getClass()==GPUService.class){
-//			while (true) {
-//				GPUService cast = (GPUService) m;
-//				while (events.peek() instanceof Event) // move all the events to the eventQueue from message queue (from events).
-//					(cast).addEventQueue((Event) events.take());
-//				if ((cast.getGpu().getModel() == null && !cast.getEventqueue().isEmpty())) //check if you need a new model.
-//					return cast.getEventqueue().take();
-//				else if (events.peek() instanceof Broadcast) // else take only broadcast from the messageQueue.
-//					return events.take();
-//				else
-//					synchronized (m) {
-//						m.wait();
-//					}
-//			}
-//
-////		while (events.isEmpty()||(cast.getGpu().getModel()!=null && events.peek() instanceof Event)) {
-////			if (events.isEmpty()) {
-////				if (cast.getGpu().getModel() == null && !(cast.getEventqueue().isEmpty()))
-////					return cast.getEventqueue().take();
-////				synchronized (m) {//The caller of the wait(), notify(), and notifyAll() methods is required to own the monitor for which it's invoking these methods.
-////					m.wait();
-////				}
-////			}
-////		}
-////			synchronized (m) {
-////				while (events.peek() instanceof Event)
-////					(cast).addEventQueue((Event) events.take());
-////
-////				if (cast.getGpu().getModel() == null && !(cast.getEventqueue().isEmpty()))
-////					return cast.getEventqueue().take();
-////				return events.take();
-////			}
-//		}
-////			return events.take(); // this also handles the other options, it waits until we have something in the queue, and then takes it out.
-//	}
 	}
+
 	public Boolean isMicroServiceRegistered(MicroService m){
 		return !(microEventMap.get(m) == null && microBroadMap.get(m)== null);
 	}

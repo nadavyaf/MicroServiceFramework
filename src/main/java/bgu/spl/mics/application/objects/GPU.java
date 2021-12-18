@@ -22,7 +22,6 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     final private ArrayBlockingQueue<DataBatch> processedCPUQueue;
     int learnedBatches;
     private int capacity;
-    //NEED TO DELETE
     private int numOfTicks;
     private int currTime;
     private int ticks;
@@ -218,5 +217,18 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     public int getNumOfTicks() {
         return numOfTicks;
     }
+
+    public void setCurrBatch(DataBatch db){
+        this.currBatch = db;
+    }
+
+    public void setCurrTime(int time){
+        this.currTime = time;
+    }
+
+    public void setLearnedBatches(int learnedBatches) {
+        this.learnedBatches = learnedBatches;
+    }
+
 
 }

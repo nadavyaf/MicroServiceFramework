@@ -40,7 +40,7 @@ public class CPU {
      * @return
      */
 
-    public void process() throws InterruptedException {
+    private void process() throws InterruptedException {
         Cluster.getInstance().getStatistics().incrementCPUTimeUnits();
         this.numOfTicks++;
             if (currTime - currDataBatch.getStartTime() >= currDataBatchTick) {
@@ -87,5 +87,21 @@ public class CPU {
 
     public int getNumOfTicks() {
         return numOfTicks;
+    }
+
+    public void setCurrDataBatch(DataBatch currDataBatch) {
+        this.currDataBatch = currDataBatch;
+    }
+
+    public void setNumOfTicks(int numOfTicks) {
+        this.numOfTicks = numOfTicks;
+    }
+
+    public void setCurrDataBatchTick(int currDataBatchTick) {
+        this.currDataBatchTick = currDataBatchTick;
+    }
+
+    public void setCurrTime(int currTime) {
+        this.currTime = currTime;
     }
 }
