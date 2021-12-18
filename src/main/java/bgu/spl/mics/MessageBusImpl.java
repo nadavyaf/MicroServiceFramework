@@ -1,14 +1,8 @@
 package bgu.spl.mics;
 
 import bgu.spl.mics.application.messages.FinishedBroadcast;
-import bgu.spl.mics.application.messages.PublishResultsEvent;
-import bgu.spl.mics.application.messages.TerminateBroadcast;
-import bgu.spl.mics.application.messages.TickBroadcast;
-import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.services.GPUService;
 
-import javax.swing.plaf.metal.MetalIconFactory;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,8 +27,7 @@ public class MessageBusImpl implements MessageBus {
 		return SingeltonHolder.instance;
 			}
 
-	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {/**Assiph's comments: if the message doesn't exist,
-	 add it with a new LinkedBlockingQueue (FIFO) and then just add the element into that queue.*/
+	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
 		messageMap.putIfAbsent(type,new LinkedBlockingQueue<>());
 		messageMap.get(type).add(m);
 	}

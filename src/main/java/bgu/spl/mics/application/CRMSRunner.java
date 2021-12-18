@@ -142,6 +142,7 @@ public class CRMSRunner {
 
         for (StudentService studentService : studentServiceList) {
             pw.println(studentService.getStudent().getName() + " read " + studentService.getStudent().getPapersRead() + " and published: " + studentService.getStudent().getPublications());
+            String status = "";
             for (Model model : studentService.getModels()) {
                 if (model.getCurrStatus() == Model.Status.Trained || model.getCurrStatus() == Model.Status.Tested)
                     pw.println(model.getName() + " " + model.getCurrStatus() + " " + model.getResult());
