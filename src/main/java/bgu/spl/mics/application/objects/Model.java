@@ -10,7 +10,7 @@ public class Model {
     private String name;
     private Student student;
     private Status status=Status.PreTrained;
-    public results result=results.None;
+    private results result=results.None;
     private Boolean published;
     public enum Status{PreTrained,Training,Trained,Tested};
     public enum results {None,Good,Bad}

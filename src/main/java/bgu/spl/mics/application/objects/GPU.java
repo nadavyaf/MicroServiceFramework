@@ -167,7 +167,6 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      */
     public void GPULearn() throws InterruptedException {
         numOfTicks++;
-        if (currBatch.isLearnedGpu())
         Cluster.getInstance().getStatistics().incrementGPUTimeUnits();
         if(currTime - this.currBatch.getStartTime() >= ticks) {
             currBatch.setLearnedGpu();

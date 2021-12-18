@@ -24,19 +24,19 @@ public class Callback_FinishedBroadcast implements Callback<FinishedBroadcast>{
         }
            else if (sts.getFuture().get(1, TimeUnit.MILLISECONDS) != null) {
                 Model result = sts.getFuture().get();
-                if (result.getResult().equals("Trained"))
+                if (result.getCurrStatus()== Model.Status.Trained){
                     sts.setFuture(sts.sendEvent(new TestModelEvent(model)));
-                else if (result.getResult().equals("Good"))
-                    sts.setFuture(sts.sendEvent(new PublishResultsEvent(model)));
-                else if (result.getResult().equals("Published") || result.getResult().equals("Bad")) {
+                }
+                else if (!result.getPublished() && result.getResult().equals("Good")) {
+                sts.setFuture(sts.sendEvent(new PublishResultsEvent(model)));
+            }
+                else if (result.getPublished() || result.getResult().equals("Bad")) {
                     if (sts.getCurrModel() + 1 < sts.getModels().size()) {
                         sts.incrementcurrModel();
                         sts.setFuture(sts.sendEvent(new TrainModelEvent(sts.getModels().get(sts.getCurrModel()))));
                     }
 
                 }
-
-
             }
         }
 }

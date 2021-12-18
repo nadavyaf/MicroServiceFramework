@@ -16,29 +16,24 @@ public class Callback_TestModelEvent implements Callback<TestModelEvent> {
 
     public void call(TestModelEvent c) throws InterruptedException {
         Random rand = new Random();
-        String result;
         int random = rand.nextInt(11);
         if (c.getModel().getStudent().getStatus().equals("PhD")) {
             if (random >= 2) {//=80%
-                result = "Good";
                 c.getModel().setResult(Model.results.Good);
             } else {
-                result = "Bad";
                 c.getModel().setResult(Model.results.Bad);
             }
         }
         else{
                 if (random >= 4) {//=60%
-                    result = "Good";
                     c.getModel().setResult(Model.results.Good);
                 }
                 else {
-                    result = "Bad";
                     c.getModel().setResult(Model.results.Bad);
                 }
 
             }
-
+            c.getModel().updateStatus();
             Cluster.getInstance().getStatistics().addTrainedModel(c.getModel().getName());
             gpuService.complete(c, c.getModel());
         }
