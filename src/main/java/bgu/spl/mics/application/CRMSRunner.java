@@ -210,6 +210,7 @@ public class CRMSRunner {
             pw.println("            \"date\": " + cfs.getCfi().getDate()  + ",");
             pw.print("            \"publications\":" + " [");
             Boolean firsty = true;
+            int modelCount = 0;
             for (Model model : cfs.getCfsList()){
                 if (firsty)
                     pw.println();
@@ -222,7 +223,12 @@ public class CRMSRunner {
                 pw.println("                    },");
                 pw.println("                    \"status\": \"" + model.getCurrStatus() + "\""  + ",");
                 pw.println("                    \"results\": \"" + model.getResult() + "\"");
-                pw.println("                }");
+                if( modelCount <cfs.getCfsList().size()-1)
+                    pw.println("                },");
+                else
+                    pw.println("                }");
+                modelCount++;
+
             }
             if (firsty)
                 pw.println("]");
