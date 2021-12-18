@@ -8,6 +8,9 @@ import bgu.spl.mics.application.messages.TrainModelEvent;
 import bgu.spl.mics.application.objects.Cluster;
 import bgu.spl.mics.application.objects.GPU;
 
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
+
 /**
  * GPU service is responsible for handling the
  * {@link //TrainModelEvent} and {@link //TestModelEvent},
@@ -24,7 +27,6 @@ public class GPUService extends MicroService {
     private Callback_TrainModelEvent train;
     private Callback_Terminate terminate;
     private Event event;
-
     public GPUService(String name, GPU gpu) {
         super(gpu + " " + "service");
         this.gpu = gpu;
@@ -35,7 +37,6 @@ public class GPUService extends MicroService {
         this.event = null;
     }
 
-    @Override
     protected void initialize() {
         MessageBusImpl.getInstance().register(this);
         this.subscribeBroadcast(TickBroadcast.class, tick);
@@ -81,6 +82,7 @@ public class GPUService extends MicroService {
         this.event = event;
     }
 }
+
 
 
 /**

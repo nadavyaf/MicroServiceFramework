@@ -9,12 +9,15 @@ public class CPU {
     final private int cores;
     final private Cluster cluster=Cluster.getInstance();
     private DataBatch currDataBatch;
+    //NEED TO DELETE
+    private int numOfTicks;
     private int currDataBatchTick;
     private int currTime;
 
     public CPU(int numberOfCores) {
         this.cores = numberOfCores;
         currTime= 1;
+        numOfTicks=0;
     }
 
     public int getTime() {
@@ -39,6 +42,7 @@ public class CPU {
 
     public void process() throws InterruptedException {
         Cluster.getInstance().getStatistics().incrementCPUTimeUnits();
+        this.numOfTicks++;
             if (currTime - currDataBatch.getStartTime() >= currDataBatchTick) {
                 currDataBatch.setProcessedCpu();
                 Cluster.getInstance().sendToGPU(currDataBatch);
@@ -79,5 +83,9 @@ public class CPU {
         if(currDataBatch != null){
             this.process();
         }
+    }
+
+    public int getNumOfTicks() {
+        return numOfTicks;
     }
 }

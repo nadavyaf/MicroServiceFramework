@@ -22,11 +22,14 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     final private ArrayBlockingQueue<DataBatch> processedCPUQueue;
     int learnedBatches;
     private int capacity;
+    //NEED TO DELETE
+    private int numOfTicks;
     private int currTime;
     private int ticks;
     private LinkedList <DataBatch> dataList;
 
     public GPU(Type type) {
+        numOfTicks=0;
         this.type = type;
         this.currBatch=null;
         this.model = null;
@@ -147,10 +150,8 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
     /**
      * Insert the processed and learned event into the learned queue for the message bus to take.
      * @param data
-     * @pre: data.isprocessedCPU()
-     *       processedCPUQueue.size < capacity
-     * @post: processedSize = @pre processedCPUQueue.size
-     *        processedCPUQueue.size == processedSize + 1
+     * @pre: none
+     * @post: this.getprocessedCPUQueue.contains(data) == true
      */
     public void insertProcessedCPU(DataBatch data){
         processedCPUQueue.add(data);
@@ -160,11 +161,14 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
      *
      * @param
      * @pre: !dataBatch.isLearnedGPU()
-     * @post: dataBatch.isLearnedGPU()
-     *        learnedSize = @pre learnedBatches
-     *        learnedBatches == learnedSize + 1
+     * @post:
+     *  numOfTicks == @prenumOfTicks + 1
+     *  learnedBatches == learnedSize + 1
+     *
      */
     public void GPULearn() throws InterruptedException {
+        numOfTicks++;
+        if (currBatch.isLearnedGpu())
         Cluster.getInstance().getStatistics().incrementGPUTimeUnits();
         if(currTime - this.currBatch.getStartTime() >= ticks) {
             currBatch.setLearnedGpu();
@@ -211,5 +215,8 @@ public class GPU { /** Assiph's comments: I think we should add another queue - 
         this.model=m;
     }
 
+    public int getNumOfTicks() {
+        return numOfTicks;
+    }
 
 }

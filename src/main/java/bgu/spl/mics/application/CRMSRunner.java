@@ -1,11 +1,9 @@
 package bgu.spl.mics.application;
 
+import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.application.objects.*;
 import bgu.spl.mics.application.services.*;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
 import java.io.*;
 import java.util.LinkedList;
@@ -16,9 +14,9 @@ import java.util.LinkedList;
  */
 public class CRMSRunner {
     public static void main(String[] args) throws IOException, InterruptedException {
+        FileReader reader = new FileReader(args[0]);
         LinkedList <Thread> threadList = new LinkedList<>();
-        File input = new File("C:/Users/nadav/IdeaProjects/JavaMasterclass/SPL2/example_input.json");
-        JsonElement fileElement = JsonParser.parseReader(new FileReader(input));
+        JsonElement fileElement = JsonParser.parseReader(reader);
         JsonObject fileObject = fileElement.getAsJsonObject();
         LinkedList <StudentService> studentServiceList = new LinkedList();
         LinkedList <ConferenceService> cfsList = new LinkedList<>();
@@ -122,42 +120,125 @@ public class CRMSRunner {
         for (StudentService studentService : studentServiceList){
             System.out.println(studentService.getStudent().getName() + " read " + studentService.getStudent().getPapersRead() + " and published: " + studentService.getStudent().getPublications());
             for (Model model : studentService.getModels()){
-                if (model.getCurrStatus()== Model.Status.Trained||model.getCurrStatus()== Model.Status.Tested)
-                System.out.println(model.getName() + " " + model.getCurrStatus() + " " + model.getResult());
+                if (model.getCurrStatus()== Model.Status.Trained||model.getCurrStatus()== Model.Status.Tested) {
+                    System.out.print(model.getName() + " " + model.getCurrStatus() + " ");
+                    if (!model.getResult().equals("None")) {
+                        System.out.print(model.getResult());
+                    }
+                    System.out.println();
+                }
             }
         }
+
+        for (CPU cpu : Cluster.getInstance().getCPUS()){
+            System.out.println("CPU time: " + cpu.getTime());
+            System.out.println("CPU numofTicks: " + cpu.getNumOfTicks());
+        }
+        for (GPU gpu : Cluster.getInstance().getGPUS()){
+            System.out.println("GPU time: " + gpu.getCurrTime());
+        }
+
         for (ConferenceService cfs : cfsList){
             System.out.println(cfs.getName() + " published:");
-            for (String model : cfs.getCfsList()){
-                System.out.println(model);
+            for (Model model : cfs.getCfsList()){
+                System.out.println(model.getName());
             }
         }
         System.out.println("Amount of GPUTimeUnits: " + Cluster.getInstance().getStatistics().getGPUTimeUnits());
         System.out.println("Amount of CPUTimeUnits: " + Cluster.getInstance().getStatistics().getCPUTimeUnits());
         System.out.println("Amount of Batches processed by CPU: " + Cluster.getInstance().getStatistics().getCPUProcessed());
 
-        File file = new File("out.txt");
-        FileWriter fw = new FileWriter(file);
+        //FileReader
+        File file = new File("out.json");
+        FileWriter fw = new FileWriter("out.json");
         PrintWriter pw = new PrintWriter(fw);
-
+        pw.println("{");
+        pw.println("    \"students\": [");
+        int num=0;
         for (StudentService studentService : studentServiceList) {
-            pw.println(studentService.getStudent().getName() + " read " + studentService.getStudent().getPapersRead() + " and published: " + studentService.getStudent().getPublications());
-            String status = "";
+            num++;
+            pw.println("        {");
+            pw.println("            \"name\": \"" + studentService.getStudent().getName() + "\""  + ",");
+            pw.println("            \"department\": \"" + studentService.getStudent().getDepartment() + "\""  + ",");
+            pw.println("            \"status\": \"" + studentService.getStudent().getStatus() + "\""  + ",");
+            pw.println("            \"publications\": " + studentService.getStudent().getPublications() + ",");
+            pw.println("            \"papersRead\": " + studentService.getStudent().getPapersRead()  + ",");
+            pw.print("            \"trainedModels\": " + "[");
+            boolean hasModel=false;
+            boolean first = true;
             for (Model model : studentService.getModels()) {
-                if (model.getCurrStatus() == Model.Status.Trained || model.getCurrStatus() == Model.Status.Tested)
-                    pw.println(model.getName() + " " + model.getCurrStatus() + " " + model.getResult());
+                if (model.getCurrStatus() == Model.Status.Trained || model.getCurrStatus() == Model.Status.Tested) {
+                    if (!hasModel)
+                        pw.println();
+                    if (!first){
+                       pw.println(",");
+                    }
+                    first=false;
+                    hasModel=true;
+                    pw.println("                {");
+                    pw.println("                    \"name\": "  + "\"" + model.getName() + "\""  + ",");
+                    pw.println("                    \"data\": {");
+                    pw.println("                        \"type\": " + "\"" + model.getData().getType() + "\""  + ",");
+                    pw.println("                        \"size\": " + model.getData().getSize());
+                    pw.println("                    },");
+                    pw.println("                    \"status\": " + "\"" + model.getCurrStatus() + "\""  + ",");
+                    pw.println("                    \"results\": " + "\"" + model.getResult() + "\"");
+                    pw.print("                }");
+                }
             }
+            if (hasModel) {
+                pw.println();
+                pw.println("            ]");
+            }
+            else
+            pw.println("]");
+            if (num!=studentServiceList.size())
+            pw.println("        },");
         }
+        pw.println("        }");
+        pw.println("    ],");
+        pw.println("    \"conferences\": [");
+        pw.println("        {");
+        boolean first=true;
+        int last=0;
         for (ConferenceService cfs : cfsList){
-            pw.println(cfs.getName() + " published:");
-            for (String model : cfs.getCfsList()){
-                pw.println(model);
+            last++;
+            if (!first)
+                pw.println("        {");
+            first=false;
+            pw.println("            \"name\": \"" + cfs.getCfi().getName() + "\""  + ",");
+            pw.println("            \"date\": " + cfs.getCfi().getDate()  + ",");
+            pw.print("            \"publications\":" + " [");
+            Boolean firsty = true;
+            for (Model model : cfs.getCfsList()){
+                if (firsty)
+                    pw.println();
+                firsty=false;
+                pw.println("                {");
+                pw.println("                    \"name\": \"" + model.getName() + "\"" + ",");
+                pw.println("                    \"data\": {");
+                pw.println("                        \"type\": \"" + model.getData().getType() + "\""  + ",");
+                pw.println("                        \"size\": " + model.getData().getSize());
+                pw.println("                    },");
+                pw.println("                    \"status\": \"" + model.getCurrStatus() + "\""  + ",");
+                pw.println("                    \"results\": \"" + model.getResult() + "\"");
+                pw.println("                }");
             }
+            if (firsty)
+                pw.println("]");
+            else
+            pw.println("            ]");
+            if (last<cfsList.size())
+            pw.println("        },");
+            else
+                pw.println("        }");
         }
-        pw.println("Amount of GPUTimeUnits: " + Cluster.getInstance().getStatistics().getGPUTimeUnits());
-        pw.println("Amount of CPUTimeUnits: " + Cluster.getInstance().getStatistics().getCPUTimeUnits());
-        pw.println("Amount of Batches processed by CPU: " + Cluster.getInstance().getStatistics().getCPUProcessed());
-
+        pw.println("    ],");
+        pw.println("\"" + "gpuTimeUsed\": " + Cluster.getInstance().getStatistics().getGPUTimeUnits() + ",");
+        pw.println("\"" + "cpuTimeUsed\": " + Cluster.getInstance().getStatistics().getCPUTimeUnits() + ",");
+        pw.println("\"" + "batchesProcessed\": " + Cluster.getInstance().getStatistics().getCPUProcessed());
+        pw.println("}");
         pw.close();
+
     }
 }

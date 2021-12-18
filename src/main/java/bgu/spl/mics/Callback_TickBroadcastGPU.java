@@ -12,7 +12,7 @@ public class Callback_TickBroadcastGPU implements Callback<TickBroadcast>{
         gpus.getGpu().updateTime();
         if(gpus.getGpu().getModel() != null){
             if(this.gpus.getGpu().getModel().isTrained()){
-            this.gpus.complete(gpus.getEvent(),"Trained");
+            this.gpus.complete(gpus.getEvent(),gpus.getGpu().getModel());
             this.gpus.setEvent(null);
             this.gpus.getGpu().setModel(null);
             }

@@ -5,6 +5,7 @@ import bgu.spl.mics.application.messages.PublishResultsEvent;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.ConfrenceInformation;
+import bgu.spl.mics.application.objects.Model;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -18,7 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class ConferenceService extends MicroService {
-    private LinkedBlockingQueue<String> cfsList;
+    private LinkedBlockingQueue<Model> cfsList;
     private ConfrenceInformation cfi;
     private Callback_Terminate terminate;
     private Callback_PublishResultsEvent publishEvent;
@@ -31,11 +32,11 @@ public class ConferenceService extends MicroService {
         publishEvent = new Callback_PublishResultsEvent(this);
         tick = new Callback_TickBroadcastConference(this);
     }
-    public void addToConference(String name){
-        cfsList.add(name);
+    public void addToConference(Model model){
+        cfsList.add(model);
     }
 
-    public LinkedBlockingQueue<String> getCfsList() {
+    public LinkedBlockingQueue<Model> getCfsList() {
         return cfsList;
     }
 

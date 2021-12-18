@@ -1,8 +1,6 @@
 package bgu.spl.mics;
-
 import bgu.spl.mics.application.messages.FinishedBroadcast;
 import bgu.spl.mics.application.services.GPUService;
-
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,7 +15,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap <Class<? extends Message>, LinkedBlockingQueue<MicroService>> messageMap = new ConcurrentHashMap<>();
-	private ConcurrentHashMap <MicroService, LinkedBlockingDeque<Message>> microMap = new ConcurrentHashMap<>();
+	private ConcurrentHashMap <MicroService, LinkedBlockingDeque<Event>> microEventMap = new ConcurrentHashMap<>();
+	private ConcurrentHashMap <MicroService, LinkedBlockingDeque<Broadcast>> microBroadMap = new ConcurrentHashMap<>();
 	private ConcurrentHashMap <Event, Future> futureMap = new ConcurrentHashMap<>();
 	private static class SingeltonHolder{//Java things, this way when we import messagebusimpl, it will not create any instance (since the funcion is private), but when we call the function, it will just call the .instance once.
 		private static MessageBusImpl instance = new MessageBusImpl();
@@ -27,7 +26,8 @@ public class MessageBusImpl implements MessageBus {
 		return SingeltonHolder.instance;
 			}
 
-	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
+	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {/**Assiph's comments: if the message doesn't exist,
+	 add it with a new LinkedBlockingQueue (FIFO) and then just add the element into that queue.*/
 		messageMap.putIfAbsent(type,new LinkedBlockingQueue<>());
 		messageMap.get(type).add(m);
 	}
@@ -47,8 +47,8 @@ public class MessageBusImpl implements MessageBus {
 		//the Iterator is weakly consistent - meaning it will not follow any changes that happens in the BlockingQueue after it started.
 		if (services!=null)//can happen if it sendsbroadcast in the middle of subscribing to broadcast.
 		for (MicroService m : services) {
-			if (microMap.get(m)!=null) // can be null, if conference service died.
-			microMap.get(m).putFirst(b);
+			if (microBroadMap.get(m)!=null) // can be null, if conference service died.
+			microBroadMap.get(m).putLast(b);
 			synchronized (m){//The caller of the wait(), notify(), and notifyAll() methods is required to own the monitor for which it's invoking these methods.
 				m.notifyAll();
 			}
@@ -78,7 +78,7 @@ public class MessageBusImpl implements MessageBus {
 		synchronized (e.getClass()) {//else we will have round robin problem.
 			MicroService m = service.take();
 			service.put(m);
-			microMap.get(m).putLast(e);
+			microEventMap.get(m).putLast(e);
 			synchronized (m) {//The caller of the wait(), notify(), and notifyAll() methods is required to own the monitor for which it's invoking these methods.
 				m.notifyAll();
 			}
@@ -87,12 +87,15 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	public void register(MicroService m) {
-		microMap.putIfAbsent(m,new LinkedBlockingDeque<>());
+		microEventMap.putIfAbsent(m,new LinkedBlockingDeque<>());
+		microBroadMap.putIfAbsent(m,new LinkedBlockingDeque<>());
+		System.out.println("Message size " + microBroadMap.size());
+		System.out.println("event size " + microEventMap.size());
 	}
-
 	public void unregister(MicroService m) {
 			m.terminate();
-			microMap.remove(m);
+			microBroadMap.remove(m);
+			microEventMap.remove(m);
 			for (Map.Entry<Class<? extends Message>, LinkedBlockingQueue<MicroService>> entry : messageMap.entrySet()) {
 				LinkedBlockingQueue<MicroService> value = entry.getValue();
 				value.remove(m);
@@ -100,24 +103,76 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	public Message awaitMessage(MicroService m) throws InterruptedException {
-		BlockingQueue<Message> events = microMap.get(m);
-		if (events==null) {
+		BlockingQueue<Event> events = microEventMap.get(m);
+		BlockingQueue<Broadcast> broadcasts = microBroadMap.get(m);
+		if (events == null || broadcasts == null) {
 			System.out.println(m.getName());
 			throw new IllegalArgumentException("The microservice is not registered!");
 		}
 		if (m.getClass()==GPUService.class){
-			GPUService cast = (GPUService) m;
-		while (events.isEmpty()||(cast.getGpu().getModel()!=null && events.peek() instanceof Event))
-			synchronized (m) {//The caller of the wait(), notify(), and notifyAll() methods is required to own the monitor for which it's invoking these methods.
-				m.wait();
+			while (true) {
+				GPUService cast = (GPUService) m;
+				if (cast.getGpu().getModel() == null && !events.isEmpty()){
+					return events.take();
+				}
+				else if (!broadcasts.isEmpty())
+					return broadcasts.take();
+				else
+					synchronized (m){
+					m.wait();
+					}
 			}
-
 		}
-			return events.take(); // this also handles the other options, it waits until we have something in the queue, and then takes it out.
+		else{
+			while (true) {
+				if (!events.isEmpty())
+					return events.take();
+				if (!broadcasts.isEmpty())
+					return broadcasts.take();
+				else
+					synchronized (m){
+					m.wait();
+					}
+			}
+		}
+//		if (m.getClass()==GPUService.class){
+//			while (true) {
+//				GPUService cast = (GPUService) m;
+//				while (events.peek() instanceof Event) // move all the events to the eventQueue from message queue (from events).
+//					(cast).addEventQueue((Event) events.take());
+//				if ((cast.getGpu().getModel() == null && !cast.getEventqueue().isEmpty())) //check if you need a new model.
+//					return cast.getEventqueue().take();
+//				else if (events.peek() instanceof Broadcast) // else take only broadcast from the messageQueue.
+//					return events.take();
+//				else
+//					synchronized (m) {
+//						m.wait();
+//					}
+//			}
+//
+////		while (events.isEmpty()||(cast.getGpu().getModel()!=null && events.peek() instanceof Event)) {
+////			if (events.isEmpty()) {
+////				if (cast.getGpu().getModel() == null && !(cast.getEventqueue().isEmpty()))
+////					return cast.getEventqueue().take();
+////				synchronized (m) {//The caller of the wait(), notify(), and notifyAll() methods is required to own the monitor for which it's invoking these methods.
+////					m.wait();
+////				}
+////			}
+////		}
+////			synchronized (m) {
+////				while (events.peek() instanceof Event)
+////					(cast).addEventQueue((Event) events.take());
+////
+////				if (cast.getGpu().getModel() == null && !(cast.getEventqueue().isEmpty()))
+////					return cast.getEventqueue().take();
+////				return events.take();
+////			}
+//		}
+////			return events.take(); // this also handles the other options, it waits until we have something in the queue, and then takes it out.
+//	}
 	}
-
 	public Boolean isMicroServiceRegistered(MicroService m){
-		return !(microMap.get(m) == null);
+		return !(microEventMap.get(m) == null && microBroadMap.get(m)== null);
 	}
 
 	public Boolean isMicroServiceEventRegistered(MicroService m,Event e) {

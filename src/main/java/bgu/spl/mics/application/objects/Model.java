@@ -10,7 +10,8 @@ public class Model {
     private String name;
     private Student student;
     private Status status=Status.PreTrained;
-    private results result=results.None;
+    public results result=results.None;
+    private Boolean published;
     public enum Status{PreTrained,Training,Trained,Tested};
     public enum results {None,Good,Bad}
 
@@ -18,6 +19,7 @@ public class Model {
         this.data = data;
         this.name = name;
         this.student = student;
+        this.published = false;
     }
 
     public Data getData() {
@@ -61,5 +63,13 @@ public class Model {
 
     public void setResult(results result) {
         this.result = result;
+    }
+
+    public Boolean getPublished() {
+        return published;
+    }
+
+    public void setPublished(Boolean published) {
+        this.published = published;
     }
 }

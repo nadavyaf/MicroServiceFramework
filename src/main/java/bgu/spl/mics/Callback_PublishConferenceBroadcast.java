@@ -13,15 +13,16 @@ private StudentService st;
         this.st = st;
     }
     public void call(PublishConferenceBroadcast c) throws InterruptedException {
-        LinkedBlockingQueue<String> doneList = c.getCfs().getCfsList();
+        LinkedBlockingQueue<Model> doneList = c.getCfs().getCfsList();
         Iterator ita = doneList.iterator();
         while(ita.hasNext()){
-            String modelName = (String)ita.next();
+            Model cfmodel = (Model)ita.next();
             Boolean flag=true;
             Iterator modelita = st.getModels().iterator();
             while (modelita.hasNext()&&flag){
-                Model model = (Model) modelita.next();
-                if (model.getName()==modelName) {
+                Model stmodel = (Model) modelita.next();
+                if (stmodel==cfmodel) {
+                    stmodel.setPublished(true);
                     st.getStudent().addPublication();
                     System.out.println(this.st.getStudent() + " added publication!");
                     flag=false;
