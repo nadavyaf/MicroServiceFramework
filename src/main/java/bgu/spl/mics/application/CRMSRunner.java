@@ -239,5 +239,6 @@ public class CRMSRunner {
         pw.println("\"" + "batchesProcessed\": " + Cluster.getInstance().getStatistics().getCPUProcessed());
         pw.println("}");
         pw.close();
+
     }
 }

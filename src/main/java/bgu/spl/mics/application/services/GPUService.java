@@ -27,8 +27,6 @@ public class GPUService extends MicroService {
     private Callback_TrainModelEvent train;
     private Callback_Terminate terminate;
     private Event event;
-    private LinkedBlockingDeque<Event> eventqueue;
-
     public GPUService(String name, GPU gpu) {
         super(gpu + " " + "service");
         this.gpu = gpu;
@@ -37,7 +35,6 @@ public class GPUService extends MicroService {
         train = new Callback_TrainModelEvent(this);
         terminate = new Callback_Terminate(this);
         this.event = null;
-        eventqueue = new LinkedBlockingDeque<>();
     }
 
     protected void initialize() {
@@ -83,14 +80,6 @@ public class GPUService extends MicroService {
 
     public void setEvent(Event event) {
         this.event = event;
-    }
-
-    public void addEventQueue(Event event){
-        this.eventqueue.addLast(event);
-    }
-
-    public LinkedBlockingDeque<Event> getEventqueue() {
-        return eventqueue;
     }
 }
 
