@@ -9,7 +9,7 @@ public class GPUTest extends TestCase {
     public void testDivideAll() {
     }
 
-    public void testInsertProcessedCPU() {
+    public void testInsertProcessedCPU() throws InterruptedException {
         GPU gpu = new GPU(GPU.Type.RTX2080);
         DataBatch data = new DataBatch(Data.Type.Images,gpu);
         gpu.insertProcessedCPU(data);

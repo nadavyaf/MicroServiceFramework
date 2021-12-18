@@ -31,7 +31,12 @@ public class CPUService extends MicroService {
     protected void initialize() {
         MessageBusImpl.getInstance().register(this);
         this.subscribeBroadcast(TickBroadcast.class,callback);
-        this.subscribeBroadcast(TerminateBroadcast.class,terminate);
+        this.subscribeBroadcast(TerminateBroadcast.class,(terminate)-> {
+            this.terminate();
+            for (Thread thread : this.cpu.getThreadList()){
+            }
+
+        });
         Cluster.getInstance().addCPU(cpu);
     }
 

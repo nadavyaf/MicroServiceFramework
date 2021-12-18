@@ -6,17 +6,7 @@
             "status": "MSc",
             "publications": 0,
             "papersRead": 0,
-            "trainedModels": [
-                {
-                    "name": "YOLO10",
-                    "data": {
-                        "type": "Images",
-                        "size": 200000
-                    },
-                    "status": "Trained",
-                    "results": "None"
-                }
-            ]
+            "trainedModels": []
         },
         {
             "name": "Zazu",
@@ -32,17 +22,7 @@
             "status": "PhD",
             "publications": 0,
             "papersRead": 0,
-            "trainedModels": [
-                {
-                    "name": "Bert",
-                    "data": {
-                        "type": "Text",
-                        "size": 1000000
-                    },
-                    "status": "Trained",
-                    "results": "None"
-                }
-            ]
+            "trainedModels": []
         },
         {
             "name": "Timon",
@@ -50,17 +30,7 @@
             "status": "MSc",
             "publications": 0,
             "papersRead": 0,
-            "trainedModels": [
-                {
-                    "name": "Percepetron",
-                    "data": {
-                        "type": "Tabular",
-                        "size": 1000000
-                    },
-                    "status": "Trained",
-                    "results": "None"
-                }
-            ]
+            "trainedModels": []
         },
         {
             "name": "Nala",
@@ -68,17 +38,7 @@
             "status": "PhD",
             "publications": 0,
             "papersRead": 0,
-            "trainedModels": [
-                {
-                    "name": "YOLO9000",
-                    "data": {
-                        "type": "Images",
-                        "size": 100000
-                    },
-                    "status": "Trained",
-                    "results": "None"
-                }
-            ]
+            "trainedModels": []
         }
     ],
     "conferences": [
@@ -108,7 +68,7 @@
             "publications": []
         }
     ],
-"gpuTimeUsed": 57286,
-"cpuTimeUsed": 71491,
-"batchesProcessed": 16028
+"gpuTimeUsed": 0,
+"cpuTimeUsed": 0,
+"batchesProcessed": 0
 }
