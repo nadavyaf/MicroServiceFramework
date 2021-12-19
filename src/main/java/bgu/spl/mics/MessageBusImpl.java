@@ -47,10 +47,12 @@ public class MessageBusImpl implements MessageBus {
 		//the Iterator is weakly consistent - meaning it will not follow any changes that happens in the BlockingQueue after it started.
 		if (services!=null)//can happen if it sendsbroadcast in the middle of subscribing to broadcast.
 		for (MicroService m : services) {
+			synchronized (m){
 			if (microBroadMap.get(m)!=null) // can be null, if conference service died.
 			microBroadMap.get(m).putLast(b);
-			synchronized (m){//The caller of the wait(), notify(), and notifyAll() methods is required to own the monitor for which it's invoking these methods.
+			synchronized (m) {//The caller of the wait(), notify(), and notifyAll() methods is required to own the monitor for which it's invoking these methods.
 				m.notifyAll();
+			}
 			}
 		}
 	}
