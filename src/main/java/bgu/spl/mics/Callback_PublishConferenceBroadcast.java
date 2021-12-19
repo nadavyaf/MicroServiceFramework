@@ -24,13 +24,11 @@ private StudentService st;
                 if (stmodel==cfmodel) {
                     stmodel.setPublished(true);
                     st.getStudent().addPublication();
-                    System.out.println(this.st.getStudent() + " added publication!");
                     flag=false;
                 }
             }
             if (flag) {
                 st.getStudent().addPapersRead();
-                System.out.println(this.st.getStudent() + " added paper read!");
             }
         }
 
