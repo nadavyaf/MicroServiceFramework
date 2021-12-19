@@ -89,8 +89,6 @@ public class MessageBusImpl implements MessageBus {
 	public void register(MicroService m) {
 		microEventMap.putIfAbsent(m,new LinkedBlockingDeque<>());
 		microBroadMap.putIfAbsent(m,new LinkedBlockingDeque<>());
-		System.out.println("Message size " + microBroadMap.size());
-		System.out.println("event size " + microEventMap.size());
 	}
 	public void unregister(MicroService m) {
 			m.terminate();

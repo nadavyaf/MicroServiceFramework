@@ -22,8 +22,6 @@ public class CRMSRunner {
         LinkedList <ConferenceService> cfsList = new LinkedList<>();
         int speed = fileObject.get("TickTime").getAsInt();
         int duration = fileObject.get("Duration").getAsInt();
-        System.out.println(speed);
-        System.out.println(duration);
         TimeService clock = new TimeService(speed,duration);
         Thread clockt = new Thread(clock);
         threadList.add(clockt);
@@ -42,7 +40,6 @@ public class CRMSRunner {
                 newGpu = new GPU(GPU.Type.RTX2080);
             if (type.equals("GTX1080"))
                 newGpu= new GPU(GPU.Type.GTX1080);
-            System.out.println(newGpu.getType());
             GPUService gpus = new GPUService("Gpu Service" + i,newGpu);
             Thread gpuservicet = new Thread(gpus);
             threadList.add(gpuservicet);
@@ -53,7 +50,6 @@ public class CRMSRunner {
         JsonArray jsonArrayCPU = fileObject.get("CPUS").getAsJsonArray();
         for (JsonElement cpu : jsonArrayCPU){
             CPU newCpu = new CPU(cpu.getAsInt());
-            System.out.println(newCpu.getCores());
             CPUService cpus = new CPUService("Cpu Service" + i,newCpu);
             Thread cpuservicet = new Thread(cpus);
             threadList.add(cpuservicet);
@@ -68,8 +64,6 @@ public class CRMSRunner {
             ConfrenceInformation cfi = new ConfrenceInformation(name,date);
             ConferenceService cfs = new ConferenceService(name + " service",cfi);
             cfsList.add(cfs);
-            System.out.println(cfi.getName() + ":" + date);
-            System.out.println(cfs.getName() + ":" + cfi.getDate());
             Thread conferencet = new Thread(cfs);
             threadList.add(conferencet);
             conferencet.start();
@@ -105,48 +99,13 @@ public class CRMSRunner {
             }
             StudentService studentService = new StudentService(student.getName() + " service",student,modelList);
             studentServiceList.add(studentService);
-            System.out.println(student.getName() + " " + student.getDepartment() + " " + student.getStatus());
-            System.out.println(studentService.getName() + " " + studentService.getStudent().getName()+ ":");
-            for (Model m : modelList){
-                System.out.print(m.getName() + " " + m.getData().getSize() + " " + m.getData().getType()+ ", ");
-            }
-            System.out.println();
             Thread studentservicet = new Thread(studentService);
             threadList.add(studentservicet);
             studentservicet.start();
         }
-        for (Thread thread : threadList)
+        for (Thread thread : threadList){
             thread.join();
-        for (StudentService studentService : studentServiceList){
-            System.out.println(studentService.getStudent().getName() + " read " + studentService.getStudent().getPapersRead() + " and published: " + studentService.getStudent().getPublications());
-            for (Model model : studentService.getModels()){
-                if (model.getCurrStatus()== Model.Status.Trained||model.getCurrStatus()== Model.Status.Tested) {
-                    System.out.print(model.getName() + " " + model.getCurrStatus() + " ");
-                    if (!model.getResult().equals("None")) {
-                        System.out.print(model.getResult());
-                    }
-                    System.out.println();
-                }
-            }
         }
-
-        for (CPU cpu : Cluster.getInstance().getCPUS()){
-            System.out.println("CPU time: " + cpu.getTime());
-            System.out.println("CPU numofTicks: " + cpu.getNumOfTicks());
-        }
-        for (GPU gpu : Cluster.getInstance().getGPUS()){
-            System.out.println("GPU time: " + gpu.getCurrTime());
-        }
-
-        for (ConferenceService cfs : cfsList){
-            System.out.println(cfs.getName() + " published:");
-            for (Model model : cfs.getCfsList()){
-                System.out.println(model.getName());
-            }
-        }
-        System.out.println("Amount of GPUTimeUnits: " + Cluster.getInstance().getStatistics().getGPUTimeUnits());
-        System.out.println("Amount of CPUTimeUnits: " + Cluster.getInstance().getStatistics().getCPUTimeUnits());
-        System.out.println("Amount of Batches processed by CPU: " + Cluster.getInstance().getStatistics().getCPUProcessed());
 
         //FileReader
         File file = new File("out.json");
