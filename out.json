@@ -4,8 +4,8 @@
             "name": "Simba",
             "department": "Computer Science",
             "status": "MSc",
-            "publications": 2,
-            "papersRead": 2,
+            "publications": 0,
+            "papersRead": 3,
             "trainedModels": [
                 {
                     "name": "YOLO10",
@@ -14,25 +14,7 @@
                         "size": 200000
                     },
                     "status": "Tested",
-                    "results": "Good"
-                },
-                {
-                    "name": "ResNet9000",
-                    "data": {
-                        "type": "Images",
-                        "size": 200000
-                    },
-                    "status": "Tested",
-                    "results": "Good"
-                },
-                {
-                    "name": "LessEfficientNet",
-                    "data": {
-                        "type": "Images",
-                        "size": 20000
-                    },
-                    "status": "Trained",
-                    "results": "None"
+                    "results": "Bad"
                 }
             ]
         },
@@ -41,7 +23,7 @@
             "department": "EE",
             "status": "PhD",
             "publications": 0,
-            "papersRead": 4,
+            "papersRead": 3,
             "trainedModels": []
         },
         {
@@ -49,7 +31,7 @@
             "department": "Computer Science",
             "status": "PhD",
             "publications": 2,
-            "papersRead": 2,
+            "papersRead": 1,
             "trainedModels": [
                 {
                     "name": "Bert",
@@ -68,6 +50,15 @@
                     },
                     "status": "Tested",
                     "results": "Good"
+                },
+                {
+                    "name": "GPT5",
+                    "data": {
+                        "type": "Text",
+                        "size": 200000
+                    },
+                    "status": "Trained",
+                    "results": "None"
                 }
             ]
         },
@@ -75,16 +66,35 @@
             "name": "Timon",
             "department": "SE",
             "status": "MSc",
-            "publications": 0,
-            "papersRead": 4,
-            "trainedModels": []
+            "publications": 1,
+            "papersRead": 2,
+            "trainedModels": [
+                {
+                    "name": "Percepetron",
+                    "data": {
+                        "type": "Tabular",
+                        "size": 1000000
+                    },
+                    "status": "Tested",
+                    "results": "Good"
+                },
+                {
+                    "name": "GNN",
+                    "data": {
+                        "type": "Tabular",
+                        "size": 1000000
+                    },
+                    "status": "Tested",
+                    "results": "Bad"
+                }
+            ]
         },
         {
             "name": "Nala",
             "department": "Computer Science",
             "status": "PhD",
             "publications": 0,
-            "papersRead": 4,
+            "papersRead": 3,
             "trainedModels": [
                 {
                     "name": "YOLO9000",
@@ -104,21 +114,6 @@
             "date": 20000,
             "publications": [
                 {
-                    "name": "YOLO10",
-                    "data": {
-                        "type": "Images",
-                        "size": 200000
-                    },
-                    "status": "Tested",
-                    "results": "Good"
-                }
-            ]
-        },
-        {
-            "name": "NeurIPS",
-            "date": 25000,
-            "publications": [
-                {
                     "name": "GPT4",
                     "data": {
                         "type": "Text",
@@ -130,14 +125,14 @@
             ]
         },
         {
-            "name": "CVPR",
-            "date": 30000,
+            "name": "NeurIPS",
+            "date": 25000,
             "publications": [
                 {
-                    "name": "ResNet9000",
+                    "name": "Percepetron",
                     "data": {
-                        "type": "Images",
-                        "size": 200000
+                        "type": "Tabular",
+                        "size": 1000000
                     },
                     "status": "Tested",
                     "results": "Good"
@@ -145,8 +140,8 @@
             ]
         },
         {
-            "name": "ECCV",
-            "date": 40000,
+            "name": "CVPR",
+            "date": 30000,
             "publications": [
                 {
                     "name": "Bert",
@@ -160,12 +155,17 @@
             ]
         },
         {
+            "name": "ECCV",
+            "date": 40000,
+            "publications": []
+        },
+        {
             "name": "AISTATS",
             "date": 50000,
             "publications": []
         }
     ],
-"gpuTimeUsed": 57990,
-"cpuTimeUsed": 289380,
-"batchesProcessed": 56698
+"gpuTimeUsed": 64446,
+"cpuTimeUsed": 285772,
+"batchesProcessed": 58874
 }
